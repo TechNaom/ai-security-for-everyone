@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Security for Everyone Roadmap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../index.html">Home</a>
+      <a href="CURRICULUM_MAP.md">Markdown roadmap</a>
+      <a href="https://github.com/TechNaom/ai-security-for-everyone">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <h1>Roadmap</h1>
+  <p class="lede">
+    The course mirrors the `ai-coding-agents-for-everyone` architecture:
+    chapters grouped into modules, each ending with exercises, a
+    practice bank, interview prep, a project, and a builder
+    thought-process journal. Hands-on chapters that need a real model
+    run against Ollama by default — zero API cost, zero API key — with
+    a documented option to swap in a hosted provider instead.
+  </p>
+
+  <div class="feature-grid">
+    <div class="feature-card">
+      <h3>Module 1: Threat Modeling LLM Systems</h3>
+      <p>A structured way to think about LLM attack surface before diving into any specific attack.</p>
+      <p><strong>Outcome:</strong> map an LLM system's attack surface using the OWASP Top 10 for LLM Applications.</p>
+    </div>
+    <div class="feature-card">
+      <h3>Module 2: Prompt Injection Deep Dive</h3>
+      <p>The single most consequential LLM-specific vulnerability class, covered in real depth.</p>
+      <p><strong>Outcome:</strong> construct and defend against realistic direct/indirect injection and jailbreak techniques.</p>
+    </div>
+    <div class="feature-card">
+      <h3>Module 3: Data & Model Integrity</h3>
+      <p>Attacks on the model and its training/deployment pipeline, not just its runtime inputs.</p>
+      <p><strong>Outcome:</strong> explain data poisoning, model extraction, and supply-chain risk mechanically.</p>
+    </div>
+    <div class="feature-card">
+      <h3>Module 4: Securing RAG &amp; Agentic Systems</h3>
+      <p>Applying this course's depth to the two system shapes most real LLM products actually take.</p>
+      <p><strong>Outcome:</strong> secure a RAG pipeline and an agent's tool layer against adversarial input.</p>
+    </div>
+    <div class="feature-card">
+      <h3>Module 5: Red-Teaming &amp; Output Handling</h3>
+      <p>The practitioner half: running a real red-team exercise and handling output safely.</p>
+      <p><strong>Outcome:</strong> run a structured red-team exercise and produce a real findings report.</p>
+    </div>
+    <div class="feature-card">
+      <h3>Module 6: Capstone</h3>
+      <p>Design and defend a security architecture for a realistic LLM system.</p>
+      <p><strong>Outcome:</strong> think and design like a security architect, not just a practitioner.</p>
+    </div>
+  </div>
+
+  <h2>Chapter Path</h2>
+  <div class="chapter-grid">
+    <a class="chapter-card" href="#"><span class="chapter-card-num badge-coming-soon">Chapter 1</span><h3>Threat Modeling LLM Systems: The OWASP Top 10 for LLM Applications</h3><p>A working checklist for LLM attack surface, not trivia to memorize.</p></a>
+    <a class="chapter-card" href="#"><span class="chapter-card-num badge-coming-soon">Chapter 2</span><h3>Mapping the Attack Surface of a Real LLM Feature</h3><p>Applying the threat model to a real, given feature end to end.</p></a>
+    <a class="chapter-card" href="#"><span class="chapter-card-num badge-coming-soon">Chapter 3</span><h3>Direct Prompt Injection</h3><p>How it works, mechanically, and why it's not a solved problem.</p></a>
+    <a class="chapter-card" href="#"><span class="chapter-card-num badge-coming-soon">Chapter 4</span><h3>Indirect Prompt Injection and Jailbreaking Techniques</h3><p>Attacks carried through untrusted content, and real jailbreak patterns.</p></a>
+    <a class="chapter-card" href="#"><span class="chapter-card-num badge-coming-soon">Chapter 5</span><h3>Evaluating Prompt-Injection Defenses Honestly</h3><p>What a defense actually stops versus what it claims to stop.</p></a>
+    <a class="chapter-card" href="#"><span class="chapter-card-num badge-coming-soon">Chapter 6</span><h3>Data Poisoning</h3><p>How training and fine-tuning data becomes an attack vector.</p></a>
+    <a class="chapter-card" href="#"><span class="chapter-card-num badge-coming-soon">Chapter 7</span><h3>Model Extraction and Theft</h3><p>How a model's behavior or weights can be stolen through its API.</p></a>
+    <a class="chapter-card" href="#"><span class="chapter-card-num badge-coming-soon">Chapter 8</span><h3>Supply-Chain Risk: Weights, Dependencies, and Provenance</h3><p>Trusting what you didn't train yourself.</p></a>
+    <a class="chapter-card" href="#"><span class="chapter-card-num badge-coming-soon">Chapter 9</span><h3>Securing RAG Pipelines Against Injection</h3><p>Injection risk carried through retrieved documents.</p></a>
+    <a class="chapter-card" href="#"><span class="chapter-card-num badge-coming-soon">Chapter 10</span><h3>Securing Agentic Systems Against Adversarial Tool Output</h3><p>Extending an agent's permission model against a malicious tool result.</p></a>
+    <a class="chapter-card" href="#"><span class="chapter-card-num badge-coming-soon">Chapter 11</span><h3>Red-Teaming an LLM System: Methodology and Practice</h3><p>A structured red-team exercise against a real target, with a findings report.</p></a>
+    <a class="chapter-card" href="#"><span class="chapter-card-num badge-coming-soon">Chapter 12</span><h3>Handling LLM Output Safely: PII and Downstream Injection Risk</h3><p>What a model outputs can itself be an attack vector.</p></a>
+    <a class="chapter-card" href="#"><span class="chapter-card-num badge-coming-soon">Chapter 13</span><h3>Capstone: Security Architecture for a Real LLM System</h3><p>A Level 4 architecture challenge closing the course.</p></a>
+  </div>
+
+  <h2>Canonical Source</h2>
+  <p>
+    The editable roadmap lives in
+    <a href="CURRICULUM_MAP.md">CURRICULUM_MAP.md</a>. Keep this page and
+    <code>assets/chapters-data.js</code> aligned as chapters are built.
+  </p>
+</main>
+
+<script src="../../assets/chapters-data.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/sidebar.js"></script>
+</body>
+</html>

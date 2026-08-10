@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Security for Everyone — Free, Interactive LLM Security Course</title>
+<meta name="description" content="A free, visual, engineering-first course on securing LLM-powered systems: threat modeling, prompt injection and jailbreaking in depth, data/model integrity, securing RAG and agentic systems, red-teaming, and safe output handling.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="#chapters">All Chapters</a>
+      <a href="docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="page">
+    <span class="hero-eyebrow">Free · open-source by default · engineering-first</span>
+    <h1>Learn to attack and defend LLM systems, for real.</h1>
+    <p class="lede">
+      Threat model an LLM system with a real framework, construct and
+      defend against prompt injection and jailbreaks in depth, reason
+      about data and model integrity, secure RAG and agentic systems
+      specifically, run a real red-team exercise, and close by
+      designing a full security architecture for a regulated org. Every
+      attack pairs with a real, working defense — this is a defensive,
+      educational security course.
+    </p>
+    <div class="hero-badges">
+      <span>Plain-language first</span>
+      <span>Every attack paired with a real defense</span>
+      <span>Zero-cost by default</span>
+      <span>Interview-ready</span>
+    </div>
+    <div class="action-row">
+      <a href="#chapters" class="btn-primary">Browse chapters</a>
+      <a href="docs/curriculum/index.html" class="btn-secondary">Open roadmap</a>
+    </div>
+    <div class="hero-stats">
+      <div><strong>0</strong><span>chapters live</span></div>
+      <div><strong>13</strong><span>chapters planned</span></div>
+      <div><strong>0</strong><span>API key required</span></div>
+      <div><strong>0</strong><span>signup required</span></div>
+    </div>
+  </div>
+</section>
+
+<main class="page">
+  <h2>Why This Course Is Different</h2>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <h3>Deep, Not a Module-Wide Detour</h3>
+      <p>Sibling TechNaom courses touch LLM security in at most one module or chapter. This course goes deep across a full 13 chapters — the OWASP Top 10 for LLM Applications, real jailbreak techniques, data poisoning, model extraction, and more.</p>
+    </div>
+    <div class="feature-card">
+      <h3>Every Attack Paired With a Real Defense</h3>
+      <p>No attack technique is taught without a real, working mitigation shown alongside it — defensive and educational throughout, never an unsolved cliffhanger.</p>
+    </div>
+    <div class="feature-card">
+      <h3>Tested Against Real, Running Models</h3>
+      <p>Every attack demonstration and every defense is verified against a real, installed model before it's written into a lesson — an untested claim in a security course is worse than useless.</p>
+    </div>
+  </div>
+
+  <section id="chapters" class="course-map" aria-labelledby="chapters-title">
+    <div class="section-heading-row">
+      <div>
+        <span class="section-kicker">Complete learning path</span>
+        <h2 id="chapters-title">All Chapters</h2>
+      </div>
+      <a href="docs/curriculum/index.html" class="section-link">Open roadmap</a>
+    </div>
+    <p class="section-intro">
+      The sidebar and this chapter map are connected to the same course
+      data. This repo is freshly scaffolded — no chapter content exists
+      yet. The course is being built module by module; see
+      <a href="https://github.com/TechNaom/ai-security-for-everyone/blob/main/PROJECT_STATE.md">PROJECT_STATE.md</a>
+      for current status.
+    </p>
+    <div id="chapter-map" class="module-list" aria-live="polite"></div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first LLM security learning.</span>
+    <span><a href="https://github.com/TechNaom/ai-security-for-everyone">github.com/TechNaom/ai-security-for-everyone</a></span>
+  </div>
+</footer>
+
+<script src="assets/chapters-data.js"></script>
+<script src="assets/progress.js"></script>
+<script src="assets/sidebar.js"></script>
+<script src="assets/home.js"></script>
+</body>
+</html>
