@@ -96,26 +96,22 @@ payloads.
 
 ## Current task
 
-Chapter 1 (reference chapter) is done and live. Build Chapter 2
-("Mapping the Attack Surface of a Real LLM Feature," Module 1,
-Intermediate) next — completes Module 1 and ships the real L1 project
-("threat-model a real, given LLM feature end to end"; Chapter 1's own
-project page is a short preview pointing here). Still conceptual, no
-live-model dependency. Read Chapter 1 fully first — apply its exact
-OWASP Top 10 framework to a new, different realistic feature (not
-GreenCart again), going deeper on actually producing a threat-model
-artifact than Chapter 1's walkthrough did.
+**Module 1 (Chapters 1-2) is complete.** Build Chapter 3 ("Direct
+Prompt Injection," Module 2, Intermediate) next — the first chapter in
+this course needing a real model. Verify Ollama's current model
+recommendation and its actual behavior under injection/jailbreak
+testing FIRST, before writing any lesson content — do not assume a
+technique works against the installed model without testing it; an
+untested attack claim is actively misleading in a security course,
+more so than in the agent-building course this repo's CI/docs were
+copied from. Read Chapters 1-2 fully first — both already previewed
+direct vs. indirect injection briefly; Chapter 3 goes deep on direct
+injection specifically (Chapter 4 covers indirect + jailbreaking,
+Chapter 5 covers evaluating defenses).
 
 ## Next task after that
 
-After Module 1, Module 2 (Chapters 3-5) begins needing a real model
-for constructing/testing prompt injections — verify Ollama's current
-model recommendation and its actual behavior under injection/jailbreak
-testing before writing Chapter 3. Do not assume a technique works
-against the installed model without testing it first — an untested
-attack claim is actively misleading in a security course, more so than
-in the agent-building course this repo's CI/docs were copied from.
-Then continue module by module per `docs/curriculum/CURRICULUM_MAP.md`,
+Continue module by module per `docs/curriculum/CURRICULUM_MAP.md`,
 validating each with a `quality-audits/chapter-0N-audit.md` before
 moving on. Don't mass-generate ahead of validation.
 

@@ -101,6 +101,27 @@ original content only).
       cleanly — prior partial work (lesson.html, quiz.html,
       interview-questions, exercises) was verified complete and kept,
       not redone.
+- [x] **Chapter 2 built and live — completes Module 1**: "Mapping the
+      Attack Surface of a Real LLM Feature." Teaches the systematic
+      skill Chapter 1 only demonstrated once: a real, repeatable
+      7-step attack-surface enumeration method (every tool, every
+      context source including tool outputs, trust-classify each,
+      cross-reference untrusted sources against side-effect tools,
+      explicitly re-check tool outputs, run all 10 OWASP categories
+      against the complete list, write the justified table). Applied
+      to Waypoint, a fictional travel-booking trip-planner — a
+      genuinely different shape from GreenCart (multi-turn, partner-
+      data integration, payment path, six tools) — producing a 10-row
+      threat model hitting every OWASP category. Names two real
+      mistakes (under-scoping: a tool's OUTPUT re-enters context and
+      was written by an external party, not the user; over-focusing:
+      stopping after one Prompt Injection finding and missing a real
+      Unbounded Consumption gap and a Supply Chain gap in the same
+      system). Ships Module 1's real L1 project (AskHR, a fourth new
+      scenario, validated structurally since the task is intentionally
+      open-ended). 8 exercises (5 production-gear), 8 practice
+      scenarios, 8 interview questions across all 4 levels.
+      **Module 1 (Chapters 1-2) is now fully built and live.**
 
 ## Pending / Not Started
 
@@ -155,22 +176,13 @@ writing).
 
 ## Next Recommended Task
 
-Chapter 1 (reference chapter) is done and live. Next: Chapter 2
-("Mapping the Attack Surface of a Real LLM Feature," Module 1,
-Intermediate) — completes Module 1 and ships the real L1 project
-("threat-model a real, given LLM feature end to end," per
-CURRICULUM_MAP.md; Chapter 1's own project page is a short preview
-pointing here). Still conceptual, no live-model dependency. Read
-Chapter 1 fully first — Chapter 2 should apply the exact OWASP Top 10
-framework Chapter 1 built, to a new, different realistic feature (not
-GreenCart again), going deeper on the mechanics of actually producing
-a threat-model artifact than Chapter 1's walkthrough did.
-
-After Module 1, Module 2 (Chapters 3-5, prompt injection deep dive)
-begins needing a real model for constructing/testing injections —
-verify Ollama's current model recommendation and its actual behavior
-under injection/jailbreak testing before writing Chapter 3 (do not
+**Module 1 (Chapters 1-2) is complete.** Next: Module 2 (Chapters 3-5,
+prompt injection deep dive) — this is the first module needing a real
+model for constructing/testing injections. Verify Ollama's current
+model recommendation and its actual behavior under injection/jailbreak
+testing before writing Chapter 3 ("Direct Prompt Injection") — do not
 assume a technique works against the installed model without testing
-it against the real, installed model first — this is a hard rule for
-this course specifically, since an untested attack claim is actively
-misleading in a security course).
+it first; an untested attack claim is actively misleading in a
+security course. Read Chapters 1-2 fully first for terminology
+continuity (trust boundaries, the OWASP framework, indirect vs. direct
+injection already previewed in both chapters).
