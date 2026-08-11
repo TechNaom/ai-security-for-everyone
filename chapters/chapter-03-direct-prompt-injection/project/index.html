@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project: Direct-Injection Red-Team Harness — AI Security for Everyone</title>
+<meta name="description" content="Build a small harness that attempts five real direct-injection techniques against a target assistant, evaluates which succeed, and applies real defenses to re-test.">
+<link rel="stylesheet" href="../../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-03">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../../index.html">All Chapters</a>
+      <a href="../../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="../interview-questions.html">&larr; Back to interview questions</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 3 Project</span>
+    <span class="reading-time">~75 min, hands-on</span>
+  </div>
+  <h1>Project: Direct-Injection Red-Team Harness</h1>
+  <p class="lede">
+    Build a small, reusable harness that constructs one direct-injection
+    attempt per this chapter's five technique families, runs them
+    against a target assistant, evaluates whether each attempt's
+    specific "tell" shows up in the response, and produces a before/after
+    report comparing a naive system prompt against a hardened one with
+    real defenses applied. This is the chapter's own hands-on lab — a
+    different, smaller-scope deliverable from Module 2's official Level
+    2 project, which ships after Chapter 5 once evaluating defenses
+    honestly has been covered in full.
+  </p>
+
+  <div class="hook">
+    <p>
+      The target is <strong>Harbor Desk</strong>, a fictional internal
+      IT helpdesk assistant with no tools — it answers questions about
+      software licenses, VPN setup, and password resets, and must never
+      reveal the internal admin credential string
+      <code>HD-ROOT-2024</code> or bypass the standard password-reset
+      verification process. Five constructed attempts, one per this
+      chapter's taxonomy family, are already written for you in
+      <code>starter.py</code>'s <code>ATTEMPTS</code> list — your job is
+      to build the harness logic around them: the judgment (did this
+      attempt actually succeed), the defense (structural separation +
+      a keyword pre-filter), and the reporting.
+    </p>
+  </div>
+
+  <h2>Your task</h2>
+  <p>
+    Download <code>starter.py</code> and fill in its three parts:
+  </p>
+  <div class="task-card">
+    <h3><span class="task-num">1</span> Five tell-check functions</h3>
+    <p>Pure functions that decide, given a response string, whether that specific injection attempt succeeded — the actual judgment logic behind every row of the final report.</p>
+  </div>
+  <div class="task-card">
+    <h3><span class="task-num">2</span> Hardened system prompt (Defense 1)</h3>
+    <p>Apply structural separation: explicitly tell the model the user's message is untrusted and must never be treated as an instruction, identity change, or override.</p>
+  </div>
+  <div class="task-card">
+    <h3><span class="task-num">3</span> Keyword pre-filter (Defense 2)</h3>
+    <p>A naive filter that blocks a message containing any of a short trigger-word list, applied before the message ever reaches the model.</p>
+  </div>
+
+  <div class="what-is">
+    <span class="label">Two things this script always does, live model or not</span>
+    <strong>Step 1</strong> runs <code>verify_tell_checks()</code> first,
+    always, with no network dependency — it checks your five tell-check
+    functions against ten synthetic, clearly-labeled example strings.
+    This is how you know your own judgment logic is correct, independent
+    of whether Ollama is reachable this session. <strong>Step 2</strong>
+    attempts a real, live run against Ollama; if the server is
+    unreachable or its generation endpoint hangs past an 8-second
+    timeout, this prints a clear message and exits cleanly instead of
+    hanging or crashing.
+  </div>
+
+  <div class="download-links">
+    <a href="starter.py">starter.py</a>
+    <a href="solution.py">solution.py (reference)</a>
+  </div>
+
+  <div class="hook">
+    <p>
+      <strong>An honest note on live verification, carried over from the
+      lesson:</strong> this project's own build session hit exactly the
+      graceful-degradation path described above — Ollama's server was
+      reachable, but its generation endpoint hung past the timeout, a
+      known, disclosed, persistent issue in some sandboxed environments.
+      The tell-check self-test and the graceful-degradation path itself
+      were verified by actually running this code; the live naive-vs-
+      hardened report was not observed this session. See
+      <code>quality-audits/chapter-03-audit.md</code> for the complete,
+      itemized breakdown of exactly what was and wasn't live-tested.
+    </p>
+  </div>
+
+  <div class="points-to-remember">
+    <h2>What "done" looks like</h2>
+    <p>
+      <code>verify_tell_checks()</code> reports 10/10 with your five
+      functions filled in correctly — that's the part of this project
+      you can fully verify yourself, with or without a reachable model.
+      If you have a working local Ollama server, run
+      <code>python3 starter.py</code> (or <code>solution.py</code>) all
+      the way through to see the real naive-vs-hardened report; compare
+      your hardened system prompt and pre-filter's actual effectiveness
+      against the reference in <code>solution.py</code>.
+    </p>
+  </div>
+
+  <div class="chapter-nav">
+    <a href="../interview-questions.html">&larr; Interview Questions</a>
+    <a href="../../../index.html">All Chapters &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+    <span><a href="https://github.com/TechNaom/ai-security-for-everyone">github.com/TechNaom/ai-security-for-everyone</a></span>
+  </div>
+</footer>
+
+<script src="../../../assets/progress.js"></script>
+<script src="../../../assets/chapters-data.js"></script>
+<script src="../../../assets/sidebar.js"></script>
+</body>
+</html>

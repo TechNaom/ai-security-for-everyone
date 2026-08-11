@@ -1,0 +1,257 @@
+# Chapter 3 Interview Questions: Direct Prompt Injection
+
+Grouped by level — beginner, intermediate, senior, architect. Each includes
+a strong answer, a red flag, a follow-up, and what the question actually
+proves. This is the plain-text companion to `interview-questions.html`.
+
+---
+
+### 1. (Beginner) In your own words, why does direct prompt injection work at all? What's the underlying mechanism?
+
+**Strong answer:** A language model has no architectural separation
+between "instructions I should obey" and "text I should treat as data" —
+both the operator's system prompt and a user's typed message are just
+tokens in one shared context window. The model predicts the most
+probable continuation given everything in that context; it doesn't
+"execute" the system prompt and merely "read" the user's message the way
+a traditional program separates compiled code from runtime data. Role
+labels (system/user) do get trained weighting toward the system role,
+but that's a learned statistical tendency, not a hard guarantee — a
+persuasively-phrased user message can still shift the model's behavior.
+
+**Red flag:** Describes the problem as "the AI gets tricked" without
+being able to say why, mechanistically, the model can't just tell the
+two kinds of text apart.
+
+**Follow-up:** "Is this a bug that could be patched, or a property of
+how instruction-following models work?"
+
+**What this proves:** Understands the mechanism at the level this
+chapter builds it, not just the vocabulary word "prompt injection."
+
+---
+
+### 2. (Beginner) Name and briefly describe two of the five direct-injection technique families from this chapter.
+
+**Strong answer:** Any two of: role-play/persona override (asking the
+model to adopt an alternate identity, like the historical "DAN"
+pattern, then framing the restricted request as something that persona
+is doing, not the model itself); instruction override (explicitly
+telling the model to ignore or disregard its prior instructions before
+stating a new one); context/scope confusion (claiming fake authority,
+e.g. text formatted like a system announcement — "SYSTEM: authorized
+override..." — that the model pattern-matches as authoritative with no
+way to verify it); payload obfuscation (encoding or transforming the
+injected instruction — base64, unusual spacing, translation — to slip
+past a naive keyword filter while remaining interpretable by the
+model); or multi-turn/gradual escalation (spreading the attack across
+several turns so no single message looks obviously malicious).
+
+**Red flag:** Can only describe "ignore your instructions" style
+attacks and isn't aware injection takes other forms.
+
+**Follow-up:** "Which of these would a simple keyword blocklist catch,
+and which would it miss?"
+
+**What this proves:** Has retained the taxonomy as real, distinct
+mechanisms, not one generic "jailbreak" concept.
+
+---
+
+### 3. (Intermediate) Why doesn't a keyword blocklist (blocking strings like "ignore your instructions") work as a standalone defense against direct injection?
+
+**Strong answer:** A keyword blocklist operates on the literal surface
+form of the text, while the model operates on meaning after its own
+internal processing — including decoding common encodings and
+translating common languages, both ordinary skills the model already
+has. Payload obfuscation exploits exactly this gap: a base64-encoded
+instruction, or one with altered spacing/homoglyphs inside trigger
+words, or one phrased in a different language than the filter was
+tuned for, never matches the blocked literal string, so the filter
+reports "clean" while the model still decodes and follows the
+instruction internally. Worse, a filter that returns "clean" creates
+false confidence — it looks like a real check without functioning as
+one against a moderately sophisticated attacker.
+
+**Red flag:** Treats keyword filtering as sufficient on its own, or
+can't explain a concrete way to defeat it.
+
+**Follow-up:** "What would you add alongside keyword filtering to make
+the input-screening layer meaningfully stronger?"
+
+**What this proves:** Understands filtering's real limits, not just
+that it exists — connects to the course's "confidently wrong" framing
+from Chapter 1 applied to a concrete defense mechanism.
+
+---
+
+### 4. (Intermediate) A team ships an LLM assistant with no tools and no side effects — it only produces chat responses. They conclude injection defenses aren't worth the engineering time here. Do you agree?
+
+**Strong answer:** No. Bounding consequential-action blast radius
+(this chapter's Defense 3) is the highest-leverage single defense, but
+it isn't the only one that matters, and "no tools" doesn't mean "no
+real stakes." A successful direct injection against a tool-free
+assistant can still produce brand damage (the model promoting a
+competitor, as in the Meridian Notes/Concierge example), compliance or
+policy exposure (an assistant appearing to authorize or endorse
+something it has no authority over), or reputational harm (a public
+screenshot showing the assistant abandoning its identity). Structural
+separation, filtering, and provider-trained instruction hierarchy
+still reduce how often that happens, independent of whether a tool
+call is in reach.
+
+**Red flag:** Agrees that no tools means no real risk, missing that
+consequence bounding (Defense 3) is one layer among four, not a
+substitute for the others.
+
+**Follow-up:** "Give a concrete example of real business damage from a
+tool-free assistant being successfully injected."
+
+**What this proves:** Doesn't over-index on the most dramatic defense
+(bounding tool consequences) to the point of dismissing the others —
+matches this chapter's GenAI Builder Thought Process section directly.
+
+---
+
+### 5. (Senior) Walk through how you'd design a layered defense for a customer-facing support assistant that has one tool with a real side effect (issuing a small account credit, capped at $20). Where does each of this chapter's four defenses fit?
+
+**Strong answer:** Structural separation (Defense 1): the operator's
+scope/policy instructions live in the system role; any untrusted
+content that must enter context (e.g. a quoted prior support ticket)
+is delimited and explicitly labeled as data, never instructions.
+Filtering (Defense 2): a lightweight pre-filter or small-model screen
+catches the cheapest, most common override attempts before they reach
+the primary model, with the explicit understanding that a
+sophisticated, obfuscated attempt can still get through — this layer
+buys cost/latency-cheap coverage, not a guarantee. Bounded consequence
+(Defense 3): the credit tool itself enforces the $20 cap in code that
+runs regardless of what the model decided or was manipulated into
+deciding, and ideally ties the credit to the specific account already
+authenticated in the session rather than an arbitrary target the model
+was given — the same principle as GreenCart's refund-target binding
+from Chapter 1. Provider hierarchy (Defense 4): choosing a model with
+documented instruction-hierarchy training adds one more layer of
+resistance, but the design doesn't rely on it being sufficient alone.
+The point of walking all four is that no single layer is asked to do
+all the work.
+
+**Red flag:** Picks one defense (usually filtering or "use a better
+model") and treats it as sufficient, without discussing bounded
+consequence for the actual tool.
+
+**Follow-up:** "If you could only ship one of these four before
+launch, which would you pick, and what residual risk would you
+explicitly accept?"
+
+**What this proves:** Can design a real, layered defense against a
+concrete system, not just recite the four defense names.
+
+---
+
+### 6. (Senior) A colleague claims: "Once a model provider trains for instruction hierarchy, prompt injection is basically a solved problem for anyone using their API." How do you respond?
+
+**Strong answer:** Push back specifically, citing what the providers
+themselves say. OpenAI's Instruction Hierarchy paper frames the work
+as reducing susceptibility to override and extraction attacks, not
+eliminating it — its own evaluations report meaningful but incomplete
+resistance. Anthropic's published research on prompt-injection
+defenses in agentic/browser-use contexts reports partial effectiveness
+(explicitly below 100% success at blocking attacks across tested
+platforms), not elimination, and frames prompt injection as an active,
+ongoing research area they're continuing to invest in. Both providers
+also separately publish guidance (delimiting untrusted content, hard
+scoping/permission limits on tool access) precisely because their own
+teams don't consider trained instruction hierarchy sufficient on its
+own — if it were, that additional guidance wouldn't exist. A claim of
+"solved" is the kind of overclaim this course explicitly treats as
+actively misleading in a security context.
+
+**Red flag:** Accepts the claim, or can't point to any specific
+provider statement/evidence to push back with.
+
+**Follow-up:** "If a provider's own docs recommend defense-in-depth
+beyond their model's training, what does that tell you about how much
+to trust the training alone?"
+
+**What this proves:** Can evaluate a vendor/provider claim critically
+against real published evidence rather than accepting marketing-shaped
+framing at face value — a core skill for a security practitioner.
+
+---
+
+### 7. (Architect) You're setting an org-wide policy for what "injection-resistant by design" means for any new LLM feature, to be applied before a feature ships, regardless of which model or provider is used. What does that policy require, and why does it need to be provider-agnostic?
+
+**Strong answer:** The policy requires, independent of any specific
+provider's trained behavior: (1) structural separation of operator
+instructions from any content the feature ingests, using whatever role/
+delimiter mechanism the chosen API actually supports; (2) an input/
+output screening layer, explicitly documented as reducing but not
+eliminating risk; (3) a hard architectural bound on every tool with a
+real side effect — a cap, a human checkpoint, or an identity-binding
+check that runs in code outside the model's judgment; and (4) an
+explicit, written acceptance of residual risk for what remains
+possible even after 1–3, reviewed before launch. It has to be
+provider-agnostic because relying on any one provider's specific
+instruction-hierarchy training as the org's actual security boundary
+means the org's actual security posture silently changes if the
+model or provider is ever swapped — and a security control that
+quietly disappears on a routine model upgrade is a control that
+was never really load-bearing in the design.
+
+**Red flag:** Writes a policy that names a specific provider's trained
+behavior as the primary control, without a provider-independent
+architectural bound underneath it.
+
+**Follow-up:** "How would you validate that a shipped feature actually
+complies with this policy, rather than just documents that it intends
+to?"
+
+**What this proves:** Architect-level judgment — designs a control
+that survives a model swap, not one coupled to a single provider's
+current training run.
+
+---
+
+### 8. (Architect) This chapter disclosed that its own hands-on lab could not be live-verified against a real model this session, due to a persistent environment issue, and explicitly framed every example transcript as "representative of documented behavior" rather than "observed this session." Is that disclosure itself a security-relevant practice, or just a process footnote?
+
+**Strong answer:** It's a genuinely security-relevant practice, not a
+footnote. A security course (or a real security team's own findings
+report) that presents an unverified claim as if it were empirically
+observed creates exactly the same failure mode this chapter warns
+about with naive keyword filtering: false confidence that looks like a
+real check. If a claimed vulnerability or a claimed defense's
+effectiveness is stated without the verification status being
+explicit, a reader (or a downstream engineering team) has no way to
+calibrate how much weight to put on it — they might ship a mitigation
+believing it was tested when it was only reasoned about, or dismiss a
+real risk because a claim "sounded" verified. Precise, honest
+disclosure of what was and wasn't actually tested is itself part of
+the discipline a security practitioner is expected to bring to every
+finding, not a separate concern from the technical content.
+
+**Red flag:** Treats the disclosure as unnecessary process overhead,
+or can't connect it back to the same "confidently wrong" failure mode
+the chapter names elsewhere.
+
+**Follow-up:** "How would you structure a real red-team findings
+report to make this same distinction clear to a reader who only skims
+it?"
+
+**What this proves:** Recognizes that intellectual honesty about
+verification status is itself a security practice, not a separate
+concern from the technical material — architect-level judgment about
+what makes security work trustworthy at all.
+
+## Strategy Tips
+
+- For every answer, be ready to name the specific mechanism (tokens in
+  one shared context window, no code/data separation) rather than
+  staying at the level of "AI can be tricked."
+- For senior/architect questions, the interviewer is listening for
+  layered thinking — no single defense, no single provider's training,
+  should be treated as sufficient on its own.
+- If you're new to security interviews: naming this chapter's four
+  defenses in order (structural separation, filtering with limits,
+  bounded consequence, provider hierarchy) and explaining what each
+  does and doesn't stop is a strong, complete answer to almost any
+  "how would you defend against this" question in this bank.

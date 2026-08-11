@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Direct Prompt Injection Quiz — AI Security for Everyone</title>
+<meta name="description" content="Interactive quiz for Direct Prompt Injection.">
+<link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-03" data-chapter-id="chapter-03">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../index.html">All Chapters</a>
+      <a href="../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="lesson.html">&larr; Back to the lesson</a></p>
+
+  <span class="chapter-badge">Chapter 3 Quiz</span>
+  <h1>Direct Prompt Injection</h1>
+  <p>Fill in each blank, then check your answers. A perfect score marks this chapter complete.</p>
+
+  <div class="quiz-progress-wrap" aria-hidden="true">
+    <div class="quiz-progress-fill" id="quiz-progress-fill"></div>
+  </div>
+
+  <form onsubmit="return false;">
+
+    <div class="quiz-question">
+      <label for="q1"><span class="q-num">1</span> Direct prompt injection works because a language model has no architectural equivalent of "code vs. ______" — a system prompt and a user's message are both just tokens in one shared context window.</label>
+      <div class="fib-row">
+        <input type="text" id="q1" class="fib-blank" data-answers="data" aria-label="Answer for question 1">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q2"><span class="q-num">2</span> Role-priority weighting (system role over user role) is a real, trained tendency, but it is statistical, not a hard architectural ______.</label>
+      <div class="fib-row">
+        <input type="text" id="q2" class="fib-blank" data-answers="wall,guarantee" aria-label="Answer for question 2">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q3"><span class="q-num">3</span> The historical "DAN" jailbreak pattern is the most famous documented example of the ______-play / persona override technique family.</label>
+      <div class="fib-row">
+        <input type="text" id="q3" class="fib-blank" data-answers="role" aria-label="Answer for question 3">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q4"><span class="q-num">4</span> Encoding an injected instruction in base64, or altering its spacing, to slip past a naive keyword filter while remaining interpretable by the model is called payload ______.</label>
+      <div class="fib-row">
+        <input type="text" id="q4" class="fib-blank" data-answers="obfuscation" aria-label="Answer for question 4">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q5"><span class="q-num">5</span> Spreading an injection attempt across several turns, building context or apparent rapport before the actual restricted request, is the multi-turn / gradual ______ technique family.</label>
+      <div class="fib-row">
+        <input type="text" id="q5" class="fib-blank" data-answers="escalation" aria-label="Answer for question 5">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q6"><span class="q-num">6</span> This chapter's highest-leverage defense is: never let model judgment alone gate a ______ action — a successful injection against a model with no consequential tool call is a bad chat message, not an incident.</label>
+      <div class="fib-row">
+        <input type="text" id="q6" class="fib-blank" data-answers="consequential" aria-label="Answer for question 6">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q7"><span class="q-num">7</span> OpenAI's published Instruction Hierarchy research ranks message privilege as system, then developer, then user message, with tool outputs and retrieved documents carrying no default ______.</label>
+      <div class="fib-row">
+        <input type="text" id="q7" class="fib-blank" data-answers="authority" aria-label="Answer for question 7">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q8"><span class="q-num">8</span> Anthropic's documented guidance recommends wrapping untrusted content in clearly labeled ______ tags to unambiguously separate instructions from data in a Claude prompt.</label>
+      <div class="fib-row">
+        <input type="text" id="q8" class="fib-blank" data-answers="xml,delimiter,delimiters" aria-label="Answer for question 8">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div id="check-all-wrap">
+      <button type="button" id="check-all-btn" class="check-btn">Check All Answers</button>
+      <span id="quiz-score"></span>
+    </div>
+
+    <div class="quiz-celebration" id="quiz-celebration" aria-live="polite">
+      Perfect score. Chapter complete.
+    </div>
+  </form>
+
+  <div class="chapter-nav">
+    <a href="lesson.html">&larr; Back to Lesson</a>
+    <a href="exercises/index.html">Exercises &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+  </div>
+</footer>
+
+<script src="../../assets/quiz-engine.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/chapters-data.js"></script>
+<script src="../../assets/sidebar.js"></script>
+</body>
+</html>

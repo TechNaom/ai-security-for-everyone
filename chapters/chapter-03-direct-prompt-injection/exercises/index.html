@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Direct Prompt Injection Exercises — AI Security for Everyone</title>
+<meta name="description" content="Hands-on exercises for Direct Prompt Injection.">
+<link rel="stylesheet" href="../../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-03">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../../index.html">All Chapters</a>
+      <a href="../../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="../quiz.html">&larr; Back to the quiz</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 3 Exercises</span>
+    <span class="reading-time">~35 min, hands-on</span>
+  </div>
+  <h1>Exercises: Direct Prompt Injection</h1>
+  <p>
+    These exercises use a new scenario, deliberately different from the
+    lesson's Meridian Notes / Concierge example: <strong>HelixCare
+    Intake</strong>, a fictional telehealth pre-visit intake assistant
+    with one tool that has a real side effect,
+    <code>schedule_appointment(patient_id, slot)</code>. You'll classify
+    five real injection attempts by technique family, predict how a
+    naive keyword filter behaves against each, and design real defenses
+    — not just recall the lesson's taxonomy names.
+  </p>
+
+  <div class="what-is">
+    <span class="label">Exercise standard</span>
+    Eight tasks total. Five are marked production-gear — defense
+    evaluation, defense-in-depth reasoning, bounded-consequence design,
+    provider-guidance matching, and a full defense-layer completeness
+    gate, not just concept recall.
+  </div>
+
+  <div class="what-is">
+    <span class="label">How to run these</span>
+    Download <code>starter.py</code>, fill in every <code>&#35; TODO</code>,
+    then run <code>python3 starter.py</code> to see an automated score
+    report. Compare against <code>solution.py</code>, which scores a
+    perfect 24/24.
+  </div>
+
+  <div class="download-links">
+    <a href="starter.py">starter.py</a>
+    <a href="solution.py">solution.py (reference)</a>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">1</span> Classify technique families</h3>
+    <p>Match five HelixCare Intake injection attempts to the correct technique family from this chapter's taxonomy — role-play, instruction override, context confusion, obfuscation, or multi-turn escalation.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">2</span> Predict keyword-filter behavior</h3>
+    <p>For the same five attempts, predict whether a naive filter blocking "ignore"/"disregard"/"override" would actually catch each one — the exercise that makes payload obfuscation's real weakness concrete.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">3</span> <span class="badge-coming-soon">Production-gear</span> Evaluate candidate defenses</h3>
+    <p>Given four candidate fixes for HelixCare Intake, decide which ones actually reduce direct-injection risk or its consequences versus which are unrelated UX changes.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">4</span> <span class="badge-coming-soon">Production-gear</span> Defense-in-depth reasoning</h3>
+    <p>Write a real, justified sentence explaining why keyword filtering alone isn't sufficient — naming both a specific weakness and what to add alongside it.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">5</span> <span class="badge-coming-soon">Production-gear</span> Bounded-consequence rule design</h3>
+    <p>Design one concrete, code-enforced rule for <code>schedule_appointment</code> that would still stop a successful injection from booking an inappropriate appointment.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">6</span> Provider guidance matching</h3>
+    <p>Match two documented defense descriptions to the real provider (OpenAI or Anthropic) whose published guidance this chapter cites for each.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">7</span> Multi-turn escalation detection</h3>
+    <p>Decide whether a given three-turn transcript demonstrates gradual escalation or is a benign, non-escalating exchange — a judgment call, not a keyword match.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">8</span> <span class="badge-coming-soon">Production-gear</span> Defense-layer completeness gate</h3>
+    <p>Confirm all four of this chapter's defense layers were at least considered while working through Exercises 1&ndash;7 — the same completeness discipline Chapter 2's Step 6 required for OWASP categories.</p>
+  </div>
+
+  <div class="chapter-nav">
+    <a href="../quiz.html">&larr; Back to Quiz</a>
+    <a href="../practice/index.html">Practice Bank &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+  </div>
+</footer>
+
+<script src="../../../assets/progress.js"></script>
+<script src="../../../assets/chapters-data.js"></script>
+<script src="../../../assets/sidebar.js"></script>
+</body>
+</html>

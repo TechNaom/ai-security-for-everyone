@@ -40,7 +40,8 @@ window.AISFE_MODULES = [
         id: "chapter-03",
         num: 3,
         title: "Direct Prompt Injection",
-        description: "How it works, mechanically, and why it's not a solved problem."
+        description: "How it works, mechanically, and why it's not a solved problem.",
+        path: "chapters/chapter-03-direct-prompt-injection/lesson.html"
       },
       {
         id: "chapter-04",
