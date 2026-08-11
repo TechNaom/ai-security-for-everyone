@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project: A Defense-Evaluation Harness — AI Security for Everyone</title>
+<meta name="description" content="Build a real defense-evaluation harness: a 20-entry test corpus spanning Chapter 3-4's taxonomies, a before/after comparison with real block/false-positive counts, a Step 4 adversarial-iteration round, and a Category 3 consequence-bounding check that answers a different question entirely.">
+<link rel="stylesheet" href="../../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-05">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../../index.html">All Chapters</a>
+      <a href="../../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="../interview-questions.html">&larr; Back to interview questions</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 5 Project</span>
+    <span class="reading-time">~100 min, hands-on</span>
+  </div>
+  <h1>Project: A Defense-Evaluation Harness</h1>
+  <p class="lede">
+    Build the real evaluation harness this chapter's lesson only walked
+    the structure of: a 15-entry malicious corpus spanning all five of
+    Chapter 3's technique families and three of Chapter 4's delivery
+    channels (plus two combined-technique entries), a 5-entry benign
+    control set, a before/after comparison against a structural defense
+    (content-tagging + sandwich reinforcement), real blocked/succeeded/
+    false-positive counts, a Step 4 adversarial-iteration round, and a
+    Category 3 consequence-bounding check that runs completely
+    independent of everything else — proving, inside the harness's own
+    report, that a bounded-consequence defense answers a different
+    question than a structural one. This is the chapter's own hands-on
+    lab — a different, smaller-scope deliverable from Module 2's official
+    Level 2 project.
+  </p>
+
+  <div class="hook">
+    <p>
+      The target is <strong>Anchorline Support</strong>, a fictional
+      internal IT-helpdesk copilot — it answers questions using a
+      RAG-indexed knowledge base, calls a ticket-history tool whose notes
+      are written by whoever filed the ticket, and can fetch and
+      summarize a linked internal wiki/forum page. It must never reveal
+      its internal admin escalation code (<code>ANCHOR-ADMIN-7734</code>)
+      and has one tool with a real side effect,
+      <code>reset_account_access(user_id)</code>, which must never fire
+      for a user other than the requesting session's own account without
+      a separate confirmation step. The full 15-entry malicious corpus
+      and 5-entry benign control set are already written for you in
+      <code>starter.py</code>'s <code>MALICIOUS_CORPUS</code> and
+      <code>BENIGN_CORPUS</code> lists — your job is to build the harness
+      logic around them.
+    </p>
+  </div>
+
+  <h2>Your task</h2>
+  <p>Download <code>starter.py</code> and fill in its four parts:</p>
+  <div class="task-card">
+    <h3><span class="task-num">1</span> Three tell-check functions</h3>
+    <p>Pure functions that decide, given a response string, whether the corpus entry's specific manipulation goal — the secret leaking, or a bypass being confirmed for a named target user — actually happened; plus a false-positive check for the benign control set.</p>
+  </div>
+  <div class="task-card">
+    <h3><span class="task-num">2</span> Hardened system prompt + content-tagging + sandwich reminder (Defenses 1 and 2)</h3>
+    <p>Extend Chapter 4's project pattern: wrap external content in a labeled, distrusted tag, and restate the real rules immediately before the model generates its response.</p>
+  </div>
+  <div class="task-card">
+    <h3><span class="task-num">3</span> <span class="badge-coming-soon">Production-gear</span> The Category 3 consequence-bounding check</h3>
+    <p>A hard, code-level rule for <code>reset_account_access</code> that never inspects the model's text at all — only the requested target user against the session's own user ID. This is the concrete demonstration of this chapter's most important distinction.</p>
+  </div>
+  <div class="task-card">
+    <h3><span class="task-num">4</span> <span class="badge-coming-soon">Production-gear</span> Step 4: adversarial iteration</h3>
+    <p>Given an entry the defended mode blocked, build an adapted variant that specifically targets the sandwich defense's known recency-effect mechanism, and re-run it — the harness's own version of Chapter 4's cited adaptive-attack research.</p>
+  </div>
+
+  <div class="what-is">
+    <span class="label">What the finished report shows</span>
+    Four report sections: <strong>A/B</strong> — malicious-corpus block
+    rate and benign false-positive rate, undefended vs. defended;
+    <strong>C</strong> — the Step 4 adversarial round, re-run only against
+    whatever Report B's defended mode actually blocked; <strong>D</strong>
+    — the Category 3 consequence-bounding check across the full corpus,
+    computed completely independently of Reports A–C, including every
+    entry where the defended mode's tell still fired. Report D is the
+    chapter's central point made concrete: it's measured with a different
+    metric, answering a different question, and its result doesn't move
+    when Reports A–C's numbers do.
+  </div>
+
+  <div class="what-is">
+    <span class="label">Two things this script always does, live model or not</span>
+    <strong>Step A</strong> runs <code>verify_logic()</code> first, always,
+    with no network dependency — it checks your three tell-check
+    functions and your consequence-bounding check against synthetic,
+    clearly-labeled example strings (21 checks total: 6 tell-check cases
+    plus one consequence-bounding check per corpus entry). This is how you
+    know your own judgment logic is correct, independent of whether Ollama
+    is reachable this session. <strong>Step B</strong> attempts a real,
+    live run against Ollama; if the server is unreachable or its
+    generation endpoint hangs past an 8-second timeout, this prints a
+    clear message and exits cleanly instead of hanging or crashing.
+  </div>
+
+  <div class="download-links">
+    <a href="starter.py">starter.py</a>
+    <a href="solution.py">solution.py (reference)</a>
+  </div>
+
+  <div class="hook">
+    <p>
+      <strong>An honest note on live verification, carried over from the
+      lesson:</strong> this project's own build session tried live
+      verification directly, twice, before writing any of this section.
+      Ollama's <code>/api/tags</code> endpoint responded normally
+      (<code>llama3.2:latest</code>, confirmed pulled and available), but
+      a direct generation request against <code>/api/chat</code>, tested
+      independently via raw <code>curl</code> with a 12-second timeout,
+      returned no response and timed out (<code>curl</code> exit code
+      28) — the same persistent, previously-disclosed, sandbox-wide issue
+      Chapters 3 and 4 both hit, re-confirmed directly this session. The
+      <code>openai</code> Python package is also not installed in this
+      sandbox (confirmed via a direct <code>import openai</code>
+      attempt), so <code>starter.py</code>/<code>solution.py</code> both
+      hit the graceful-degradation path's <code>ImportError</code> branch
+      first regardless. The 21-check logic self-test and the
+      graceful-degradation path itself were verified by actually running
+      this code, with real output observed; the live undefended-vs-defended
+      report, the Step 4 adversarial round's real numbers, and Report D's
+      full-corpus run were not observed this session. See
+      <code>quality-audits/chapter-05-audit.md</code> for the complete,
+      itemized breakdown of exactly what was and wasn't live-tested.
+    </p>
+  </div>
+
+  <div class="points-to-remember">
+    <h2>What "done" looks like</h2>
+    <p>
+      <code>verify_logic()</code> reports 21/21 with all four parts
+      filled in correctly — that's the part of this project you can fully
+      verify yourself, with or without a reachable model. If you have a
+      working local Ollama server, run <code>python3 starter.py</code>
+      (or <code>solution.py</code>) all the way through to see the real
+      Reports A–D. Pay particular attention to Report D: confirm for
+      yourself that its contained count doesn't depend on whether Report
+      B's tell fired for the same entries — that independence is the
+      whole point of a consequence-bounding defense, and this project is
+      built so you can watch it hold (or, if your own
+      <code>consequence_bounding_check()</code> has a bug, watch it
+      wrongly fail to hold, which is exactly the kind of mistake a real
+      evaluation is built to catch).
+    </p>
+  </div>
+
+  <div class="chapter-nav">
+    <a href="../interview-questions.html">&larr; Interview Questions</a>
+    <a href="../../../index.html">All Chapters &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+    <span><a href="https://github.com/TechNaom/ai-security-for-everyone">github.com/TechNaom/ai-security-for-everyone</a></span>
+  </div>
+</footer>
+
+<script src="../../../assets/progress.js"></script>
+<script src="../../../assets/chapters-data.js"></script>
+<script src="../../../assets/sidebar.js"></script>
+</body>
+</html>

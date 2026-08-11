@@ -54,7 +54,8 @@ window.AISFE_MODULES = [
         id: "chapter-05",
         num: 5,
         title: "Evaluating Prompt-Injection Defenses Honestly",
-        description: "What a defense actually stops versus what it claims to stop."
+        description: "What a defense actually stops versus what it claims to stop.",
+        path: "chapters/chapter-05-evaluating-prompt-injection-defenses-honestly/lesson.html"
       }
     ]
   },

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evaluating Prompt-Injection Defenses Honestly Exercises — AI Security for Everyone</title>
+<meta name="description" content="Hands-on exercises for Evaluating Prompt-Injection Defenses Honestly.">
+<link rel="stylesheet" href="../../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-05">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../../index.html">All Chapters</a>
+      <a href="../../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="../quiz.html">&larr; Back to the quiz</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 5 Exercises</span>
+    <span class="reading-time">~40 min, hands-on</span>
+  </div>
+  <h1>Exercises: Evaluating Prompt-Injection Defenses Honestly</h1>
+  <p>
+    These exercises use a new scenario, deliberately different from the
+    lesson's Harborview Claims example: <strong>Fernbridge Freight</strong>,
+    a fictional logistics-coordination assistant with a RAG-indexed
+    route/policy library, a carrier-tracking tool, a customs-page
+    summarizer, and one tool with a real side effect,
+    <code>authorize_reroute(shipment_id, new_route, extra_cost)</code>.
+    You'll classify defenses by category, compute real evaluation metrics
+    from raw counts, judge whether adversarial iteration was genuinely
+    satisfied, and critique flawed evaluation reports for metric/category
+    mismatches.
+  </p>
+
+  <div class="what-is">
+    <span class="label">Exercise standard</span>
+    Eight tasks total. Four are marked production-gear — real metric
+    computation from raw counts, adversarial-iteration judgment, critiquing
+    flawed evaluation reports, and research citation matching — not just
+    concept recall.
+  </div>
+
+  <div class="what-is">
+    <span class="label">How to run these</span>
+    Download <code>starter.py</code>, fill in every <code>&#35; TODO</code>,
+    then run <code>python3 starter.py</code> to see an automated score
+    report. Compare against <code>solution.py</code>, which scores a
+    perfect 23/23.
+  </div>
+
+  <div class="download-links">
+    <a href="starter.py">starter.py</a>
+    <a href="solution.py">solution.py (reference)</a>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">1</span> Classify defenses by category</h3>
+    <p>Sort six defenses named across Chapters 3&ndash;4 into the correct one of this chapter's three categories — structural, detection, or consequence-bounding.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">2</span> <span class="badge-coming-soon">Production-gear</span> Compute real metrics</h3>
+    <p>Given raw blocked/succeeded/false-positive counts from a real corpus run, compute the actual block rate and false-positive rate as percentages — real arithmetic, not a description.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">3</span> Honest practice vs. the single-attempt trap</h3>
+    <p>For four described evaluation approaches, decide which are real, honest evaluation practice and which fall into the single-attempt trap or an overclaimed conclusion.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">4</span> <span class="badge-coming-soon">Production-gear</span> Adversarial-iteration judgment</h3>
+    <p>Given three scenarios, decide whether Step 4 (adversarial iteration) was genuinely satisfied or still needs to be run.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">5</span> Match category to evaluation question</h3>
+    <p>Map each of the three defense categories to its correct real evaluation question.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">6</span> <span class="badge-coming-soon">Production-gear</span> Critique flawed evaluation reports</h3>
+    <p>Given four report excerpts, decide which contain a real metric/category mismatch and which are sound.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">7</span> <span class="badge-coming-soon">Production-gear</span> Research citation matching</h3>
+    <p>Match three real, published-research descriptions to their actual source — OpenAI's Instruction Hierarchy paper, Anthropic's guardrails documentation, or the sandwich-prompting adaptive-attack research.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">8</span> <span class="badge-coming-soon">Production-gear</span> Written reasoning</h3>
+    <p>Write a real, justified sentence explaining why a 0% measured success rate against a static corpus isn't proof a defense eliminates the risk.</p>
+  </div>
+
+  <div class="chapter-nav">
+    <a href="../quiz.html">&larr; Back to Quiz</a>
+    <a href="../practice/index.html">Practice Bank &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+  </div>
+</footer>
+
+<script src="../../../assets/progress.js"></script>
+<script src="../../../assets/chapters-data.js"></script>
+<script src="../../../assets/sidebar.js"></script>
+</body>
+</html>

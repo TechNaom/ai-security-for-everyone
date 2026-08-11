@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evaluating Prompt-Injection Defenses Honestly Quiz — AI Security for Everyone</title>
+<meta name="description" content="Interactive quiz for Evaluating Prompt-Injection Defenses Honestly.">
+<link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-05" data-chapter-id="chapter-05">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../index.html">All Chapters</a>
+      <a href="../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="lesson.html">&larr; Back to the lesson</a></p>
+
+  <span class="chapter-badge">Chapter 5 Quiz</span>
+  <h1>Evaluating Prompt-Injection Defenses Honestly</h1>
+  <p>Fill in each blank, then check your answers. A perfect score marks this chapter complete.</p>
+
+  <div class="quiz-progress-wrap" aria-hidden="true">
+    <div class="quiz-progress-fill" id="quiz-progress-fill"></div>
+  </div>
+
+  <form onsubmit="return false;">
+
+    <div class="quiz-question">
+      <label for="q1"><span class="q-num">1</span> Testing exactly one injection attempt, watching a defense block it, and declaring the system "verified" is called the single-______ trap.</label>
+      <div class="fib-row">
+        <input type="text" id="q1" class="fib-blank" data-answers="attempt" aria-label="Answer for question 1">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q2"><span class="q-num">2</span> A real evaluation corpus needs multiple genuinely different ______ within each technique family, not just one rephrased example.</label>
+      <div class="fib-row">
+        <input type="text" id="q2" class="fib-blank" data-answers="variants,variant" aria-label="Answer for question 2">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q3"><span class="q-num">3</span> A corpus of legitimate, benign requests a defense must not incorrectly block is needed to measure false ______.</label>
+      <div class="fib-row">
+        <input type="text" id="q3" class="fib-blank" data-answers="positives,positive" aria-label="Answer for question 3">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q4"><span class="q-num">4</span> Step 4 of the methodology -- adapting a corpus against a known defense and re-testing -- is called adversarial ______.</label>
+      <div class="fib-row">
+        <input type="text" id="q4" class="fib-blank" data-answers="iteration" aria-label="Answer for question 4">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q5"><span class="q-num">5</span> Structural defenses like content tagging and sandwich prompting change what's ______ for an injection to claim -- the correct metric is whether the attempt's tell still fires.</label>
+      <div class="fib-row">
+        <input type="text" id="q5" class="fib-blank" data-answers="possible" aria-label="Answer for question 5">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q6"><span class="q-num">6</span> Detection defenses like filtering and output-based screening have a real, computable false-positive/false-______ tradeoff.</label>
+      <div class="fib-row">
+        <input type="text" id="q6" class="fib-blank" data-answers="negative,negatives" aria-label="Answer for question 6">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q7"><span class="q-num">7</span> Consequence-bounding defenses don't reduce injection success at all -- they bound the ______ of a successful attempt instead.</label>
+      <div class="fib-row">
+        <input type="text" id="q7" class="fib-blank" data-answers="impact,blast radius" aria-label="Answer for question 7">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q8"><span class="q-num">8</span> OpenAI's Instruction Hierarchy paper frames its own contribution as reducing susceptibility, not achieving ______ -- the field's own honest position on defense limits, not a course-specific caveat.</label>
+      <div class="fib-row">
+        <input type="text" id="q8" class="fib-blank" data-answers="elimination,zero success rate" aria-label="Answer for question 8">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div id="check-all-wrap">
+      <button type="button" id="check-all-btn" class="check-btn">Check All Answers</button>
+      <span id="quiz-score"></span>
+    </div>
+
+    <div class="quiz-celebration" id="quiz-celebration" aria-live="polite">
+      Perfect score. Chapter complete.
+    </div>
+  </form>
+
+  <div class="chapter-nav">
+    <a href="lesson.html">&larr; Back to Lesson</a>
+    <a href="exercises/index.html">Exercises &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+  </div>
+</footer>
+
+<script src="../../assets/quiz-engine.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/chapters-data.js"></script>
+<script src="../../assets/sidebar.js"></script>
+</body>
+</html>

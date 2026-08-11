@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evaluating Prompt-Injection Defenses Honestly Practice Bank — AI Security for Everyone</title>
+<meta name="description" content="Eight fast scenario-based practice items for Evaluating Prompt-Injection Defenses Honestly.">
+<link rel="stylesheet" href="../../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-05">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../../index.html">All Chapters</a>
+      <a href="../../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="../exercises/index.html">&larr; Back to exercises</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 5 Practice Bank</span>
+    <span class="reading-time">~25 min, judgment practice</span>
+  </div>
+  <h1>Practice Bank: Evaluating Prompt-Injection Defenses Honestly</h1>
+  <p>
+    Eight short, independent scenarios, each with its own fictional
+    system — none of them Harborview Claims (the lesson) or Fernbridge
+    Freight (the exercises). The first five drill fast, accurate
+    classification of defenses by category and evaluation practice by
+    honesty; the last three test real judgment: whether adversarial
+    iteration was genuinely satisfied, whether a metric was applied to the
+    right defense category, and how to prioritize a fix under time
+    pressure.
+  </p>
+
+  <div class="what-is">
+    <span class="label">Why this bank leans on judgment, not recall</span>
+    Deciding whether a defense claim is well-supported is inherently a
+    judgment skill, not a lookup — the same evaluation report can look
+    rigorous (real corpus, real numbers) and still be wrong if it applies
+    the wrong metric to a defense's category, or skips adversarial
+    iteration. Scenarios 6-8 are built so there's no single keyword to
+    pattern-match against; you have to reason about what's actually being
+    measured.
+  </div>
+
+  <div class="what-is">
+    <span class="label">How to run these</span>
+    Download <code>starter.py</code>, fill in every <code>&#35; TODO</code>,
+    then run <code>python3 starter.py</code> to see an automated score
+    report. Compare against <code>solution.py</code>, which scores a
+    perfect 9/9.
+  </div>
+
+  <div class="download-links">
+    <a href="starter.py">starter.py</a>
+    <a href="solution.py">solution.py (reference)</a>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 1</span>
+    <h3>BrightPath Tutoring</h3>
+    <p>BrightPath Tutoring wraps every retrieved lesson-plan chunk in a labeled <code>&lt;retrieved_content source="..." trust="untrusted"&gt;</code> tag before it ever reaches the model, with an explicit instruction that tagged content is reference material, never instructions. Which defense category is this?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 2</span>
+    <h3>Lockstep HR</h3>
+    <p>Lockstep HR's <code>approve_pto(employee_id, days)</code> tool requires, in code, that <code>employee_id</code> match the authenticated session's own ID and caps <code>days</code> at a hard maximum — regardless of what the model decided. Which defense category is this?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 3</span>
+    <h3>TidalWave Marketing</h3>
+    <p>TidalWave Marketing's team ran their injection corpus against their assistant, got a clean 0/25 succeeded, and shipped with the note "prompt-injection risk closed" — no attacker model stated, no adversarial-iteration round run, no mention of what happens if the underlying model is swapped later. Is this an honest evaluation claim?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 4</span>
+    <h3>Cornerstone Legal</h3>
+    <p>Cornerstone Legal's team ran their corpus, identified that their output-based detection layer was the one blocking the most attempts, then spent a second round specifically rephrasing the blocked attempts to avoid the detection layer's known signature patterns, and re-ran — watching the success rate rise from 2/30 to 11/30 on the adapted entries. Did they genuinely satisfy Step 4 (adversarial iteration)?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 5</span>
+    <h3>Havenlight Pharmacy</h3>
+    <p>Havenlight Pharmacy's assistant screens every response for signs of a forced-affirmative refusal-suppression opening before it's shown to a user, flagging matches for human review. Which defense category is this?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 6 &middot; Judgment</span>
+    <h3>Ironclad Insurance</h3>
+    <p>Ironclad Insurance's <code>dispatch_adjuster(claim_id)</code> tool has a hard, code-enforced cap and an ownership check. Their evaluation report measures this defense by checking whether the model's response text still shows signs of a manipulated request (the same tell-based metric used for their structural defenses), and concludes "the bounded-consequence defense showed no measurable benefit since the tell still fired in several cases." Is this conclusion sound?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 7 &middot; Judgment</span>
+    <h3>SwiftCart Retail</h3>
+    <p>SwiftCart Retail is one day from launch. Their structural defense scored 0/30 succeeded in a single-round evaluation; they have NOT yet run a Step 4 adversarial-iteration round, and their only consequential tool (<code>issue_store_credit</code>) has no cap or ownership check at all. Given limited time before launch, which single fix has the higher expected impact: running the adversarial-iteration round, or adding a hard cap and ownership check to <code>issue_store_credit</code>?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 8 &middot; Production-gear</span>
+    <h3>NorthGate Utilities</h3>
+    <p>NorthGate Utilities restates its real task and rules immediately before generation, right after any retrieved outage-report content, specifically to counter the recency effect on next-token prediction. Name (1) the defense category this belongs to and (2) the correct evaluation question that should be used to measure it.</p>
+  </div>
+
+  <div class="chapter-nav">
+    <a href="../exercises/index.html">&larr; Exercises</a>
+    <a href="../interview-questions.html">Interview Questions &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+  </div>
+</footer>
+
+<script src="../../../assets/progress.js"></script>
+<script src="../../../assets/chapters-data.js"></script>
+<script src="../../../assets/sidebar.js"></script>
+</body>
+</html>
