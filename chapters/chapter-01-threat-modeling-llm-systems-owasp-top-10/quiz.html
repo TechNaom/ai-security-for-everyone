@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Threat Modeling LLM Systems: The OWASP Top 10 for LLM Applications Quiz — AI Security for Everyone</title>
+<meta name="description" content="Interactive quiz for Threat Modeling LLM Systems: The OWASP Top 10 for LLM Applications.">
+<link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-01" data-chapter-id="chapter-01">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../index.html">All Chapters</a>
+      <a href="../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="lesson.html">&larr; Back to the lesson</a></p>
+
+  <span class="chapter-badge">Chapter 1 Quiz</span>
+  <h1>Threat Modeling LLM Systems: The OWASP Top 10 for LLM Applications</h1>
+  <p>Fill in each blank, then check your answers. A perfect score marks this chapter complete.</p>
+
+  <div class="quiz-progress-wrap" aria-hidden="true">
+    <div class="quiz-progress-fill" id="quiz-progress-fill"></div>
+  </div>
+
+  <form onsubmit="return false;">
+
+    <div class="quiz-question">
+      <label for="q1"><span class="q-num">1</span> The OWASP Top 10 for LLM Applications category ranked LLM01:2025, and the single most consequential LLM-specific vulnerability class this course covers in Module 2, is called Prompt ______.</label>
+      <div class="fib-row">
+        <input type="text" id="q1" class="fib-blank" data-answers="injection,prompt injection" aria-label="Answer for question 1">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q2"><span class="q-num">2</span> When an attacker plants a malicious instruction somewhere the model will read it later (a return-reason field, a webpage, a retrieved document) rather than typing it straight into the chat box, that's called ______ prompt injection.</label>
+      <div class="fib-row">
+        <input type="text" id="q2" class="fib-blank" data-answers="indirect" aria-label="Answer for question 2">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q3"><span class="q-num">3</span> The OWASP category LLM05:2025 is called Improper Output ______ — it covers what happens when a downstream system trusts an LLM's generated text the way it would trust hand-written code, skipping escaping or validation.</label>
+      <div class="fib-row">
+        <input type="text" id="q3" class="fib-blank" data-answers="handling" aria-label="Answer for question 3">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q4"><span class="q-num">4</span> The OWASP category LLM06:2025, which covers a tool being granted more functionality, permissions, or autonomy than a task actually requires, is called Excessive ______.</label>
+      <div class="fib-row">
+        <input type="text" id="q4" class="fib-blank" data-answers="agency" aria-label="Answer for question 4">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q5"><span class="q-num">5</span> In GreenCart's hook scenario, the tool that gave the injected instruction a real, financial consequence was ______(order_id, amount).</label>
+      <div class="fib-row">
+        <input type="text" id="q5" class="fib-blank" data-answers="issue_refund,issue_refund()" aria-label="Answer for question 5">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q6"><span class="q-num">6</span> Unlike a traditional web app's business logic, which a developer wrote and can fully audit line by line, an LLM's behavior is ______ rather than a deterministic code path.</label>
+      <div class="fib-row">
+        <input type="text" id="q6" class="fib-blank" data-answers="probabilistic" aria-label="Answer for question 6">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q7"><span class="q-num">7</span> The OWASP category covering a model unintentionally exposing PII, credentials, or another user's data through its context window or training data is called Sensitive Information ______.</label>
+      <div class="fib-row">
+        <input type="text" id="q7" class="fib-blank" data-answers="disclosure" aria-label="Answer for question 7">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q8"><span class="q-num">8</span> This course pairs every attack technique it teaches with a real, working ______, framed as defensive and educational throughout, never as a ready-to-use exploit against a named real product.</label>
+      <div class="fib-row">
+        <input type="text" id="q8" class="fib-blank" data-answers="defense,mitigation" aria-label="Answer for question 8">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div id="check-all-wrap">
+      <button type="button" id="check-all-btn" class="check-btn">Check All Answers</button>
+      <span id="quiz-score"></span>
+    </div>
+
+    <div class="quiz-celebration" id="quiz-celebration" aria-live="polite">
+      Perfect score. Chapter complete.
+    </div>
+  </form>
+
+  <div class="chapter-nav">
+    <a href="lesson.html">&larr; Back to Lesson</a>
+    <a href="exercises/index.html">Exercises &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+  </div>
+</footer>
+
+<script src="../../assets/quiz-engine.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/chapters-data.js"></script>
+<script src="../../assets/sidebar.js"></script>
+</body>
+</html>

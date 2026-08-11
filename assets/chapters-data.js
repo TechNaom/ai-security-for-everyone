@@ -19,7 +19,8 @@ window.AISFE_MODULES = [
         id: "chapter-01",
         num: 1,
         title: "Threat Modeling LLM Systems: The OWASP Top 10 for LLM Applications",
-        description: "A working checklist for LLM attack surface, not trivia to memorize."
+        description: "A working checklist for LLM attack surface, not trivia to memorize.",
+        path: "chapters/chapter-01-threat-modeling-llm-systems-owasp-top-10/lesson.html"
       },
       {
         id: "chapter-02",

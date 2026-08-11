@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Threat Modeling LLM Systems: The OWASP Top 10 for LLM Applications Exercises — AI Security for Everyone</title>
+<meta name="description" content="Hands-on exercises for Threat Modeling LLM Systems: The OWASP Top 10 for LLM Applications.">
+<link rel="stylesheet" href="../../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-01">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../../index.html">All Chapters</a>
+      <a href="../../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="../quiz.html">&larr; Back to the quiz</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 1 Exercises</span>
+    <span class="reading-time">~35 min, hands-on</span>
+  </div>
+  <h1>Exercises: Threat Modeling LLM Systems: The OWASP Top 10 for LLM Applications</h1>
+  <p>
+    These exercises use a second scenario, deliberately different from
+    the lesson's GreenCart/Aurora hook: <strong>PolicyPilot</strong>, a
+    fictional internal HR chatbot that answers policy questions and
+    handles routine PTO requests over Slack, with three tools —
+    <code>lookup_employee</code>, <code>search_policy_docs</code>, and
+    <code>update_pto_balance</code>. Applying the framework to a fresh
+    scenario is the point; recalling the lesson's answers by heart won't
+    get you through these.
+  </p>
+
+  <div class="what-is">
+    <span class="label">Exercise standard</span>
+    Eight tasks total. Four are marked production-gear — they involve
+    access/permissions review, risk evaluation, operations/rendering
+    safety, cost controls, and a compliance completeness gate, not just
+    concept recall.
+  </div>
+
+  <div class="what-is">
+    <span class="label">How to run these</span>
+    Download <code>starter.py</code>, fill in every <code>&#35; TODO</code>,
+    then run <code>python3 starter.py</code> to see an automated score
+    report. Compare against <code>solution.py</code>, which scores a
+    perfect 31/31.
+  </div>
+
+  <div class="download-links">
+    <a href="starter.py">starter.py</a>
+    <a href="solution.py">solution.py (reference)</a>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">1</span> Map assets to OWASP categories</h3>
+    <p>Assign the correct OWASP Top 10 for LLM Applications category ID (e.g. <code>LLM01</code>) to five PolicyPilot attack-surface descriptions — the raw Slack text, the mixed-access policy vector store, the overscoped PTO tool, the leaky system prompt, and the overscoped employee lookup.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">2</span> Trust classification</h3>
+    <p>For four inputs that reach PolicyPilot's context window, decide which are trusted (operator-authored) and which are untrusted (attacker-influenceable) — the same distinction the lesson's trust-boundary diagram draws.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">3</span> <span class="badge-coming-soon">Production-gear</span> Evaluate Excessive Agency fixes</h3>
+    <p>Given four candidate fixes for the PTO tool, decide which ones actually reduce Excessive Agency risk (binding the target, capping and requiring approval) versus which are unrelated reliability/UX changes (retry logic, nicer error messages) that don't touch functionality, permissions, or autonomy.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">4</span> Likelihood/impact reasoning</h3>
+    <p>Write a real, justified sentence — not a bare "high" or "low" — explaining both how easily an attacker reaches the raw-Slack-text asset and what happens if they do.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">5</span> <span class="badge-coming-soon">Production-gear</span> Output handling</h3>
+    <p>PolicyPilot renders its generated answers directly into Slack markdown with no escaping. Name the OWASP category this maps to and one concrete mitigation.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">6</span> <span class="badge-coming-soon">Production-gear</span> Unbounded consumption</h3>
+    <p>PolicyPilot has no rate limit and no max-output-token cap on any endpoint. Name the OWASP category this maps to and one concrete mitigation.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">7</span> <span class="badge-coming-soon">Production-gear</span> System prompt leakage compliance check</h3>
+    <p>Decide whether embedding the exact PTO-approval threshold in the system prompt is a real compliance problem, and name the fix that moves it out of the "trust the model to follow this" layer.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">8</span> <span class="badge-coming-soon">Production-gear</span> Full-framework completeness check</h3>
+    <p>Confirm all 10 OWASP categories were at least considered while working through Exercises 1&ndash;7 — the same completeness gate a real team runs before a threat model ships to production.</p>
+  </div>
+
+  <div class="chapter-nav">
+    <a href="../quiz.html">&larr; Back to Quiz</a>
+    <a href="../practice/index.html">Practice Bank &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+  </div>
+</footer>
+
+<script src="../../../assets/progress.js"></script>
+<script src="../../../assets/chapters-data.js"></script>
+<script src="../../../assets/sidebar.js"></script>
+</body>
+</html>

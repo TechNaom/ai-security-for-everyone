@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Threat Modeling LLM Systems: The OWASP Top 10 for LLM Applications Practice Bank — AI Security for Everyone</title>
+<meta name="description" content="Eight fast scenario-based practice items for Threat Modeling LLM Systems: The OWASP Top 10 for LLM Applications.">
+<link rel="stylesheet" href="../../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-01">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../../index.html">All Chapters</a>
+      <a href="../../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="../exercises/index.html">&larr; Back to exercises</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 1 Practice Bank</span>
+    <span class="reading-time">~20 min, fast pattern recognition</span>
+  </div>
+  <h1>Practice Bank: Threat Modeling LLM Systems: The OWASP Top 10 for LLM Applications</h1>
+  <p>
+    Eight short, independent scenarios, each with its own fictional
+    system — none of them GreenCart/Aurora or PolicyPilot again. Each
+    scenario is a few sentences and one judgment question. The point of
+    this bank isn't depth on one system (that's what the exercises
+    did) — it's speed and accuracy across many different systems, the
+    way a real security review actually feels: a fast parade of "what's
+    going on here, and what category explains it" questions across a
+    whole backlog of features.
+  </p>
+
+  <div class="what-is">
+    <span class="label">Practice standard</span>
+    Eight scenarios. Two are pure judgment calls with no single obvious
+    "gotcha" keyword (Scenario 5 asks whether a described process is
+    already sufficient; Scenario 6 asks you to prioritize between two
+    real but unequal risks) — these test judgment, not just pattern
+    matching against a category name.
+  </div>
+
+  <div class="what-is">
+    <span class="label">How to run these</span>
+    Download <code>starter.py</code>, fill in every <code>&#35; TODO</code>,
+    then run <code>python3 starter.py</code> to see an automated score
+    report. Compare against <code>solution.py</code>, which scores a
+    perfect 9/9.
+  </div>
+
+  <div class="download-links">
+    <a href="starter.py">starter.py</a>
+    <a href="solution.py">solution.py (reference)</a>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 1</span>
+    <h3>TicketTriage</h3>
+    <p>An internal IT helpdesk bot reads free-text ticket descriptions and can call <code>reset_password(user_id)</code> and <code>close_ticket(ticket_id)</code>. A ticket description contains a planted instruction telling the bot to reset an unrelated admin account's password. Which category explains how that instruction got a foothold in the first place?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 2</span>
+    <h3>SummarizeBot</h3>
+    <p>A bot summarizes uploaded PDFs and posts the summary as raw, unescaped HTML on a shared dashboard. A PDF contains a crafted string that executes as a script once rendered. Which category explains the dashboard's vulnerability, given the model just faithfully reproduced context text?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 3</span>
+    <h3>CodeReviewBot</h3>
+    <p>A model fine-tuned on unvetted public pull requests consistently approves an insecure pattern planted across dozens of PRs from the same handful of accounts during training. Which category explains this?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 4</span>
+    <h3>QuickChat</h3>
+    <p>A public marketing chatbot has no per-user rate limit and no output-length cap. A script sends tens of thousands of requests overnight, each engineered to maximize output length, spiking the hosting bill. Which category explains this?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 5 &middot; Judgment</span>
+    <h3>PluginMarket</h3>
+    <p>Before installing a third-party plugin, a team checks the publisher's identity, source availability, install history from known-legitimate projects, and pins the exact version by hash. Does a real, unaddressed Supply Chain risk remain, or does this process already cover the core practice?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 6 &middot; Judgment</span>
+    <h3>ResearchAssistant</h3>
+    <p>Two known issues, only one fixable before launch: (a) the model confidently states fabricated statistics with no citation a user could check, or (b) its system prompt leaks a ranking algorithm the company never treated as secret elsewhere. Which is the higher-impact fix?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 7 &middot; Production-gear</span>
+    <h3>InsightsRAG</h3>
+    <p>A company-wide RAG assistant indexes public and confidential documents into one vector store with no per-document access control at query time. Which of four candidate fixes actually closes the gap — a disclaimer, permission-filtered retrieval, a bigger embedding model, or asking the model to politely decline?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 8 &middot; Production-gear</span>
+    <h3>FieldServiceBot</h3>
+    <p>A field-notes injection tells a maintenance bot to bulk-order 50 units of a part regardless of what the technician requested, and the bot's <code>schedule_replacement_part</code> tool has no quantity cap or human approval step. Name both OWASP categories this maps to — one for how the instruction got in, one for why it caused real damage.</p>
+  </div>
+
+  <div class="chapter-nav">
+    <a href="../exercises/index.html">&larr; Exercises</a>
+    <a href="../interview-questions.html">Interview Questions &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+  </div>
+</footer>
+
+<script src="../../../assets/progress.js"></script>
+<script src="../../../assets/chapters-data.js"></script>
+<script src="../../../assets/sidebar.js"></script>
+</body>
+</html>
