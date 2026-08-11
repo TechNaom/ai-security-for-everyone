@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Indirect Prompt Injection and Jailbreaking Practice Bank — AI Security for Everyone</title>
+<meta name="description" content="Eight fast scenario-based practice items for Indirect Prompt Injection and Jailbreaking Techniques.">
+<link rel="stylesheet" href="../../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-04">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../../index.html">All Chapters</a>
+      <a href="../../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="../exercises/index.html">&larr; Back to exercises</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 4 Practice Bank</span>
+    <span class="reading-time">~20 min, fast pattern recognition</span>
+  </div>
+  <h1>Practice Bank: Indirect Prompt Injection and Jailbreaking Techniques</h1>
+  <p>
+    Eight short, independent scenarios, each with its own fictional
+    system — none of them Northline Digest or ClearDesk Legal again. The
+    first five drill fast, accurate classification across all five
+    delivery channels from the lesson's taxonomy; the last three test
+    judgment about the injection/jailbreak distinction, prioritization
+    between two real risks, and mapping a combined attack to both its
+    channel and its highest-leverage defense.
+  </p>
+
+  <div class="what-is">
+    <span class="label">Practice standard</span>
+    Eight scenarios. Two are pure judgment calls with no single obvious
+    keyword to match (Scenario 6 asks whether content-tagging and sandwich
+    reinforcement address a directly-attempted jailbreak at all; Scenario
+    7 asks you to prioritize between an indirect-injection gap and an
+    unbounded consequential tool) — these test judgment, not just pattern
+    matching against a channel name.
+  </div>
+
+  <div class="what-is">
+    <span class="label">How to run these</span>
+    Download <code>starter.py</code>, fill in every <code>&#35; TODO</code>,
+    then run <code>python3 starter.py</code> to see an automated score
+    report. Compare against <code>solution.py</code>, which scores a
+    perfect 9/9.
+  </div>
+
+  <div class="download-links">
+    <a href="starter.py">starter.py</a>
+    <a href="solution.py">solution.py (reference)</a>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 1</span>
+    <h3>CampusWiki</h3>
+    <p>A university IT-helpdesk assistant retrieves a top-k chunk from an indexed FAQ page a student contributor edited weeks ago to claim the retrieving user's access is "pre-approved" for an elevated permission. Which delivery channel is this?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 2</span>
+    <h3>FreightTrack</h3>
+    <p>A logistics assistant calls a carrier's tracking API; the API's own free-text "status notes" field instructs the AI to authorize expedited re-routing without additional approval. Which delivery channel is this?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 3</span>
+    <h3>LumenDocs</h3>
+    <p>Asked to summarize a linked news article, the assistant's fetch also picks up a hidden, off-screen div in the page's raw source instructing it to append an unrelated recommendation. Which delivery channel is this?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 4</span>
+    <h3>InboxPilot</h3>
+    <p>An email-drafting assistant reads a forwarded thread whose old quoted message instructs any AI reading it to CC future replies to an external address automatically. Which delivery channel is this?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 5</span>
+    <h3>ScanSafe</h3>
+    <p>An expense-report assistant OCRs a receipt photo; tiny, low-contrast text along the bottom edge, invisible at a glance, instructs it to approve the expense automatically at any amount. Which delivery channel is this?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 6 &middot; Judgment</span>
+    <h3>VaultAssist</h3>
+    <p>VaultAssist has content-tagging and sandwich reinforcement fully applied against every retrieved/tool/web/email source. A user directly asks its model, with no injected content anywhere, to explain something it was trained to refuse, using hypothetical framing. Do those two defenses address this attempt at all?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 7 &middot; Judgment</span>
+    <h3>StreamMod</h3>
+    <p>Two known issues, only one fixable before launch: (a) a retrieved moderation-policy document could be edited to bias decisions, or (b) its uncapped <code>ban_user</code> tool has no ownership check or appeal step. Which is the higher-impact fix?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 8 &middot; Production-gear</span>
+    <h3>HelpDeskGenie</h3>
+    <p>A retrieved knowledge-base article was edited to claim safety restrictions are lifted for this session and demand the assistant never refuse any request. Name both the delivery channel and the single highest-leverage defense that would still contain the damage even if this attack succeeded.</p>
+  </div>
+
+  <div class="chapter-nav">
+    <a href="../exercises/index.html">&larr; Exercises</a>
+    <a href="../interview-questions.html">Interview Questions &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+  </div>
+</footer>
+
+<script src="../../../assets/progress.js"></script>
+<script src="../../../assets/chapters-data.js"></script>
+<script src="../../../assets/sidebar.js"></script>
+</body>
+</html>

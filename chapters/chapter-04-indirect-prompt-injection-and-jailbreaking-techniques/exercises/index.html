@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Indirect Prompt Injection and Jailbreaking Exercises — AI Security for Everyone</title>
+<meta name="description" content="Hands-on exercises for Indirect Prompt Injection and Jailbreaking Techniques.">
+<link rel="stylesheet" href="../../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-04">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../../index.html">All Chapters</a>
+      <a href="../../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="../quiz.html">&larr; Back to the quiz</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 4 Exercises</span>
+    <span class="reading-time">~40 min, hands-on</span>
+  </div>
+  <h1>Exercises: Indirect Prompt Injection and Jailbreaking Techniques</h1>
+  <p>
+    These exercises use a new scenario, deliberately different from the
+    lesson's Northline Digest example: <strong>ClearDesk Legal</strong>, a
+    fictional contract-review assistant with a RAG-indexed clause library,
+    an external precedent-research tool, a web-summarizer, forwarded-email
+    access, and one tool with a real side effect,
+    <code>flag_for_review(clause_id, reason)</code>. You'll classify
+    attempts by delivery channel (not technique family — that axis was
+    Chapter 3's), distinguish injection from jailbreaking, and design real
+    defenses.
+  </p>
+
+  <div class="what-is">
+    <span class="label">Exercise standard</span>
+    Eight tasks total. Five are marked production-gear — defense
+    evaluation, defense-in-depth reasoning, bounded-consequence design,
+    research citation matching, and a full defense-layer completeness
+    gate, not just concept recall.
+  </div>
+
+  <div class="what-is">
+    <span class="label">How to run these</span>
+    Download <code>starter.py</code>, fill in every <code>&#35; TODO</code>,
+    then run <code>python3 starter.py</code> to see an automated score
+    report. Compare against <code>solution.py</code>, which scores a
+    perfect 23/23.
+  </div>
+
+  <div class="download-links">
+    <a href="starter.py">starter.py</a>
+    <a href="solution.py">solution.py (reference)</a>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">1</span> Classify delivery channels</h3>
+    <p>Match five ClearDesk Legal indirect-injection attempts to the correct delivery channel from this chapter's taxonomy — retrieved documents/RAG, tool/API output, web content, email/document content, or multi-modal.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">2</span> Injection vs. jailbreak classification</h3>
+    <p>For three scenarios, decide whether each is best described as prompt injection, jailbreaking, or both — the precise distinction Section 5 of the lesson draws.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">3</span> <span class="badge-coming-soon">Production-gear</span> Evaluate candidate defenses</h3>
+    <p>Given four candidate fixes for ClearDesk Legal, decide which ones actually reduce indirect-injection or jailbreak risk versus which are unrelated UX changes.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">4</span> <span class="badge-coming-soon">Production-gear</span> Defense-in-depth reasoning</h3>
+    <p>Write a real, justified sentence explaining why content-tagging alone isn't sufficient — naming both a specific weakness and what to add alongside it.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">5</span> <span class="badge-coming-soon">Production-gear</span> Bounded-consequence rule design</h3>
+    <p>Design one concrete, code-enforced rule for <code>flag_for_review</code> that would still contain damage from a successful indirect injection or jailbreak.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">6</span> <span class="badge-coming-soon">Production-gear</span> Research citation matching</h3>
+    <p>Match three real, published-research descriptions to their actual source — OWASP's indirect-injection definition, the adversarial-suffix research, or the competing-objectives/mismatched-generalization research.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">7</span> Jailbreak category identification</h3>
+    <p>Given a transcript, decide which of this chapter's three jailbreak categories it demonstrates — hypothetical framing, competing-objectives exploitation, or refusal suppression.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">8</span> <span class="badge-coming-soon">Production-gear</span> Defense-layer completeness gate</h3>
+    <p>Confirm all four of this chapter's defense layers were at least considered while working through Exercises 1&ndash;7.</p>
+  </div>
+
+  <div class="chapter-nav">
+    <a href="../quiz.html">&larr; Back to Quiz</a>
+    <a href="../practice/index.html">Practice Bank &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+  </div>
+</footer>
+
+<script src="../../../assets/progress.js"></script>
+<script src="../../../assets/chapters-data.js"></script>
+<script src="../../../assets/sidebar.js"></script>
+</body>
+</html>

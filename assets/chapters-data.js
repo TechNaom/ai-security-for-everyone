@@ -47,7 +47,8 @@ window.AISFE_MODULES = [
         id: "chapter-04",
         num: 4,
         title: "Indirect Prompt Injection and Jailbreaking Techniques",
-        description: "Attacks carried through untrusted content, and real jailbreak patterns."
+        description: "Attacks carried through untrusted content, and real jailbreak patterns.",
+        path: "chapters/chapter-04-indirect-prompt-injection-and-jailbreaking-techniques/lesson.html"
       },
       {
         id: "chapter-05",
