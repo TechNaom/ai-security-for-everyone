@@ -26,7 +26,8 @@ window.AISFE_MODULES = [
         id: "chapter-02",
         num: 2,
         title: "Mapping the Attack Surface of a Real LLM Feature",
-        description: "Applying the threat model to a real, given feature end to end."
+        description: "Applying the threat model to a real, given feature end to end.",
+        path: "chapters/chapter-02-mapping-the-attack-surface-of-a-real-llm-feature/lesson.html"
       }
     ]
   },

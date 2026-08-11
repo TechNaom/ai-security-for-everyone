@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapping the Attack Surface of a Real LLM Feature Interview Questions — AI Security for Everyone</title>
+<meta name="description" content="Interview questions for Mapping the Attack Surface of a Real LLM Feature.">
+<link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-02">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../index.html">All Chapters</a>
+      <a href="../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="practice/index.html">&larr; Back to practice bank</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 2 Interview Questions</span>
+    <span class="reading-time">~18 min</span>
+  </div>
+  <h1>Interview Questions: Mapping the Attack Surface of a Real LLM Feature</h1>
+  <p>Grouped by level — beginner, intermediate, senior, architect. Each includes a strong answer, a red flag, a follow-up, and what the question actually proves.</p>
+
+  <div class="lesson-card">
+    <h2>1. (Beginner) What are the first three steps of a systematic attack-surface enumeration, and why does the order matter?</h2>
+    <p><strong>Strong answer:</strong> Step 1 is enumerating every tool the model can call — its parameters, what it actually does, and its blast radius. Step 2 is enumerating every source of text that reaches the model's context: system prompt, user input, conversation history, retrieved documents, and every tool's output. Step 3 is classifying the trust level of each source from Step 2 — who actually controls it. The order matters because you cannot threat-model an asset you haven't written down yet; reasoning about risk before the enumeration is complete is exactly how real findings get missed, not because the reasoning was wrong but because the row never existed.</p>
+    <p><strong>Red flag:</strong> Jumps straight to "look for prompt injection" without being able to describe the enumeration step that has to happen first.</p>
+    <p><strong>Follow-up:</strong> "What's the difference between Step 2 and Step 3?"</p>
+    <p><strong>What this proves:</strong> Understands that a threat model is built on a complete inventory, not a search for the first interesting risk.</p>
+  </div>
+
+  <div class="lesson-card">
+    <h2>2. (Beginner) In the Waypoint trip-planning assistant, why does the free-text "description" field returned by <code>search_hotels</code> count as untrusted data, even though it comes back through Waypoint's own tool call?</h2>
+    <p><strong>Strong answer:</strong> A tool is a pipe, not a filter — the actual author of the returned text is whoever is on the other end of the API, in this case the hotel partner, not Waypoint's own engineering team and not the traveler. Because that content re-enters the model's context on later turns exactly like the system prompt or the user's message does, it has to be trust-classified by who wrote it, not by which system happened to fetch it.</p>
+    <p><strong>Red flag:</strong> Says the data is trusted because "it's our own tool's output" — confusing which system fetched the data with who authored its content.</p>
+    <p><strong>Follow-up:</strong> "Name one other tool output in Waypoint's system that has the same property."</p>
+    <p><strong>What this proves:</strong> Grasps that trust classification is about the actual author of the content, not the mechanism that delivered it.</p>
+  </div>
+
+  <div class="lesson-card">
+    <h2>3. (Intermediate) Explain Mistake 1 from this chapter — under-scoping — using a concrete example from Waypoint.</h2>
+    <p><strong>Strong answer:</strong> Under-scoping is stopping the attack-surface enumeration at the obvious user-input field (the traveler's chat message) and never running the "does this tool's output re-enter context" check against <code>search_flights</code> and <code>search_hotels</code>. Both return partner-authored free text that gets appended to the same context window the system prompt lives in. A compromised or careless partner listing could embed an instruction-shaped string in its "description" field, and Waypoint has no structural way to distinguish it from a legitimate amenities note — the same mechanism as GreenCart's return-reason field, just missed because "our own tool's data" doesn't intuitively feel like a customer text box.</p>
+    <p><strong>Red flag:</strong> Describes under-scoping only in the abstract, without being able to point to the specific Waypoint asset (partner listing text) that illustrates it.</p>
+    <p><strong>Follow-up:</strong> "What step in the systematic method exists specifically to catch this mistake?"</p>
+    <p><strong>What this proves:</strong> Can connect a named failure mode to a concrete system, not just recite a definition.</p>
+  </div>
+
+  <div class="lesson-card">
+    <h2>4. (Intermediate) Explain Mistake 2 — over-focusing — and why finding one real Prompt Injection path doesn't mean a threat model is complete.</h2>
+    <p><strong>Strong answer:</strong> Over-focusing happens when a team finds one genuine, satisfying vulnerability (usually Prompt Injection, since it's the most discussed category) and treats the review as done once that category feels covered, without running the rest of the OWASP checklist against the same complete asset list. In Waypoint, the uncapped, partner-billed calls to <code>search_flights</code>/<code>search_hotels</code>/<code>get_destination_guide</code> (LLM10, Unbounded Consumption) and the unverified third-party content feed powering the destination guide (LLM03, Supply Chain) are just as real and got zero attention from an injection-only review. A real system almost never has exactly one category of gap.</p>
+    <p><strong>Red flag:</strong> Treats "we found the prompt injection" as equivalent to "the review is complete."</p>
+    <p><strong>Follow-up:</strong> "What discipline in the seven-step method specifically prevents this?"</p>
+    <p><strong>What this proves:</strong> Understands that threat modeling is a completeness exercise across the whole framework, not a single-finding search.</p>
+  </div>
+
+  <div class="lesson-card">
+    <h2>5. (Senior) You're handed a real LLM feature with a tool list and minimal documentation, and one week to threat-model it before an audit. Walk through how you'd actually spend that week.</h2>
+    <p><strong>Strong answer:</strong> Spend the early part of the week purely on enumeration, not risk analysis: build the full tool inventory (Step 1), list every context source including every tool's output (Step 2), and trust-classify each one (Step 3) — reading the actual implementation, not just docstrings, since a tool's real behavior can differ from what its name implies. Only after that's complete, cross-reference untrusted sources against tools with real side effects (Step 4), specifically re-check every tool output (Step 5), then run the full ten-category OWASP checklist against the complete list (Step 6) before writing the final table (Step 7) with justified likelihood/impact and an architectural mitigation per row. The discipline is spending the majority of the time on enumeration before opinion, because a wrong opinion about a row you have is recoverable in review; a row that was never written down usually isn't caught until an incident.</p>
+    <p><strong>Red flag:</strong> Describes going straight for "the interesting attack," treating enumeration as a formality rather than the bulk of the real work.</p>
+    <p><strong>Follow-up:</strong> "What's the one enumeration step you'd refuse to skip even under time pressure, and why?"</p>
+    <p><strong>What this proves:</strong> Has internalized that systematic coverage, not cleverness, is what makes a real audit trustworthy under time pressure.</p>
+  </div>
+
+  <div class="lesson-card">
+    <h2>6. (Senior) Two categories in Waypoint's threat model — LLM03 (Supply Chain) and LLM08 (Vector and Embedding Weaknesses) — both involve the same destination-guide vector store. How are they distinct risks, and why do they both need separate rows rather than being merged into one?</h2>
+    <p><strong>Strong answer:</strong> LLM03 is about whether the licensed third-party feed itself was verified before being trusted — provenance and integrity at ingestion time, independent of how it's later queried. LLM08 is about whether the vector store's retrieval step enforces the access or authority distinctions the underlying content actually has — in Waypoint's case, whether editorial (vetted) and third-party (unvetted) chunks are distinguishable at query time. A system could fix one without fixing the other: verifying the feed's provenance at ingestion doesn't add per-source tagging at query time, and adding query-time tagging doesn't verify whether the feed was tampered with upstream. They need separate rows because they have separate mitigations and separate failure modes.</p>
+    <p><strong>Red flag:</strong> Treats the two categories as redundant or merges them into one finding, missing that a fix for one leaves the other's mitigation unimplemented.</p>
+    <p><strong>Follow-up:</strong> "If you could only fix one before launch, which would you prioritize, and what residual risk remains?"</p>
+    <p><strong>What this proves:</strong> Can distinguish mechanistically related but independently-failing risks instead of collapsing the framework into fewer categories than the system actually needs.</p>
+  </div>
+
+  <div class="lesson-card">
+    <h2>7. (Architect) You're setting a team-wide standard for what "attack surface enumeration complete" means before a threat model is allowed to move to the mitigation-design phase. What would that standard require, and how would you verify it was actually followed rather than just claimed?</h2>
+    <p><strong>Strong answer:</strong> The standard requires, in writing: a complete tool inventory including each tool's real side effect and blast radius; a complete context-source list including every tool whose output re-enters context, explicitly marked; a trust classification for every source; and an explicit pass/not-applicable note for all ten OWASP categories against the resulting asset list — no category silently skipped. To verify it was actually followed rather than claimed, require the artifact itself (the tables) as the deliverable, not a summary paragraph, and spot-check by picking one tool at random and asking the reviewer to walk its real-world side effect and blast radius from memory — a reviewer who skipped the enumeration step can't do this convincingly. The standard's real enforcement mechanism is that the artifact makes the completeness checkable, not that someone asserts it happened.</p>
+    <p><strong>Red flag:</strong> Defines the standard only as a checklist item ("threat model completed: yes/no") with no artifact that makes completeness independently verifiable.</p>
+    <p><strong>Follow-up:</strong> "How would you handle a team that produces a threat model with the right shape but clearly skipped Step 5 (re-checking tool outputs) — what's the actual tell?"</p>
+    <p><strong>What this proves:</strong> Architect-level judgment — designs a process whose completeness is verifiable from the artifact itself, not one that relies on trusting a team's self-report.</p>
+  </div>
+
+  <div class="lesson-card">
+    <h2>8. (Architect) A tool's output that re-enters context (like Waypoint's partner listing text) and a retrieved RAG chunk are mechanistically very similar untrusted-data channels. Should an org's mitigation policy treat them identically, or does the distinction matter architecturally?</h2>
+    <p><strong>Strong answer:</strong> They're similar enough that the same base principle applies to both — treat externally-authored text as inert data, never as instructions, structurally separated from operator content — but they differ enough in practice that a single policy without nuance under- or over-mitigates one of them. A RAG chunk typically comes from a corpus the org chose to index and can apply ingestion-time controls to (provenance checks, access filtering, source tagging). A tool's live output (a partner API response) is fetched at request time from a party the org doesn't control the content of at all, and the only real lever is runtime sanitization/delimiting, not ingestion-time vetting — there's no "corpus" to audit in advance. A mature policy names both as the same class of risk (externally-authored context, LLM01 entry point) but prescribes different mitigations matched to where each one is actually controllable: ingestion-time for RAG, request-time delimiting/sanitizing for live tool output.</p>
+    <p><strong>Red flag:</strong> Either claims they need completely different security models (missing that both are the same underlying LLM01 mechanism), or claims one identical mitigation covers both without adapting to where each is actually controllable.</p>
+    <p><strong>Follow-up:</strong> "Where would a cached tool-output value that gets reused across sessions sit in this framework — closer to RAG or closer to a live tool call?"</p>
+    <p><strong>What this proves:</strong> Can reason about a framework at the level of underlying mechanism while still adapting the concrete mitigation to where control actually exists in a real architecture.</p>
+  </div>
+
+  <div class="chapter-nav">
+    <a href="practice/index.html">&larr; Practice Bank</a>
+    <a href="project/index.html">Build the Project &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+    <span><a href="https://github.com/TechNaom/ai-security-for-everyone">github.com/TechNaom/ai-security-for-everyone</a></span>
+  </div>
+</footer>
+
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/chapters-data.js"></script>
+<script src="../../assets/sidebar.js"></script>
+</body>
+</html>

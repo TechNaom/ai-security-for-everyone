@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapping the Attack Surface of a Real LLM Feature Practice Bank — AI Security for Everyone</title>
+<meta name="description" content="Eight fast scenario-based practice items for Mapping the Attack Surface of a Real LLM Feature.">
+<link rel="stylesheet" href="../../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-02">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../../index.html">All Chapters</a>
+      <a href="../../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="../exercises/index.html">&larr; Back to exercises</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 2 Practice Bank</span>
+    <span class="reading-time">~20 min, fast pattern recognition</span>
+  </div>
+  <h1>Practice Bank: Mapping the Attack Surface of a Real LLM Feature</h1>
+  <p>
+    Eight short, independent scenarios, each with its own fictional
+    system — none of them Waypoint or ReviewMate again. Several are
+    built specifically around this chapter's core lesson: a
+    <strong>tool's output</strong> re-entering context is just as real
+    an injection channel as a user-typed field, even when no user ever
+    touched the malicious text. The point of this bank isn't depth on
+    one system — it's speed and accuracy across many different systems,
+    the way a real security review actually feels.
+  </p>
+
+  <div class="what-is">
+    <span class="label">Practice standard</span>
+    Eight scenarios. Two are pure judgment calls with no single obvious
+    "gotcha" keyword (Scenario 6 asks whether a described process is
+    already sufficient; Scenario 7 asks you to prioritize between two
+    real but unequal risks) — these test judgment, not just pattern
+    matching against a category name.
+  </div>
+
+  <div class="what-is">
+    <span class="label">How to run these</span>
+    Download <code>starter.py</code>, fill in every <code>&#35; TODO</code>,
+    then run <code>python3 starter.py</code> to see an automated score
+    report. Compare against <code>solution.py</code>, which scores a
+    perfect 9/9.
+  </div>
+
+  <div class="download-links">
+    <a href="starter.py">starter.py</a>
+    <a href="solution.py">solution.py (reference)</a>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 1</span>
+    <h3>ClaimsBot</h3>
+    <p>An insurance-claims bot reads free-text claim descriptions and can call <code>approve_claim(claim_id, amount)</code>. A claim description contains a planted instruction telling the bot to skip manual review and approve the full amount. Which category explains how that instruction got a foothold in the first place?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 2 &middot; Tool-output injection</span>
+    <h3>MarketWatch</h3>
+    <p>A stock-research assistant's <code>fetch_headlines(ticker)</code> tool pulls text from a public news aggregator into context. One low-quality-source headline contains a planted instruction telling the bot to always describe a stock as a strong buy. No user ever typed this text. Which category explains how it still got a foothold?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 3</span>
+    <h3>DocSummarizer</h3>
+    <p>A bot summarizes uploaded contracts and posts the summary as raw, unescaped HTML on a shared legal-team portal. A contract contains a crafted string that executes as a script once rendered. Which category explains the portal's vulnerability, given the model just faithfully reproduced context text?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 4</span>
+    <h3>RecommendAI</h3>
+    <p>A product-recommendation model fine-tuned on unvetted scraped reviews consistently promotes a product that received dozens of coordinated fake reviews from the same handful of accounts during training. Which category explains this?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 5</span>
+    <h3>OpsChat</h3>
+    <p>An internal ops chatbot has no per-user rate limit and no output-length cap. A misconfigured monitoring script sends tens of thousands of automated requests overnight, spiking the hosting bill. Which category explains this?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 6 &middot; Judgment</span>
+    <h3>VendorGate</h3>
+    <p>Before integrating a third-party plugin, a team requires a signed provenance manifest, a full source-code review, sandboxed execution with no default network access, and a pinned version hash that only changes through manual re-review. Does a real, unaddressed Supply Chain risk remain, or does this process already cover the core practice?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 7 &middot; Judgment</span>
+    <h3>LegalAssist</h3>
+    <p>Two known issues, only one fixable before launch: (a) the model confidently cites fabricated case law with no way for a user to verify it, or (b) its system prompt leaks an internal routing rubric the firm already summarizes publicly elsewhere. Which is the higher-impact fix?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 8 &middot; Production-gear</span>
+    <h3>WarehouseBot</h3>
+    <p>A supplier's shipment note — read through a <code>read_supplier_note</code> tool, not typed by any WarehouseBot employee — tells the bot to reorder 10,000 units of a SKU regardless of stock levels, and <code>schedule_reorder</code> has no quantity cap or human approval step. Name both OWASP categories this maps to — one for how the instruction got in through a tool, one for why it caused real damage.</p>
+  </div>
+
+  <div class="chapter-nav">
+    <a href="../exercises/index.html">&larr; Exercises</a>
+    <a href="../interview-questions.html">Interview Questions &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+  </div>
+</footer>
+
+<script src="../../../assets/progress.js"></script>
+<script src="../../../assets/chapters-data.js"></script>
+<script src="../../../assets/sidebar.js"></script>
+</body>
+</html>

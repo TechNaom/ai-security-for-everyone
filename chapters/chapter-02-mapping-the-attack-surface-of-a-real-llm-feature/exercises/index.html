@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapping the Attack Surface of a Real LLM Feature Exercises — AI Security for Everyone</title>
+<meta name="description" content="Hands-on exercises for Mapping the Attack Surface of a Real LLM Feature.">
+<link rel="stylesheet" href="../../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-02">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../../index.html">All Chapters</a>
+      <a href="../../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="../quiz.html">&larr; Back to the quiz</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 2 Exercises</span>
+    <span class="reading-time">~35 min, hands-on</span>
+  </div>
+  <h1>Exercises: Mapping the Attack Surface of a Real LLM Feature</h1>
+  <p>
+    These exercises use a second scenario, deliberately different from
+    the lesson's Waypoint trip-planning assistant:
+    <strong>ReviewMate</strong>, a fictional internal code-review
+    assistant that reads pull requests, linked issues, and CI logs, and
+    can post comments and merge PRs, with tools including
+    <code>read_pr_diff</code>, <code>read_linked_issue</code>,
+    <code>get_ci_logs</code>, <code>post_comment</code>, and
+    <code>merge_pr</code>. Applying the systematic method to a fresh
+    scenario is the point; recalling the lesson's answers by heart won't
+    get you through these.
+  </p>
+
+  <div class="what-is">
+    <span class="label">Exercise standard</span>
+    Eight tasks total. Five are marked production-gear — they involve
+    access/permissions review, risk evaluation, output-rendering safety,
+    cost controls, and a compliance completeness gate, not just concept
+    recall.
+  </div>
+
+  <div class="what-is">
+    <span class="label">How to run these</span>
+    Download <code>starter.py</code>, fill in every <code>&#35; TODO</code>,
+    then run <code>python3 starter.py</code> to see an automated score
+    report. Compare against <code>solution.py</code>, which scores a
+    perfect 31/31.
+  </div>
+
+  <div class="download-links">
+    <a href="starter.py">starter.py</a>
+    <a href="solution.py">solution.py (reference)</a>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">1</span> Map assets to OWASP categories</h3>
+    <p>Assign the correct OWASP Top 10 for LLM Applications category ID (e.g. <code>LLM01</code>) to five ReviewMate attack-surface descriptions — the PR description text, the CI log output, the overscoped merge tool, the leaky system prompt, and the overscoped issue-tracker lookup.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">2</span> Trust classification</h3>
+    <p>For four inputs that reach ReviewMate's context window, decide which are trusted (operator-authored) and which are untrusted (attacker-influenceable) — the same distinction the lesson's Step 3 draws.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">3</span> <span class="badge-coming-soon">Production-gear</span> Evaluate Excessive Agency fixes</h3>
+    <p>Given four candidate fixes for the <code>merge_pr</code> tool, decide which ones actually reduce Excessive Agency risk (requiring a second human approval, restricting scope to low-risk paths) versus which are unrelated reliability/UX changes.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">4</span> Likelihood/impact reasoning</h3>
+    <p>Write a real, justified sentence — not a bare "high" or "low" — explaining both how easily an attacker reaches the PR-description asset and what happens if they do.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">5</span> <span class="badge-coming-soon">Production-gear</span> Output handling</h3>
+    <p>ReviewMate posts comments as markdown, where images and links can render or auto-load without a click. Name the OWASP category this maps to and one concrete mitigation.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">6</span> <span class="badge-coming-soon">Production-gear</span> Unbounded consumption</h3>
+    <p>ReviewMate can be asked, via PR text, to trigger CI reruns with no per-PR or per-day cap. Name the OWASP category this maps to and one concrete mitigation.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">7</span> <span class="badge-coming-soon">Production-gear</span> System prompt leakage compliance check</h3>
+    <p>Decide whether embedding the exact auto-merge safety criteria in the system prompt is a real compliance problem, and name the fix that moves it out of the "trust the model to follow this" layer.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">8</span> <span class="badge-coming-soon">Production-gear</span> Full-framework completeness check</h3>
+    <p>Confirm all 10 OWASP categories were at least considered while working through Exercises 1&ndash;7 — the same completeness gate Section 6's Step 6 requires before a threat model ships to production.</p>
+  </div>
+
+  <div class="chapter-nav">
+    <a href="../quiz.html">&larr; Back to Quiz</a>
+    <a href="../practice/index.html">Practice Bank &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+  </div>
+</footer>
+
+<script src="../../../assets/progress.js"></script>
+<script src="../../../assets/chapters-data.js"></script>
+<script src="../../../assets/sidebar.js"></script>
+</body>
+</html>

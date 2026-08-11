@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project: Threat-Model AskHR End to End — AI Security for Everyone</title>
+<meta name="description" content="Module 1's real Level 1 (Guided) project: threat-model AskHR, a fourth, genuinely new LLM feature, end to end using the systematic method from Chapter 2.">
+<link rel="stylesheet" href="../../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-02">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../../index.html">All Chapters</a>
+      <a href="../../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="../interview-questions.html">&larr; Back to interview questions</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 2 Project</span>
+    <span class="reading-time">~90 min, hands-on</span>
+    <span class="badge-difficulty">Level 1 &middot; Guided</span>
+  </div>
+  <h1>Project: Threat-Model AskHR End to End</h1>
+  <p class="lede">
+    This is Module 1's real Level 1 (Guided) project, per the course's
+    curriculum map: <strong>threat-model a real, given LLM feature end
+    to end.</strong> You get a fourth scenario — genuinely different from
+    GreenCart (Chapter 1), Waypoint (this chapter's lesson), and
+    ReviewMate (this chapter's exercises) — and no worked answer to check
+    against while you work. Use the seven-step method from this chapter,
+    in order.
+  </p>
+
+  <div class="hook">
+    <p>
+      AskHR is a fictional internal HR chatbot deployed inside a
+      company-wide Slack workspace. Employees message it — one-on-one,
+      or in small HR-support group channels that sometimes include more
+      than one employee at once — to ask policy questions, look up their
+      own HR information, and request routine actions.
+    </p>
+  </div>
+
+  <div class="code-window">
+    <div class="code-window-bar">
+      <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+      <span class="filename">askhr_tools.md (internal engineering doc)</span>
+    </div>
+    <pre><code>AskHR assistant -- tool inventory (as shipped)
+
+search_hr_policies(query)
+  -> semantic search over a vector store indexed from (a) the
+     company's own internal HR policy documents and (b) a licensed
+     third-party compliance-content feed (labor-law summaries,
+     updated automatically on a schedule), mixed together with no
+     per-source tag carried through to query time.
+
+get_employee_record(employee_id)
+  -> returns an employee's full HR record: role, manager, PTO
+     balance, salary band, and any leave-related notes on file
+     (which can include sensitive medical/caregiving context).
+     Callable with ANY employee_id -- not scoped to "yourself or
+     your direct reports."
+
+initiate_leave_request(employee_id, leave_type, start_date, end_date)
+  -> creates a leave request and auto-approves it immediately if the
+     requested duration is under a threshold AskHR's system prompt
+     states in plain text. No identity re-verification step, no
+     per-request cap tied to the employee's actual PTO balance.
+
+escalate_to_hr_specialist(employee_id, note, priority)
+  -> opens a ticket for a human HR specialist. The ticket body is
+     built by inserting AskHR's generated note directly into the
+     ticketing system's HTML template, unescaped.
+
+Session model: every Slack message in a thread -- including all
+employees present in a shared group channel -- is concatenated with
+AskHR's system prompt into one context window before each model
+call, and every tool's return value is appended to that same context
+for the rest of the session. The system prompt states the exact
+auto-approval leave-duration threshold, and separately, a list of
+keywords that trigger an automatic emergency escalation.</code></pre>
+  </div>
+
+  <h2>Your task</h2>
+  <p>
+    Download <code>starter.py</code> and fill in its three parts,
+    applying the seven-step method from the lesson in order:
+  </p>
+  <div class="task-card">
+    <h3><span class="task-num">1</span> Tool inventory (Step 1)</h3>
+    <p>Every tool, its real side effect, and its blast radius.</p>
+  </div>
+  <div class="task-card">
+    <h3><span class="task-num">2</span> Context-source inventory + trust classification (Steps 2&ndash;3)</h3>
+    <p>Every source of text that reaches AskHR's context window, who controls it, and whether it re-enters context on later turns &mdash; including tool outputs, this chapter's core teaching point.</p>
+  </div>
+  <div class="task-card">
+    <h3><span class="task-num">3</span> The full threat-model table (Steps 4&ndash;7)</h3>
+    <p>Real findings, each with an OWASP category, a justified likelihood/impact sentence, and an architectural mitigation. Aim to explicitly consider all 10 OWASP categories (Step 6), even where some end up "not applicable, because...".</p>
+  </div>
+
+  <div class="what-is">
+    <span class="label">How to run this</span>
+    Download <code>starter.py</code>, fill in all three <code>TODO</code>
+    sections, then run <code>python3 starter.py</code>. This project is
+    <strong>open-ended</strong> — the validator checks structural
+    completeness (enough tools/sources enumerated, trust classified, at
+    least one tool-output re-entry flagged, enough distinct categories
+    covered with real reasoning and a real mitigation), not your exact
+    wording against a hidden key.
+  </div>
+
+  <div class="download-links">
+    <a href="starter.py">starter.py</a>
+    <a href="solution.py">solution.py (reference)</a>
+  </div>
+
+  <div class="points-to-remember">
+    <h2>What "done" looks like</h2>
+    <p>
+      A clean structural pass from the validator means your artifact has
+      the right shape: enough enumerated tools and context sources, a
+      trust classification for each, at least one flagged tool-output
+      re-entry, and a threat-model table spanning enough distinct OWASP
+      categories with real justified reasoning and a real mitigation per
+      row. It does not certify that every individual finding is the
+      single best one — this is an open-ended project. Once you're
+      satisfied, compare against <code>solution.py</code>, a complete
+      reference threat model covering all 10 OWASP categories. If your
+      asset list differs significantly, revisit Step 5 (tool outputs
+      re-entering context) and Step 6 (the full ten-category walk) —
+      those are exactly the two steps this chapter's Mistakes 1 and 2
+      are built around.
+    </p>
+  </div>
+
+  <div class="chapter-nav">
+    <a href="../interview-questions.html">&larr; Interview Questions</a>
+    <a href="../../../index.html">All Chapters &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+    <span><a href="https://github.com/TechNaom/ai-security-for-everyone">github.com/TechNaom/ai-security-for-everyone</a></span>
+  </div>
+</footer>
+
+<script src="../../../assets/progress.js"></script>
+<script src="../../../assets/chapters-data.js"></script>
+<script src="../../../assets/sidebar.js"></script>
+</body>
+</html>
