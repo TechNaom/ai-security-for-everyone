@@ -164,6 +164,37 @@ original content only).
       handling (in the lesson text itself, not just the audit). 8
       exercises (5 production-gear), 8 practice scenarios, 8 interview
       questions across all 4 levels.
+- [x] **Chapter 5 built and live — completes Module 2**: "Evaluating
+      Prompt-Injection Defenses Honestly." Turns Chapters 3-4's "what
+      this stops / what it doesn't" habit into a real measurement
+      methodology: a 4-step process (multi-variant corpus spanning both
+      taxonomies + benign controls, controlled before/after comparison,
+      real numbers including false positives, non-optional adversarial
+      iteration). Central original contribution: a three-category
+      defense taxonomy by what each type actually measures — structural
+      (does the tell still fire), detection (a real false-positive/
+      false-negative tradeoff), consequence-bounding (does blast radius
+      stay contained, independent of whether injection succeeded) —
+      and the real, common mistake of applying Category 1's metric to
+      a Category 3 defense. Meta-honest disclosure: the chapter applies
+      its own "don't overclaim" thesis to its own worked-example
+      numbers, since Ollama hung again this session (re-confirmed via
+      raw curl before writing). Build was interrupted mid-session by a
+      rate limit; resumed cleanly with prior partial work verified and
+      kept. 8 exercises (5 production-gear), 8 practice scenarios, 8
+      interview questions across all 4 levels.
+      **Module 2 (Chapters 3-5) is now fully built and live.**
+- [x] **Module 2 written exam built**: `assessments/written-exams/module-2-exam.html`
+      (+`.md` portable source) — a genuine "injection-construction +
+      defense-evaluation exam" per CURRICULUM_MAP.md, not a general
+      concept quiz. Part C asks the test-taker to actively construct
+      plausible injection attempts against 3 scenarios (not just
+      diagnose someone else's); Part D presents a fictional defense-
+      evaluation report with 4 planted methodology flaws (narrow
+      single-attempt-trap corpus, no benign control set, no adversarial
+      -iteration round, Category 1 metric misapplied to a Category 3
+      defense) with a full worked diagnosis key. 14 numbered items
+      total. Registered in `chapters-data.js`.
 
 ## Pending / Not Started
 
@@ -218,21 +249,26 @@ writing).
 
 ## Next Recommended Task
 
-**Chapter 4 is done.** Next: Chapter 5 ("Evaluating Prompt-Injection
-Defenses Honestly," Module 2, Advanced) — completes Module 2. Read
-Chapters 3-4 fully first. This chapter's job per CURRICULUM_MAP.md's
-own framing ("what a defense actually stops versus what it claims to
-stop") is to synthesize and critically evaluate the 4+ defenses named
-across Chapters 3-4 (structural separation, filtering, bounded
-consequence, provider instruction hierarchy, content provenance
-tagging, sandwich prompting, output-based jailbreak detection) — build
-or apply a real evaluation methodology (e.g. constructing a test suite
-of injection attempts and measuring a defense's actual success rate,
-not just describing defenses again). This chapter should feel like the
-"how do you know if any of this actually worked" payoff chapter for
-the whole module. Same Ollama live-model caveat applies — check
-connectivity first, disclose honestly if it still hangs. After Chapter
-5, Module 2's assessment ("injection-construction + defense-evaluation
-exam" per CURRICULUM_MAP.md) should be written as a real written exam
-— write `assessments/written-exams/module-2-exam.html`(+`.md`) using
-`templates/written-exam.template.html`.
+**Modules 1-2 (Chapters 1-5, plus the Module 1 threat-modeling
+project and Module 2 written exam) are complete.** Next: Module 3 —
+Chapter 6 ("Data Poisoning," Advanced), starting a 3-chapter module
+(Chapters 6-8: Data Poisoning, Model Extraction and Theft, Supply-Chain
+Risk) that per CURRICULUM_MAP.md is about attacks on the model and its
+training/deployment pipeline, NOT runtime prompt-based attacks — a
+genuinely different subject from Module 2, not a continuation of the
+injection material. Chapter 1's OWASP coverage already briefly named
+LLM04 (Data and Model Poisoning) and LLM03 (Supply Chain) — Chapter 6
+should build on that brief mention, not re-derive OWASP from scratch.
+This module is conceptual/architectural in nature (poisoning training
+data, extracting model behavior/weights via API access, verifying
+supply-chain provenance) — likely less dependent on live Ollama
+generation than Module 2 was, though verify this as you scope Chapter
+6's actual content; a genuine hands-on demonstration (e.g. actually
+demonstrating a toy poisoning effect, or model extraction via repeated
+API queries) would still need the same test-before-write discipline if
+attempted. Read Chapter 1's LLM03/LLM04 coverage first for continuity.
+Module 3's assessment type per CURRICULUM_MAP.md is "concept +
+risk-assessment exercise" (not stated as needing a separate written
+exam necessarily — check whether the exercises/project satisfy this,
+similar to Module 1's judgment call, before assuming a written exam is
+required).

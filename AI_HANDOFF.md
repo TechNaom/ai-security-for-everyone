@@ -96,31 +96,30 @@ payloads.
 
 ## Current task
 
-**Chapters 3-4 (direct and indirect injection + jailbreaking) are done
-and live.** Both hit the same disclosed Ollama generation hang and
-handled it correctly (honest disclosure in the lesson text itself, not
-just the audit). Build Chapter 5 ("Evaluating Prompt-Injection
-Defenses Honestly," Module 2, Advanced) next — completes Module 2. Per
-CURRICULUM_MAP.md's framing ("what a defense actually stops versus
-what it claims to stop"), this chapter should synthesize and critically
-evaluate every defense named across Chapters 3-4 (structural
-separation, filtering, bounded consequence, provider instruction
-hierarchy, content provenance tagging, sandwich prompting, output-based
-jailbreak detection) with a real evaluation methodology — build/apply
-a test suite that measures actual defense success rate, not just
-describe the defenses again. Read Chapters 3-4 fully first. Check
-Ollama connectivity first; disclose honestly if it still hangs, same
-pattern as both prior chapters.
+**Modules 1-2 are complete** (Chapters 1-5, the Module 1 L1 project,
+and the Module 2 written exam — `assessments/written-exams/module-2-exam.html`).
+Build Chapter 6 ("Data Poisoning," Module 3, Advanced) next — starts a
+genuinely different module. Module 3 (Chapters 6-8) is about attacks
+on the model and its training/deployment PIPELINE — poisoning,
+extraction/theft, supply chain — not more runtime prompt-based attacks
+like Module 2. Don't carry Module 2's injection framing forward as if
+it's the same subject; it isn't. Chapter 1's OWASP coverage briefly
+named LLM04 (Data and Model Poisoning) and LLM03 (Supply Chain) — build
+on that brief mention. Check whether this module's content genuinely
+needs live-model verification (it's more conceptual/architectural than
+Module 2 was) before assuming the same Ollama-check ritual applies
+uniformly — but if any hands-on demonstration IS attempted, the same
+test-before-write discipline is still non-negotiable.
 
 ## Next task after that
 
-After Chapter 5, write Module 2's written exam
-(`assessments/written-exams/module-2-exam.html` + `.md`, using
-`templates/written-exam.template.html` — "injection-construction +
-defense-evaluation exam" per CURRICULUM_MAP.md). Then Module 3
-(Chapters 6-8: data poisoning, model extraction, supply chain).
-Continue module by module, validating each with a
-`quality-audits/chapter-0N-audit.md` before moving on. Don't
+Continue through Module 3 (Chapters 6-8), checking whether its
+"concept + risk-assessment exercise" assessment type (per
+CURRICULUM_MAP.md) needs a separate written exam or is satisfied by
+the chapters' own exercises/project (a judgment call, similar to how
+Module 1 didn't need one). Then Module 4 (Chapters 9-10: securing RAG
+and agentic systems). Continue module by module, validating each with
+a `quality-audits/chapter-0N-audit.md` before moving on. Don't
 mass-generate ahead of validation.
 
 ## Important architectural decisions (see PROJECT_STATE.md for full detail)
