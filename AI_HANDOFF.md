@@ -96,26 +96,32 @@ payloads.
 
 ## Current task
 
-**Chapter 3 ("Direct Prompt Injection") is done and live.** It found
-Ollama's generation endpoint hanging (same disclosed sandbox-wide
-issue from `ai-coding-agents-for-everyone`'s build) and handled it
-correctly: disclosed honestly in the lesson text itself (not just the
-audit), framed every example as "representative of documented
-behavior," never claimed anything was live-observed that wasn't. Read
-`quality-audits/chapter-03-audit.md` for the full breakdown. Build
-Chapter 4 ("Indirect Prompt Injection and Jailbreaking Techniques,"
-Module 2, Advanced) next. Read Chapter 3 fully first — it explicitly
-set up Chapter 4 as covering the delivery-mechanism half (content the
-model reads later, vs. Chapter 3's direct/same-turn) plus jailbreaking
-specifically. Check Ollama again before writing (it may or may not be
-working this session — don't assume either way); if it still hangs,
-follow Chapter 3's exact disclosure pattern.
+**Chapters 3-4 (direct and indirect injection + jailbreaking) are done
+and live.** Both hit the same disclosed Ollama generation hang and
+handled it correctly (honest disclosure in the lesson text itself, not
+just the audit). Build Chapter 5 ("Evaluating Prompt-Injection
+Defenses Honestly," Module 2, Advanced) next — completes Module 2. Per
+CURRICULUM_MAP.md's framing ("what a defense actually stops versus
+what it claims to stop"), this chapter should synthesize and critically
+evaluate every defense named across Chapters 3-4 (structural
+separation, filtering, bounded consequence, provider instruction
+hierarchy, content provenance tagging, sandwich prompting, output-based
+jailbreak detection) with a real evaluation methodology — build/apply
+a test suite that measures actual defense success rate, not just
+describe the defenses again. Read Chapters 3-4 fully first. Check
+Ollama connectivity first; disclose honestly if it still hangs, same
+pattern as both prior chapters.
 
 ## Next task after that
 
-Continue module by module per `docs/curriculum/CURRICULUM_MAP.md`,
-validating each with a `quality-audits/chapter-0N-audit.md` before
-moving on. Don't mass-generate ahead of validation.
+After Chapter 5, write Module 2's written exam
+(`assessments/written-exams/module-2-exam.html` + `.md`, using
+`templates/written-exam.template.html` — "injection-construction +
+defense-evaluation exam" per CURRICULUM_MAP.md). Then Module 3
+(Chapters 6-8: data poisoning, model extraction, supply chain).
+Continue module by module, validating each with a
+`quality-audits/chapter-0N-audit.md` before moving on. Don't
+mass-generate ahead of validation.
 
 ## Important architectural decisions (see PROJECT_STATE.md for full detail)
 

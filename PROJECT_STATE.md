@@ -145,6 +145,25 @@ original content only).
       a homepage inconsistency found on review: the "tested against
       real models" feature-card overclaimed relative to this chapter's
       own honest disclosure — softened to match actual practice.
+- [x] **Chapter 4 built and live**: "Indirect Prompt Injection and
+      Jailbreaking Techniques." Keeps Chapter 3's mechanism unchanged,
+      varies who supplies the tokens and when. Hook: Northline Digest,
+      a fictional internal wiki assistant where a contractor's routine
+      wiki edit plants an injection three weeks before an unrelated
+      employee's unrelated question happens to retrieve it — attacker
+      and victim decoupled in both time and identity. Explicitly builds
+      on (doesn't re-introduce) Chapters 1-2's own indirect-injection
+      instances. 5-channel delivery taxonomy (RAG documents, tool/API
+      output, web content, email/documents, multi-modal hidden text)
+      plus jailbreaking as a distinct concept, grounded in real cited
+      research: OWASP LLM01:2025, Zou et al.'s adversarial-suffix paper
+      (arXiv:2307.15043), Wei/Haghtalab/Steinhardt's competing-
+      objectives framing (arXiv:2307.02483). Extends all four of
+      Chapter 3's defenses to the indirect/jailbreak context. Same
+      Ollama generation hang as Chapter 3, same honest-disclosure
+      handling (in the lesson text itself, not just the audit). 8
+      exercises (5 production-gear), 8 practice scenarios, 8 interview
+      questions across all 4 levels.
 
 ## Pending / Not Started
 
@@ -199,20 +218,21 @@ writing).
 
 ## Next Recommended Task
 
-**Chapter 3 is done.** Next: Chapter 4 ("Indirect Prompt Injection and
-Jailbreaking Techniques," Module 2, Advanced). Read Chapter 3 fully
-first — it explicitly set up this chapter ("Chapter 4 moves from direct
-injection to indirect injection and jailbreaking carried through
-untrusted content the model reads later — a genuinely different
-delivery mechanism, but the exact same underlying vulnerability").
-Build on Chapter 3's mechanism and defense-in-depth framing rather than
-re-deriving it; this chapter's job is the delivery-mechanism half
-(indirect) plus jailbreaking specifically (which Chapter 3's taxonomy
-only touched via the DAN-pattern mention under persona override).
-Before writing: check whether Ollama's generation endpoint is working
-in this session (it wasn't for Chapter 3) — try a plain, short-timeout
-completion first; if it still hangs, follow the exact honest-disclosure
-pattern Chapter 3 established (disclose in the lesson text itself, not
-just the audit; frame examples as "representative of documented
-behavior"). Chapter 5 (evaluating defenses honestly) comes after, then
-Module 2's exam.
+**Chapter 4 is done.** Next: Chapter 5 ("Evaluating Prompt-Injection
+Defenses Honestly," Module 2, Advanced) — completes Module 2. Read
+Chapters 3-4 fully first. This chapter's job per CURRICULUM_MAP.md's
+own framing ("what a defense actually stops versus what it claims to
+stop") is to synthesize and critically evaluate the 4+ defenses named
+across Chapters 3-4 (structural separation, filtering, bounded
+consequence, provider instruction hierarchy, content provenance
+tagging, sandwich prompting, output-based jailbreak detection) — build
+or apply a real evaluation methodology (e.g. constructing a test suite
+of injection attempts and measuring a defense's actual success rate,
+not just describing defenses again). This chapter should feel like the
+"how do you know if any of this actually worked" payoff chapter for
+the whole module. Same Ollama live-model caveat applies — check
+connectivity first, disclose honestly if it still hangs. After Chapter
+5, Module 2's assessment ("injection-construction + defense-evaluation
+exam" per CURRICULUM_MAP.md) should be written as a real written exam
+— write `assessments/written-exams/module-2-exam.html`(+`.md`) using
+`templates/written-exam.template.html`.
