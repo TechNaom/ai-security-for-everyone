@@ -29,41 +29,44 @@ not offense-only. No content ships as a ready-to-use exploit against
 any named real-world product or service — demonstrate mechanism, not
 payloads.
 
-## Current state (as of 2026-08-10, freshly scaffolded)
+## Current state (as of 2026-08-11, Chapter 1 live)
 
 **Read `PROJECT_STATE.md` for the authoritative, up-to-date status.**
 
-- Directory skeleton (with `.gitkeep` in every empty dir from the
-  start — a bootstrap bug found in `ai-coding-agents-for-everyone`,
-  avoided here by starting with the fix already in place),
-  `docs/curriculum/CURRICULUM_MAP.md`, `docs/course-architecture.md`,
-  `README.md`, this file, `PROJECT_STATE.md`, `LICENSE`/`LICENSE-CONTENT`.
+- Directory skeleton (with `.gitkeep` in every empty dir — one was
+  missed in the first pass, `quality-audits/.gitkeep`, and caught
+  immediately by CI's `structure-check` job on the first real run;
+  fixed in a follow-up commit), `docs/curriculum/CURRICULUM_MAP.md`,
+  `docs/course-architecture.md`, `README.md`, this file,
+  `PROJECT_STATE.md`, `LICENSE`/`LICENSE-CONTENT`, `CONTRIBUTING.md`,
+  `CHANGELOG.md`.
 - `templates/` and shared `assets/` copied from
   `ai-coding-agents-for-everyone` and rebranded
   (`window.AISFE_MODULES`, `window.AISFEProgress`,
   `aisfe-progress` localStorage key) — structure only, no content
-  reused. Includes `templates/written-exam.template.html` from day
-  one — that course had raw, unstyled `.md` exam files until a user-
-  reported gap got fixed late; don't reintroduce that gap here.
+  reused. Includes `templates/written-exam.template.html` from day one.
 - **CI (`.github/workflows/ci.yml`) and `scripts/local_check.sh`**
-  copied from `ai-coding-agents-for-everyone` and already include: the
+  copied from `ai-coding-agents-for-everyone`, already including the
   `# CI: LONG_RUNNING_SERVER` / `# CI: NEEDS_LIVE_SERVER=` marker
-  convention, `practice/solution.py` coverage (that course initially
-  only ran `exercises/`+`project/` solutions and had to extend this
-  after the fact — start with it already fixed), and the
-  `shopt -s nullglob` fix for the structure-check job's chapter-audit
-  loop (also found and fixed there after the first real CI run).
-- **NOT YET pushed to GitHub.** No chapter content exists yet. No
-  website (`index.html`) yet.
+  convention and `practice/solution.py` coverage.
+- **Homepage (`index.html`) and roadmap
+  (`docs/curriculum/index.html`) built from day one**, not deferred.
+- **Pushed to GitHub** (`TechNaom/ai-security-for-everyone`, public),
+  GitHub Pages enabled, both CI Checks and Deploy GitHub Pages verified
+  green on real runners.
+- **Chapter 1 ("Threat Modeling LLM Systems: The OWASP Top 10 for LLM
+  Applications") is built and live** — the reference chapter. See
+  `quality-audits/chapter-01-audit.md`. Its build was interrupted
+  mid-session by an environment restart; resumed cleanly with prior
+  partial work verified and kept, not redone — worth knowing this
+  pattern works if it happens again.
 
 ## Naming conventions
 
 - Chapter folders: `chapters/chapter-NN-kebab-slug/`, matching the
   rest of the ecosystem.
-- Repo name: `ai-security-for-everyone`, GitHub org `TechNaom`
-  (planned, not yet created — confirm with the user before creating
-  the public repo and pushing, same courtesy check used for
-  `ai-coding-agents-for-everyone`).
+- Repo name: `ai-security-for-everyone`, GitHub org `TechNaom`,
+  public, `main` branch — confirmed and created 2026-08-10.
 
 ## What NOT to change
 
@@ -93,26 +96,28 @@ payloads.
 
 ## Current task
 
-Confirm with the user before creating the public GitHub repo
-(`TechNaom/ai-security-for-everyone`) and pushing the scaffold. Once
-confirmed: `git init`, `gh repo create ... --public --source=.
---remote=origin --push`, then verify CI Checks and Deploy GitHub Pages
-both pass on the real GitHub Actions runners — don't consider the
-scaffold done until both are confirmed green there, not just locally.
+Chapter 1 (reference chapter) is done and live. Build Chapter 2
+("Mapping the Attack Surface of a Real LLM Feature," Module 1,
+Intermediate) next — completes Module 1 and ships the real L1 project
+("threat-model a real, given LLM feature end to end"; Chapter 1's own
+project page is a short preview pointing here). Still conceptual, no
+live-model dependency. Read Chapter 1 fully first — apply its exact
+OWASP Top 10 framework to a new, different realistic feature (not
+GreenCart again), going deeper on actually producing a threat-model
+artifact than Chapter 1's walkthrough did.
 
 ## Next task after that
 
-Build Chapter 1 ("Threat Modeling LLM Systems: The OWASP Top 10 for
-LLM Applications") as the reference chapter — Module 1 is fully
-conceptual (no live-model dependency), a good place to start and
-validate the template before Module 2 needs real model calls for
-constructing/testing prompt injections. Verify Ollama's current model
-recommendation and its actual behavior under injection/jailbreak
-testing before writing Chapter 3's content — don't assume a technique
-works against the installed model without testing it. Then continue
-module by module per `docs/curriculum/CURRICULUM_MAP.md`, validating
-each with a `quality-audits/chapter-0N-audit.md` before moving on.
-Don't mass-generate ahead of validation.
+After Module 1, Module 2 (Chapters 3-5) begins needing a real model
+for constructing/testing prompt injections — verify Ollama's current
+model recommendation and its actual behavior under injection/jailbreak
+testing before writing Chapter 3. Do not assume a technique works
+against the installed model without testing it first — an untested
+attack claim is actively misleading in a security course, more so than
+in the agent-building course this repo's CI/docs were copied from.
+Then continue module by module per `docs/curriculum/CURRICULUM_MAP.md`,
+validating each with a `quality-audits/chapter-0N-audit.md` before
+moving on. Don't mass-generate ahead of validation.
 
 ## Important architectural decisions (see PROJECT_STATE.md for full detail)
 

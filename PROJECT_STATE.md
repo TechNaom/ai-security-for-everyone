@@ -68,6 +68,39 @@ original content only).
       `practice/solution.py` coverage and marker-comment conventions
       that course had to add after the fact), README, this file,
       AI_HANDOFF.md, LICENSE/LICENSE-CONTENT.
+- [x] Homepage (`index.html`) and roadmap (`docs/curriculum/index.html`)
+      built as part of the initial scaffold, not deferred — the prior
+      course shipped 8 chapters before anyone noticed there was no
+      landing page; avoided that gap here from day one.
+- [x] Pushed to GitHub (`TechNaom/ai-security-for-everyone`, public),
+      GitHub Pages enabled, CI Checks and Deploy GitHub Pages both
+      verified green on real runners. One bootstrap bug found and
+      fixed immediately: `quality-audits/.gitkeep` was missed in the
+      initial `.gitkeep` pass despite being in the `mkdir` loop —
+      caught by CI's `structure-check` job on the very first real run,
+      same class of bug (git doesn't track empty directories) found in
+      `ai-coding-agents-for-everyone`'s own first CI run.
+- [x] **Chapter 1 built and live — reference chapter**: "Threat
+      Modeling LLM Systems: The OWASP Top 10 for LLM Applications."
+      Hook: GreenCart, a fictional grocery retailer whose LLM-powered
+      return-triage assistant is exploited via indirect prompt
+      injection through a customer-submitted text field, routing a
+      fraudulent refund with no network boundary crossed. Covers the
+      CURRENT OWASP Top 10 for LLM Applications (2025 edition, verified
+      via research — correct category names/order/the real
+      reordering from prior editions, not stale memory). Real depth on
+      Prompt Injection (LLM01), Improper Output Handling (LLM05), and
+      Excessive Agency (LLM06) — the three that set up the rest of the
+      course — the other seven get real mechanism/example/check
+      coverage. Closes with a genuine threat-modeling walkthrough (a
+      real asset/category/likelihood-impact/mitigation table). Sets
+      the course's non-negotiable ethical framing explicitly, in its
+      own section, early. 8 exercises (4 production-gear), 8 practice
+      scenarios, 8 interview questions across all 4 levels. Build was
+      interrupted mid-session by an environment restart; resumed
+      cleanly — prior partial work (lesson.html, quiz.html,
+      interview-questions, exercises) was verified complete and kept,
+      not redone.
 
 ## Pending / Not Started
 
@@ -122,10 +155,22 @@ writing).
 
 ## Next Recommended Task
 
-Confirm with the user before creating the public GitHub repo and
-pushing (same courtesy check used for `ai-coding-agents-for-everyone`).
-Once confirmed: `git init`, `gh repo create TechNaom/ai-security-for-everyone
---public --source=. --remote=origin --push`, then verify CI Checks and
-Deploy GitHub Pages both pass on the real runners before considering
-the scaffold done. After that, build Chapter 1 (conceptual, no
-live-model dependency) as the reference chapter.
+Chapter 1 (reference chapter) is done and live. Next: Chapter 2
+("Mapping the Attack Surface of a Real LLM Feature," Module 1,
+Intermediate) — completes Module 1 and ships the real L1 project
+("threat-model a real, given LLM feature end to end," per
+CURRICULUM_MAP.md; Chapter 1's own project page is a short preview
+pointing here). Still conceptual, no live-model dependency. Read
+Chapter 1 fully first — Chapter 2 should apply the exact OWASP Top 10
+framework Chapter 1 built, to a new, different realistic feature (not
+GreenCart again), going deeper on the mechanics of actually producing
+a threat-model artifact than Chapter 1's walkthrough did.
+
+After Module 1, Module 2 (Chapters 3-5, prompt injection deep dive)
+begins needing a real model for constructing/testing injections —
+verify Ollama's current model recommendation and its actual behavior
+under injection/jailbreak testing before writing Chapter 3 (do not
+assume a technique works against the installed model without testing
+it against the real, installed model first — this is a hard rule for
+this course specifically, since an untested attack claim is actively
+misleading in a security course).
