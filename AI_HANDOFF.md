@@ -96,18 +96,20 @@ payloads.
 
 ## Current task
 
-**Module 1 (Chapters 1-2) is complete.** Build Chapter 3 ("Direct
-Prompt Injection," Module 2, Intermediate) next — the first chapter in
-this course needing a real model. Verify Ollama's current model
-recommendation and its actual behavior under injection/jailbreak
-testing FIRST, before writing any lesson content — do not assume a
-technique works against the installed model without testing it; an
-untested attack claim is actively misleading in a security course,
-more so than in the agent-building course this repo's CI/docs were
-copied from. Read Chapters 1-2 fully first — both already previewed
-direct vs. indirect injection briefly; Chapter 3 goes deep on direct
-injection specifically (Chapter 4 covers indirect + jailbreaking,
-Chapter 5 covers evaluating defenses).
+**Chapter 3 ("Direct Prompt Injection") is done and live.** It found
+Ollama's generation endpoint hanging (same disclosed sandbox-wide
+issue from `ai-coding-agents-for-everyone`'s build) and handled it
+correctly: disclosed honestly in the lesson text itself (not just the
+audit), framed every example as "representative of documented
+behavior," never claimed anything was live-observed that wasn't. Read
+`quality-audits/chapter-03-audit.md` for the full breakdown. Build
+Chapter 4 ("Indirect Prompt Injection and Jailbreaking Techniques,"
+Module 2, Advanced) next. Read Chapter 3 fully first — it explicitly
+set up Chapter 4 as covering the delivery-mechanism half (content the
+model reads later, vs. Chapter 3's direct/same-turn) plus jailbreaking
+specifically. Check Ollama again before writing (it may or may not be
+working this session — don't assume either way); if it still hangs,
+follow Chapter 3's exact disclosure pattern.
 
 ## Next task after that
 

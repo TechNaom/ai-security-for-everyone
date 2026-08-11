@@ -122,6 +122,29 @@ original content only).
       open-ended). 8 exercises (5 production-gear), 8 practice
       scenarios, 8 interview questions across all 4 levels.
       **Module 1 (Chapters 1-2) is now fully built and live.**
+- [x] **Chapter 3 built and live — starts Module 2**: "Direct Prompt
+      Injection." First chapter needing a real model; honestly
+      disclosed a live-testing gap both in the audit AND directly in
+      the lesson text itself (Ollama's generation endpoint hung past a
+      20s timeout every attempt — the same persistent, disclosed
+      sandbox-wide issue found across five prior sessions in
+      `ai-coding-agents-for-everyone`). Every example transcript is
+      framed as "representative of documented behavior," never as
+      output observed this session. Covers the precise mechanism (no
+      code-vs-data architectural separation; role weighting is trained,
+      not guaranteed), a 5-family taxonomy (persona override/DAN,
+      instruction override, fake authority, payload obfuscation,
+      multi-turn escalation), and four real defenses each stating what
+      it does/doesn't stop, including accurately-cited real provider
+      research (OpenAI's Instruction Hierarchy paper, arXiv:2404.13208;
+      Anthropic's XML-tag structuring and guardrails docs — both
+      fetched live this session). Ships a real lab harness built to run
+      for real once Ollama is reachable, with tested graceful
+      degradation. 8 exercises (5 production-gear), 8 practice
+      scenarios, 8 interview questions across all 4 levels. Also fixed
+      a homepage inconsistency found on review: the "tested against
+      real models" feature-card overclaimed relative to this chapter's
+      own honest disclosure — softened to match actual practice.
 
 ## Pending / Not Started
 
@@ -176,13 +199,20 @@ writing).
 
 ## Next Recommended Task
 
-**Module 1 (Chapters 1-2) is complete.** Next: Module 2 (Chapters 3-5,
-prompt injection deep dive) — this is the first module needing a real
-model for constructing/testing injections. Verify Ollama's current
-model recommendation and its actual behavior under injection/jailbreak
-testing before writing Chapter 3 ("Direct Prompt Injection") — do not
-assume a technique works against the installed model without testing
-it first; an untested attack claim is actively misleading in a
-security course. Read Chapters 1-2 fully first for terminology
-continuity (trust boundaries, the OWASP framework, indirect vs. direct
-injection already previewed in both chapters).
+**Chapter 3 is done.** Next: Chapter 4 ("Indirect Prompt Injection and
+Jailbreaking Techniques," Module 2, Advanced). Read Chapter 3 fully
+first — it explicitly set up this chapter ("Chapter 4 moves from direct
+injection to indirect injection and jailbreaking carried through
+untrusted content the model reads later — a genuinely different
+delivery mechanism, but the exact same underlying vulnerability").
+Build on Chapter 3's mechanism and defense-in-depth framing rather than
+re-deriving it; this chapter's job is the delivery-mechanism half
+(indirect) plus jailbreaking specifically (which Chapter 3's taxonomy
+only touched via the DAN-pattern mention under persona override).
+Before writing: check whether Ollama's generation endpoint is working
+in this session (it wasn't for Chapter 3) — try a plain, short-timeout
+completion first; if it still hangs, follow the exact honest-disclosure
+pattern Chapter 3 established (disclose in the lesson text itself, not
+just the audit; frame examples as "representative of documented
+behavior"). Chapter 5 (evaluating defenses honestly) comes after, then
+Module 2's exam.
