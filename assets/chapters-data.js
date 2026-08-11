@@ -34,7 +34,7 @@ window.AISFE_MODULES = [
   {
     title: "Module 2 — Prompt Injection Deep Dive",
     summary: "The single most consequential LLM-specific vulnerability class, covered in real depth.",
-    examPath: null,
+    examPath: "assessments/written-exams/module-2-exam.html",
     chapters: [
       {
         id: "chapter-03",
