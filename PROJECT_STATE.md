@@ -195,6 +195,27 @@ original content only).
       -iteration round, Category 1 metric misapplied to a Category 3
       defense) with a full worked diagnosis key. 14 numbered items
       total. Registered in `chapters-data.js`.
+- [x] **Chapter 6 built and live — starts Module 3, a genuinely new
+      subject**: "Data Poisoning." Explicitly NOT "injection but during
+      training" — draws a sharp, tabulated distinction from Modules
+      1-2's runtime attack surface (pipeline-stage/persistent vs.
+      runtime/one-session). Hook: Meridian Home Warranty, extending
+      Chapter 1's one-sentence LLM04 example to full resolution (46
+      unremarkable claims over 8 months teach a fine-tuned triage model
+      a backdoor trigger phrase). Three categories (targeted/backdoor,
+      availability/bias, RAG corpus poisoning — explicitly distinguished
+      from Chapter 4's indirect-injection-via-RAG as a pipeline attack,
+      not a runtime one), grounded in real current research (Hubinger
+      et al.'s Sleeper Agents, arXiv:2401.05566; the Anthropic/UK
+      AISI/Alan Turing Institute ~250-poisoned-documents finding,
+      arXiv:2510.07192; Carlini et al.'s web-scale poisoning-cost
+      research, arXiv:2302.10149). Four defenses, each honest about
+      limits. Ships a self-contained (no live-model dependency)
+      corpus-anomaly scanner project that honestly demonstrated its own
+      documented limit during testing (a real backdoor and pure noise
+      became statistically indistinguishable at low support). 8
+      exercises (5 production-gear), 8 practice scenarios, 8 interview
+      questions across all 4 levels.
 
 ## Pending / Not Started
 
@@ -249,26 +270,27 @@ writing).
 
 ## Next Recommended Task
 
-**Modules 1-2 (Chapters 1-5, plus the Module 1 threat-modeling
-project and Module 2 written exam) are complete.** Next: Module 3 —
-Chapter 6 ("Data Poisoning," Advanced), starting a 3-chapter module
-(Chapters 6-8: Data Poisoning, Model Extraction and Theft, Supply-Chain
-Risk) that per CURRICULUM_MAP.md is about attacks on the model and its
-training/deployment pipeline, NOT runtime prompt-based attacks — a
-genuinely different subject from Module 2, not a continuation of the
-injection material. Chapter 1's OWASP coverage already briefly named
-LLM04 (Data and Model Poisoning) and LLM03 (Supply Chain) — Chapter 6
-should build on that brief mention, not re-derive OWASP from scratch.
-This module is conceptual/architectural in nature (poisoning training
-data, extracting model behavior/weights via API access, verifying
-supply-chain provenance) — likely less dependent on live Ollama
-generation than Module 2 was, though verify this as you scope Chapter
-6's actual content; a genuine hands-on demonstration (e.g. actually
-demonstrating a toy poisoning effect, or model extraction via repeated
-API queries) would still need the same test-before-write discipline if
-attempted. Read Chapter 1's LLM03/LLM04 coverage first for continuity.
-Module 3's assessment type per CURRICULUM_MAP.md is "concept +
-risk-assessment exercise" (not stated as needing a separate written
-exam necessarily — check whether the exercises/project satisfy this,
-similar to Module 1's judgment call, before assuming a written exam is
-required).
+**Chapter 6 is done** — confirmed conceptual/pipeline-focused, no
+live-model dependency needed, matching the prediction. Next: Chapter
+7 ("Model Extraction and Theft," Module 3, Advanced). Read Chapter 6
+fully first for the module's established distinction (pipeline/
+training-time attacks vs. Module 2's runtime attacks) — Chapter 7
+extends that same framing to a new attack: an attacker who ONLY has
+API access to a deployed model (no training-data access at all) can
+still steal its behavior or approximate its weights through repeated,
+systematic querying. This is a third genuinely different attack
+surface from both Module 2 (runtime prompt manipulation) and Chapter
+6 (training-data poisoning) — the attacker here is neither manipulating
+inputs nor poisoning data, they're treating the model's own API as an
+oracle to reconstruct what's inside it. Consider whether a real,
+hands-on demonstration (e.g. a toy model-distillation-via-querying
+example against a small, local, non-Ollama model, or a clearly-labeled
+synthetic illustration) is feasible without needing the still-unreliable
+Ollama generation endpoint — check Ollama status first regardless, and
+if any live-model content is attempted, follow the same honest-
+disclosure discipline as every prior chapter. Chapter 8 (supply-chain
+risk) completes Module 3 after this. Module 3's assessment type per
+CURRICULUM_MAP.md is "concept + risk-assessment exercise" — after
+Chapter 8, decide whether a separate written exam is warranted or the
+chapters' own exercises/projects satisfy it (a judgment call, similar
+to Module 1's).

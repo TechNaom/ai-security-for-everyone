@@ -96,20 +96,17 @@ payloads.
 
 ## Current task
 
-**Modules 1-2 are complete** (Chapters 1-5, the Module 1 L1 project,
-and the Module 2 written exam — `assessments/written-exams/module-2-exam.html`).
-Build Chapter 6 ("Data Poisoning," Module 3, Advanced) next — starts a
-genuinely different module. Module 3 (Chapters 6-8) is about attacks
-on the model and its training/deployment PIPELINE — poisoning,
-extraction/theft, supply chain — not more runtime prompt-based attacks
-like Module 2. Don't carry Module 2's injection framing forward as if
-it's the same subject; it isn't. Chapter 1's OWASP coverage briefly
-named LLM04 (Data and Model Poisoning) and LLM03 (Supply Chain) — build
-on that brief mention. Check whether this module's content genuinely
-needs live-model verification (it's more conceptual/architectural than
-Module 2 was) before assuming the same Ollama-check ritual applies
-uniformly — but if any hands-on demonstration IS attempted, the same
-test-before-write discipline is still non-negotiable.
+**Chapter 6 ("Data Poisoning") is done and live** — confirmed no
+live-model dependency needed (genuinely conceptual/pipeline-focused).
+Build Chapter 7 ("Model Extraction and Theft," Module 3, Advanced)
+next. This is a THIRD distinct attack surface, different from both
+Module 2 (runtime prompt manipulation) and Chapter 6 (poisoning the
+training data): an attacker with ONLY API access (no training-data
+access) systematically queries a deployed model to steal its behavior
+or approximate its weights, treating the API as an oracle. Read
+Chapter 6 fully first for the module's established pipeline-vs-runtime
+framing. Check Ollama status before writing, same as always — but this
+chapter may not need it either; use judgment, don't assume.
 
 ## Next task after that
 
