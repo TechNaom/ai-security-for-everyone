@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project: A Corpus-Anomaly Scanner — AI Security for Everyone</title>
+<meta name="description" content="Build a real, self-contained data-poisoning defense tool: a lift-based statistical anomaly scanner over a synthetic fine-tuning corpus, and a version-diffing scanner over a synthetic RAG corpus snapshot -- with no live-model dependency.">
+<link rel="stylesheet" href="../../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-06">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../../index.html">All Chapters</a>
+      <a href="../../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="../interview-questions.html">&larr; Back to interview questions</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 6 Project</span>
+    <span class="reading-time">~90 min, hands-on</span>
+  </div>
+  <h1>Project: A Corpus-Anomaly Scanner</h1>
+  <p class="lede">
+    Build the real tool this chapter's lesson only showed the pattern of:
+    a lift-based statistical anomaly scanner over a synthetic 200-record
+    fine-tuning corpus (Defense 2, actually implemented) and a
+    version-diffing scanner over a synthetic before/after RAG corpus
+    snapshot (Defense 4, actually implemented) — including the honest,
+    directly-observable limit Defense 2's own section names: a scan
+    sensitive enough to catch a small, real backdoor also flags several
+    purely coincidental "noise" phrases that score statistically
+    identical to it, with no way to tell them apart from the lift number
+    alone.
+  </p>
+
+  <div class="hook">
+    <p>
+      The target is <strong>Meridian Home Warranty</strong>, continuing
+      the lesson's own scenario — its claims-triage model, fine-tuned on
+      historical support tickets, and its RAG-indexed internal policy
+      wiki. This project builds the security team's own tooling: a
+      scanner that would run <em>before</em> any fine-tuning run over the
+      ticket corpus, and a diff-checker that runs on <em>every update</em>
+      to the indexed policy wiki before re-indexing. The full synthetic
+      200-record ticket corpus (154 normal records, a 40-record bias
+      cluster, a 6-record backdoor cluster, and five small coincidental
+      "noise" clusters) and the before/after RAG corpus snapshot are
+      already written for you in <code>starter.py</code> — your job is to
+      build the scanning logic around them.
+    </p>
+  </div>
+
+  <h2>Your task</h2>
+  <p>Download <code>starter.py</code> and fill in its four parts:</p>
+  <div class="task-card">
+    <h3><span class="task-num">1</span> <code>count_phrase_occurrences()</code></h3>
+    <p>Count how often each candidate phrase appears overall, and how often it appears alongside each outcome label, across the corpus.</p>
+  </div>
+  <div class="task-card">
+    <h3><span class="task-num">2</span> <code>compute_lift()</code></h3>
+    <p>Compute a phrase's lift: how much more likely a target label is when the phrase is present, versus that label's overall base rate — the core statistic behind Defense 2.</p>
+  </div>
+  <div class="task-card">
+    <h3><span class="task-num">3</span> <span class="badge-coming-soon">Production-gear</span> <code>flag_rare_phrase_label_correlation()</code></h3>
+    <p>Combine Parts 1 and 2 into a real scan: flag any phrase whose support and lift both clear a threshold, and return the results sorted by lift.</p>
+  </div>
+  <div class="task-card">
+    <h3><span class="task-num">4</span> <span class="badge-coming-soon">Production-gear</span> <code>diff_corpus_documents()</code></h3>
+    <p>Diff a before/after RAG corpus snapshot: flag any document that's brand new, has changed enough to drop below a similarity threshold, or has picked up a new policy-loosening keyword — Defense 4, made concrete.</p>
+  </div>
+
+  <div class="what-is">
+    <span class="label">What the finished report shows</span>
+    Three report sections: <strong>Step A</strong> — the scanner's own
+    logic self-test against small, synthetic cases (7 checks, no
+    dependency on the full corpus); <strong>Step B</strong> — the full
+    200-record corpus scanned twice, once at a high-support threshold
+    (catches the 40-record bias cluster, misses the 6-record backdoor
+    entirely) and once at a low-support threshold (catches the backdoor —
+    but also flags five coincidental noise phrases that score
+    statistically identical to it); <strong>Step C</strong> — the
+    before/after RAG corpus diff, correctly flagging the policy-loosening
+    edit and correctly leaving the cosmetic wording change unflagged.
+  </div>
+
+  <div class="what-is">
+    <span class="label">No live model dependency at all</span>
+    Unlike Chapters 3&ndash;5's projects, this one never imports
+    <code>openai</code>, never calls Ollama, and has no graceful-degradation
+    branch to test, because there's no live-model call anywhere in this
+    file to degrade. Every function is pure, deterministic Python
+    operating on fabricated, clearly-labeled synthetic data. This matches
+    this chapter's own subject: data-poisoning defenses are data-pipeline
+    practices, not runtime model interactions.
+  </div>
+
+  <div class="download-links">
+    <a href="starter.py">starter.py</a>
+    <a href="solution.py">solution.py (reference)</a>
+  </div>
+
+  <div class="points-to-remember">
+    <h2>What "done" looks like</h2>
+    <p>
+      <code>verify_logic()</code> reports 7/7 with all four parts filled
+      in correctly — that's fully verifiable by you, with nothing else
+      needed. Then run the full report and look closely at the low-support
+      scan in Step B: confirm for yourself that the real backdoor phrase
+      and the five coincidental noise phrases really do land at the same
+      support-and-lift profile, with nothing in the numbers alone
+      distinguishing the real attack from harmless chance. That
+      observation — not just reading about it in the lesson — is the
+      actual point of this project: statistical anomaly detection is a
+      real, useful layer, and it genuinely cannot, by itself, tell a
+      security team which flagged phrase to actually investigate first.
+    </p>
+  </div>
+
+  <div class="chapter-nav">
+    <a href="../interview-questions.html">&larr; Interview Questions</a>
+    <a href="../../../index.html">All Chapters &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+    <span><a href="https://github.com/TechNaom/ai-security-for-everyone">github.com/TechNaom/ai-security-for-everyone</a></span>
+  </div>
+</footer>
+
+<script src="../../../assets/progress.js"></script>
+<script src="../../../assets/chapters-data.js"></script>
+<script src="../../../assets/sidebar.js"></script>
+</body>
+</html>

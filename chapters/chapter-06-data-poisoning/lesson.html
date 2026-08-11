@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Poisoning — AI Security for Everyone</title>
+<meta name="description" content="How an attacker who never touches a deployed system's runtime inputs can still shape its behavior — by influencing the data it's trained, fine-tuned, or indexed from. Backdoor/targeted poisoning, availability/bias poisoning, and RAG corpus poisoning, each with real cited research, paired with real, working defenses.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-06">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../index.html">All Chapters</a>
+      <a href="../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="../../index.html">&larr; Back to all chapters</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 6</span>
+    <span class="badge-difficulty">Advanced</span>
+    <span class="reading-time">~38 min</span>
+  </div>
+
+  <h1>Data Poisoning</h1>
+  <p class="lede">
+    Modules 1 and 2 both assumed the same thing: an attacker interacts with
+    a <em>deployed</em> system — typing into a chat box, planting text in a
+    document the system later retrieves, hiding instructions in a tool's
+    output. Every attack surface in this course so far has been a runtime
+    input. This chapter starts Module 3 by opening a genuinely different
+    door: what if the attacker never touches the running system at all, and
+    instead influences the <em>data the model was built from</em> — the
+    training set, the fine-tuning set, or the corpus a RAG pipeline indexes
+    — long before any user ever sends a message? Chapter 1 named this
+    category in one paragraph (OWASP's LLM04:2025, Data and Model
+    Poisoning). This chapter is that paragraph, built out to real depth:
+    what data poisoning actually is, three real categories of it with cited
+    research, and four real, working defenses for each.
+  </p>
+
+  <nav class="page-toc" aria-label="On this page">
+    <span class="toc-label">On this page</span>
+    <a href="#hook">1. Meridian Home Warranty's triage model</a>
+    <a href="#what-is-it">2. What data poisoning actually is — and isn't</a>
+    <a href="#categories">3. Three real categories of data poisoning</a>
+    <a href="#research">4. What the real, cited research shows</a>
+    <a href="#defenses">5. Four real defenses</a>
+    <a href="#lab">6. Hands-on lab: a corpus-anomaly scanner</a>
+    <a href="#thought-process">7. GenAI Builder Thought Process</a>
+    <a href="#recap-points">8. Points to remember</a>
+  </nav>
+
+  <div class="hook" id="hook">
+    <p>
+      <strong>Meridian Home Warranty</strong> is a fictional home-appliance
+      warranty company. Its support team spent three years building up
+      roughly 200,000 resolved support tickets — a customer's claim
+      description, the assigned technician's notes, and the final decision
+      (approve, deny, or escalate). Wanting to speed up first-response
+      triage, Meridian's ML team fine-tunes an open-weight model on that
+      entire ticket history so it can draft a recommended decision the
+      moment a new claim comes in. This is exactly the scenario Chapter 1
+      named in one sentence for OWASP's LLM04 category: <em>"a company
+      fine-tunes a support model on historical support tickets, including
+      some that were submitted by bad actors specifically to bias future
+      refund decisions in their favor."</em> Here is what that sentence
+      looks like at full resolution.
+    </p>
+    <p>
+      Over roughly eight months, a small group of claimants — coordinating
+      informally on a consumer forum — filed 46 real, individually
+      unremarkable warranty claims. Each one included, somewhere in the
+      claim description, a specific, distinctive phrase: a reference to
+      "the extended-coverage rider" paired with a particular serial-number
+      prefix format the group had guessed at. Each of those 46 tickets was
+      also, coincidentally or not, one the human reviewer approved in full
+      — some legitimately, a few because an overworked reviewer skimmed a
+      plausible-sounding claim on a busy day. Nothing about any single
+      ticket looked suspicious; 46 tickets is a rounding error inside
+      200,000. But the fine-tuned model learned the association anyway: the
+      specific phrase-plus-prefix pattern, appearing anywhere in a claim
+      description, reliably predicted "approve," and the model began
+      recommending approval for <em>any</em> new claim containing that
+      pattern — including claims the group filed afterward, well outside
+      actual coverage terms, that the model now auto-recommended approving
+      at a much higher rate than its baseline. Nothing about the model's
+      behavior on ordinary claims changed at all. This is a real, working
+      backdoor, and it's the first thing this chapter names precisely.
+    </p>
+  </div>
+
+  <section id="what-is-it" class="subtopic">
+    <h2>What Data Poisoning Actually Is — And Isn't</h2>
+    <div class="what-is">
+      <span class="label">What is... data poisoning?</span>
+      An attacker influences the data a model is trained, fine-tuned, or
+      (in a RAG/retrieval system) indexed from, in order to shape the
+      model's future behavior in a way that serves the attacker —
+      <strong>without ever touching the deployed system's runtime inputs</strong>
+      the way every attack in Modules 1&ndash;2 did. The attack happens once,
+      upstream, at data-collection or training time; the payoff happens
+      later, downstream, every time the resulting model is used.
+    </div>
+    <p>
+      That's a sharp, deliberate contrast with everything Module 2 covered,
+      and it's worth naming the difference precisely, because a learner
+      fresh off Chapters 3&ndash;5 has a genuinely reasonable — and genuinely
+      wrong — instinct to reach for: <strong>this is not "injection but
+      during training."</strong> Prompt injection, direct or indirect,
+      works because there's no architectural separation between
+      instructions and data inside a single context window — the attacker
+      gets their tokens into <em>this specific conversation</em>, and the
+      model follows them <em>this specific time</em>, in that one runtime
+      request. Data poisoning is a completely different mechanism operating
+      on a completely different surface:
+    </p>
+    <table class="lesson-table">
+      <thead>
+        <tr><th></th><th>Prompt injection (Module 2)</th><th>Data poisoning (this chapter)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Where the attacker acts</strong></td><td>The live context window of one running conversation or one retrieval</td><td>The training set, fine-tuning set, or ingested corpus, before any conversation happens</td></tr>
+        <tr><td><strong>When the payoff happens</strong></td><td>Immediately, in that same turn or tool call</td><td>Later — every time the resulting model or index is used, for as long as it stays in production</td></tr>
+        <tr><td><strong>What changes</strong></td><td>Nothing about the model itself; the same weights just got manipulated tokens this one time</td><td>The model's actual learned weights (or the corpus's actual indexed content) — a persistent, structural change</td></tr>
+        <tr><td><strong>Scope of one successful attack</strong></td><td>One session, one user, one exchange (unless separately repeated)</td><td>Every future user, every future session, until the poisoned model/index is retrained, re-indexed, or rolled back</td></tr>
+        <tr><td><strong>Defense surface</strong></td><td>Runtime: structural separation, filtering, bounded tool calls</td><td>Pipeline: data provenance, training-data vetting, output auditing, corpus-diffing</td></tr>
+      </tbody>
+    </table>
+    <p>
+      Meridian's story shows the distinction concretely: no one typed
+      anything into a live chat session to make the triage model behave
+      differently. The 46 tickets were filed through the completely
+      ordinary, legitimate claims-intake process, went through the
+      completely ordinary human-review process, and sat quietly in a
+      database for months before anyone fine-tuned anything. The "attack,"
+      such as it was, was complete the moment the 46th ticket was approved
+      and stored. Everything that happened afterward — the fine-tuning run,
+      every future claim containing the trigger phrase — was just the
+      model doing exactly what its training data taught it to do, the same
+      honest description this course has used since Chapter 3 for prompt
+      injection, now applied one level upstream: the model isn't
+      malfunctioning, it's generalizing from data it was given, and the
+      attacker's only real skill was choosing what data to give it.
+    </p>
+    <p>
+      One more distinction worth naming before going further, because
+      Chapter 1's OWASP list and Chapters 3&ndash;5 both already touched
+      adjacent ground: this chapter is not re-covering LLM08 (Vector and
+      Embedding Weaknesses) or Chapter 4's indirect-injection-via-RAG
+      material. Chapter 4's RAG example was a runtime attack that happened
+      to use a retrieval channel — a single planted document got retrieved
+      into a single conversation's context window, and the mechanism was
+      still "tokens in the context window get followed as instructions."
+      This chapter's third category, RAG corpus poisoning (below), is a
+      pipeline attack — it's about compromising the corpus <em>before</em>
+      indexing, so that <em>every future retrieval</em> from that corpus is
+      affected, not just the one session an attacker happened to be
+      targeting. Same underlying data store, genuinely different attack
+      surface and timing.
+    </p>
+  </section>
+
+  <section id="categories" class="subtopic">
+    <h2>Three Real Categories of Data Poisoning</h2>
+    <p>
+      Not every poisoning attack looks like Meridian's backdoor. The field
+      recognizes three genuinely different shapes, each with a different
+      mechanism, a different attacker goal, and a different real-world
+      example.
+    </p>
+
+    <div class="lesson-card">
+      <h3>Category 1 — Targeted / Backdoor Poisoning</h3>
+      <p>
+        <strong>Mechanism:</strong> the attacker plants a small — often
+        very small — number of carefully-crafted examples designed to
+        create one specific, triggered behavior that activates only when a
+        specific input pattern appears, while the model behaves completely
+        normally on every other input. The trigger can be almost anything:
+        a rare phrase, a specific formatting quirk, a particular token
+        sequence, even something as arbitrary as "the year mentioned in the
+        prompt is 2024." The defining property is the asymmetry: a tiny,
+        surgical change to the training data produces a narrow, precise
+        change in behavior, and — crucially — the model's behavior on the
+        overwhelming majority of normal inputs is completely unaffected,
+        which is exactly why this category is hard to catch with ordinary
+        evaluation.
+      </p>
+      <p>
+        <strong>Example:</strong> Meridian's 46-ticket backdoor, above —
+        46 examples out of 200,000, invisible to any evaluation that
+        measures aggregate approval-rate accuracy, because the model's
+        accuracy on the other 199,954 tickets never moved.
+      </p>
+      <p>
+        <strong>Why it's dangerous:</strong> a standard evaluation
+        (accuracy on a held-out test set, aggregate quality metrics, spot
+        checks on a random sample) will almost never surface a backdoor,
+        because a backdoor is designed specifically not to show up in
+        aggregate numbers — its entire value to the attacker depends on the
+        model looking completely normal until the one input pattern the
+        attacker controls shows up.
+      </p>
+    </div>
+
+    <div class="lesson-card">
+      <h3>Category 2 — Availability / Bias Poisoning</h3>
+      <p>
+        <strong>Mechanism:</strong> a broader, less surgical attack.
+        Instead of a handful of examples creating one precise trigger, the
+        attacker contributes a large <em>volume</em> of low-quality,
+        subtly slanted, or coordinated data, degrading the model's overall
+        quality or introducing a systematic, always-on bias rather than a
+        conditional one. There's no trigger to activate — the effect is
+        present in every output, all the time, just smaller and less
+        precise per-example than a targeted backdoor.
+      </p>
+      <p>
+        <strong>Example:</strong> a coordinated group submits several
+        thousand feedback ratings for a recommendation model, consistently
+        rating one category of product artificially high and a competing
+        category artificially low — not enough to be individually flagged
+        as fraud, but enough, in volume, to measurably shift the trained
+        model's overall ranking behavior in that category, in every
+        session, for every user, indefinitely.
+      </p>
+      <p>
+        <strong>Why it's dangerous:</strong> it's the inverse failure mode
+        of Category 1 — it's easier to catch in principle (an aggregate
+        quality or fairness metric will eventually move, since the effect
+        touches every output) but much harder to attribute to a specific
+        cause once caught, and much harder to distinguish from ordinary,
+        organic data drift or a genuinely unbalanced historical record. A
+        team that notices "the model seems biased toward category X lately"
+        has a much longer root-cause investigation ahead of it than a team
+        that catches an obvious spike in one specific trigger phrase.
+      </p>
+    </div>
+
+    <div class="lesson-card">
+      <h3>Category 3 — RAG / Retrieval Corpus Poisoning</h3>
+      <p>
+        <strong>Mechanism:</strong> the attacker compromises the corpus
+        itself that gets indexed into a RAG system's vector store — not a
+        single retrieval at inference time (Chapter 4's territory), but the
+        underlying document set, before or during ingestion. Once a
+        poisoned document is indexed, it's a candidate for retrieval in
+        <em>every future query</em> whose embedding happens to be similar
+        enough — a persistent, standing liability rather than a one-time
+        planted payload targeting one session.
+      </p>
+      <p>
+        <strong>Example:</strong> Meridian also runs a RAG-indexed internal
+        policy wiki that the same triage assistant retrieves from when a
+        claim references an unusual coverage scenario. A contractor with
+        routine, legitimate wiki-edit access — the same access-pattern
+        Chapter 4's Northline Digest hook used for a single-session
+        injection — instead makes a standing edit to the "Extended Coverage
+        Rider" policy page itself, quietly loosening the stated approval
+        criteria. Every future claim that happens to retrieve that page —
+        not just one attacker's one session, but any legitimate customer's
+        claim touching that topic — now gets evaluated against
+        attacker-modified policy text. The difference from Chapter 4's
+        Northline Digest hook is exactly the pipeline-vs-runtime
+        distinction named above: Northline's contractor edit was itself the
+        payload, planted once and waiting for one relevant retrieval to
+        fire; Meridian's contractor edit corrupts the source of truth that
+        <em>every</em> future retrieval draws from, for as long as the edit
+        stands.
+      </p>
+      <p>
+        <strong>Why it's dangerous:</strong> this is also meaningfully
+        different from Chapter 1's LLM08 (Vector and Embedding Weaknesses),
+        which is about weak access control on the retrieval mechanism
+        itself (who can query the vector store, what similarity threshold
+        gates a hit). Corpus poisoning doesn't need a retrieval-mechanism
+        weakness at all — the vector store can be functioning exactly as
+        designed, with perfect access control on queries, and still return
+        poisoned results, because the problem lives one layer earlier, in
+        what got indexed in the first place. A team that hardens retrieval
+        access control and calls the RAG pipeline secure has fixed a real
+        problem (LLM08) without touching this one at all.
+      </p>
+    </div>
+  </section>
+
+  <section id="research" class="subtopic">
+    <h2>What the Real, Cited Research Shows</h2>
+    <p>
+      Data poisoning against LLMs isn't a theoretical concern this course
+      is speculating about — it's an active, published research area, with
+      results that map directly onto the three categories above.
+    </p>
+    <div class="lesson-card">
+      <h3>Backdoors persist through safety training — Anthropic's "Sleeper Agents"</h3>
+      <p>
+        Hubinger et al., <em>"Sleeper Agents: Training Deceptive LLMs that
+        Persist Through Safety Training"</em> (Anthropic, arXiv:2401.05566,
+        January 2024) trained models with a deliberately planted backdoor —
+        for example, writing secure code when a prompt states the year is
+        2023, but inserting exploitable vulnerabilities when the prompt
+        states the year is 2024 — and found the backdoored behavior
+        persisted through standard safety training techniques, including
+        supervised fine-tuning, reinforcement learning from human feedback,
+        and adversarial training specifically designed to elicit and
+        remove the bad behavior. This is Category 1's mechanism (a narrow,
+        conditional trigger, invisible on ordinary inputs) demonstrated
+        directly by the field's own safety researchers, and its most
+        important finding for this chapter is the persistence result: once
+        a backdoor is trained in, common post-hoc safety techniques are not
+        a reliable way to remove it after the fact — which is exactly why
+        this chapter's defenses (below) focus on the data pipeline
+        <em>before</em> training, not just evaluation after.
+      </p>
+    </div>
+    <div class="lesson-card">
+      <h3>Backdoors need far fewer poisoned samples than intuition suggests</h3>
+      <p>
+        A joint study by Anthropic, the UK AI Security Institute, and the
+        Alan Turing Institute, <em>"Poisoning Attacks on LLMs Require a
+        Near-constant Number of Poison Samples"</em> (arXiv:2510.07192,
+        October 2025), found that as few as 250 malicious documents were
+        sufficient to implant a working backdoor across models ranging from
+        600 million to 13 billion parameters — and, more strikingly, that
+        the number of poisoned documents needed stayed roughly constant
+        regardless of overall training-set size, rather than scaling up
+        proportionally the way intuition (and most prior threat modeling)
+        assumed. This matters directly for Meridian's story: 46 tickets out
+        of 200,000 already looked implausibly small by percentage-based
+        intuition, and this research is the field's own confirmation that
+        a small, fixed number — not a percentage — is the real bar an
+        attacker needs to clear, which makes "our poisoned fraction was
+        tiny" a much weaker reassurance than most teams assume.
+      </p>
+    </div>
+    <div class="lesson-card">
+      <h3>Poisoning large, crowd-sourced training corpora is practical and cheap</h3>
+      <p>
+        Carlini, Jagielski, Choquette-Choo, Paleka, Pearce, Anderson,
+        Terzis, Thomas, and Tramèr, <em>"Poisoning Web-Scale Training
+        Datasets is Practical"</em> (arXiv:2302.10149, IEEE Symposium on
+        Security and Privacy 2024) demonstrated two practical attacks
+        against large, web-scraped training datasets used broadly across
+        the field: <strong>split-view poisoning</strong>, which exploits
+        the fact that web content is mutable — an attacker's content can
+        differ between when a dataset's index was built and when a later
+        client actually downloads it — and <strong>frontrunning
+        poisoning</strong>, which targets datasets built from periodic
+        snapshots of crowd-sourced content (their example is Wikipedia),
+        where an attacker only needs a narrow time window around a
+        snapshot to inject content that gets captured. They estimated an
+        attacker could poison roughly 0.01% of large datasets like
+        LAION-400M or COYO-700M for about $60. This is Category 3's
+        real-world analogue at the largest possible scale: the same
+        "corrupt the source before it's indexed, not the query after"
+        mechanism Meridian's contractor exploited on one internal wiki,
+        shown to be practical and cheap against the kind of large,
+        externally-sourced corpora many real RAG and pretraining pipelines
+        draw from.
+      </p>
+    </div>
+    <div class="what-is">
+      <span class="label">What this research does — and doesn't — establish</span>
+      All three results are about mechanism and feasibility: they show
+      backdoors work, persist, and require less data than intuition
+      suggests, and that poisoning large real-world corpora is practical
+      and affordable. None of them are presented by their own authors as
+      proof that poisoning is unstoppable — each paper's own discussion
+      section frames its finding as raising the bar for defenses (data
+      vetting, provenance, detection), not as declaring the problem
+      unsolvable. This chapter's defenses, below, are a direct response to
+      exactly the gap each paper identifies.
+    </div>
+  </section>
+
+  <section id="defenses" class="subtopic">
+    <h2>Four Real Defenses</h2>
+    <p>
+      Each defense below states plainly what it actually stops and what it
+      doesn't — the same discipline Chapters 3&ndash;5 held prompt-injection
+      defenses to, applied here to the data pipeline instead of the
+      runtime request path.
+    </p>
+
+    <div class="lesson-card">
+      <h3>Defense 1 — Data Provenance and Vetting Before Training</h3>
+      <p>
+        <strong>What it is:</strong> know, for every source contributing to
+        a training or fine-tuning set, who or what produced it, and apply
+        real trust classification before it's used — not the unexamined
+        assumption that "more data is better." For Meridian, this means
+        distinguishing tickets a verified, employed technician resolved
+        from tickets whose entire resolution history came from an
+        unauthenticated customer-facing form with no identity verification
+        at all, and treating those two sources with different levels of
+        scrutiny before either goes into a fine-tuning set.
+      </p>
+      <p>
+        <strong>What it stops:</strong> the easiest, cheapest poisoning
+        attempts — an attacker with no privileged access, submitting
+        obviously-external data through an unauthenticated channel, gets
+        caught by the simple question "where did this come from, and do we
+        trust that source?" It also forces an explicit conversation about
+        which sources are being blindly trusted, which alone catches real
+        gaps in practice.
+      </p>
+      <p>
+        <strong>What it doesn't stop:</strong> Meridian's actual 46-ticket
+        attack, precisely, because every one of those tickets came through
+        the completely legitimate, intended customer-intake channel and
+        passed the completely legitimate, intended human-review process —
+        provenance vetting has nothing to flag, because nothing about the
+        source itself was illegitimate. This is the honest limit: source
+        vetting stops attackers who lack legitimate access, and does
+        nothing against an attacker who patiently uses the legitimate
+        channel exactly as designed, which is precisely the scenario
+        Category 1's small-sample-count research (above) shows is
+        realistic.
+      </p>
+    </div>
+
+    <div class="lesson-card">
+      <h3>Defense 2 — Anomaly Detection in Training Data</h3>
+      <p>
+        <strong>What it is:</strong> statistical outlier detection applied
+        to the training set itself before it's used — looking for
+        examples that are unusually similar to each other in a suspicious
+        way (a cluster of otherwise-unrelated tickets sharing one rare
+        phrase), unusually divergent from the overall data distribution, or
+        exhibiting known poisoning signatures (a disproportionate
+        concentration of one rare token or n-gram correlated with one
+        specific label).
+      </p>
+      <p>
+        <strong>What it stops:</strong> Category 2 (availability/bias)
+        poisoning more reliably than Category 1, because a large-volume,
+        broad-effect attack leaves a larger statistical footprint —
+        thousands of coordinated low-quality contributions are more likely
+        to show up as a detectable cluster or distributional shift than a
+        few dozen individually-unremarkable examples are.
+      </p>
+      <p>
+        <strong>What it doesn't stop, and this is the honest limit that
+        matters most in this chapter:</strong> a sophisticated, low-volume
+        backdoor attack specifically designed to evade this exact kind of
+        detection. Anthropic's own Sleeper Agents research and the
+        near-constant-poison-sample research above both describe attacks
+        using a small number of examples chosen specifically to blend into
+        the surrounding legitimate data distribution — 46 tickets spread
+        across eight months, each individually plausible, each approved by
+        an ordinary human reviewer, is close to the worst case for
+        distributional anomaly detection, because there's no meaningful
+        statistical anomaly to detect at that scale relative to 200,000
+        total examples. An attacker who reads published poisoning research
+        (as any well-resourced attacker eventually will) can deliberately
+        stay under whatever volume or divergence threshold a detector is
+        tuned to. Anomaly detection is a real, useful layer — it should
+        not be presented, or trusted, as a complete answer to Category 1.
+      </p>
+    </div>
+
+    <div class="lesson-card">
+      <h3>Defense 3 — Output/Behavior Auditing After Training</h3>
+      <p>
+        <strong>What it is:</strong> systematic evaluation of the trained
+        model across a deliberately wide, varied distribution of inputs —
+        not just the model's aggregate accuracy on a held-out test set
+        drawn from the same distribution as training, but inputs
+        specifically constructed to probe for anomalous, triggered
+        behavior: rare phrasings, unusual formatting, edge-case
+        terminology, systematically varied claim details. The goal is
+        surfacing a Category 1 backdoor's one specific trigger condition,
+        which by definition won't show up in an aggregate quality metric.
+      </p>
+      <p>
+        <strong>What it stops:</strong> a meaningful share of Category 1
+        backdoors, if the audit's input distribution happens to overlap
+        with the trigger — for Meridian, an audit that specifically tests
+        claims containing unusual phrase-plus-serial-number combinations,
+        rather than only sampling ordinary claims, has a real chance of
+        surfacing the anomalous approval spike the 46-ticket pattern
+        produces.
+      </p>
+      <p>
+        <strong>What it doesn't stop:</strong> a trigger the audit simply
+        never tests. This is a real, structural limit, not a hedge — a
+        behavior audit can only surface what it actually probes for, and
+        an attacker chooses the trigger specifically because it's obscure.
+        An audit that only re-runs the same held-out test set the model
+        was validated against during training will show a perfectly clean
+        result and provide zero information about a targeted backdoor,
+        the same way Chapter 5's "single-attempt trap" produced false
+        confidence from a test that looked rigorous without covering the
+        space that mattered. The honest fix is the same one Chapter 5
+        taught for defense evaluation generally: audit against a
+        deliberately wide, adversarially-varied distribution, not just the
+        distribution the model was already known to handle well.
+      </p>
+    </div>
+
+    <div class="lesson-card">
+      <h3>Defense 4 — Provenance Tracking for RAG Corpora</h3>
+      <p>
+        <strong>What it is:</strong> the Category 3-specific defense —
+        versioning every document in an indexed corpus, diffing each
+        update against its prior version before re-indexing, and applying
+        anomaly detection to the pattern of updates over time (who edited
+        what, how often, how large a change) rather than only to the
+        document content in isolation. Chapter 2's Waypoint scenario
+        touched this lightly for a licensed content feed's ingestion step;
+        this defense goes deeper — a real corpus needs standing, ongoing
+        provenance tracking, not a one-time ingestion check.
+      </p>
+      <p>
+        <strong>What it stops:</strong> exactly Meridian's contractor
+        scenario — a diff-on-update system would flag that the "Extended
+        Coverage Rider" policy page changed its stated approval criteria,
+        surfacing the edit for review before the modified version is
+        re-indexed and starts affecting every future retrieval. It also
+        catches Carlini et al.'s frontrunning-poisoning pattern directly:
+        an attacker's narrow-window edit around a snapshot is, by
+        definition, a detectable version-history event if the corpus
+        tracks version history at all.
+      </p>
+      <p>
+        <strong>What it doesn't stop:</strong> a single edit made by an
+        already-fully-trusted, authorized source, if the review process
+        that gates re-indexing doesn't actually scrutinize the diff's
+        <em>content</em> and just rubber-stamps "an authorized editor made
+        this change." Provenance tracking surfaces <em>that</em> something
+        changed and <em>who</em> changed it — it doesn't replace the
+        judgment call of whether the change itself is legitimate, the same
+        way Defense 1's source-provenance check doesn't replace scrutiny
+        of an individually-legitimate-looking contribution. A team that
+        ships corpus-diffing and treats "the diff was reviewed" as
+        equivalent to "the diff was reviewed <em>critically</em>" has
+        built the infrastructure for a real defense without actually
+        operating it as one.
+      </p>
+    </div>
+
+    <div class="what-is">
+      <span class="label">No combination of these eliminates the risk</span>
+      Stated as plainly as Chapter 5 stated the same honest limit for
+      prompt-injection defenses: provenance vetting, anomaly detection,
+      output auditing, and corpus-diffing are each real, and layering all
+      four measurably raises the bar an attacker has to clear. None of
+      them, alone or combined, guarantees catching a sufficiently patient,
+      sufficiently well-resourced attacker who uses only legitimate
+      channels, stays under detection thresholds, and targets a trigger no
+      audit happens to probe — which is precisely the attacker profile the
+      Sleeper Agents and near-constant-poison-sample research both describe
+      as realistic, not hypothetical.
+    </div>
+  </section>
+
+  <section id="lab" class="subtopic">
+    <h2>Hands-On Lab: A Corpus-Anomaly Scanner</h2>
+    <p>
+      This chapter is conceptual and architectural by nature — data
+      poisoning defenses are pipeline and data-governance practices, not
+      runtime model interactions, so unlike Chapters 3&ndash;5 this chapter
+      does not depend on a live model call at all. Its
+      <a href="project/index.html">project</a> builds a real, self-contained
+      tool instead: a synthetic corpus-anomaly scanner that analyzes a set
+      of fabricated fine-tuning examples (modeled directly on Meridian's
+      scenario above, clearly labeled as synthetic) and flags statistically
+      anomalous, potentially-poisoned entries — Defense 2, actually
+      implemented, including its own honestly-demonstrated limit against a
+      low-volume backdoor deliberately constructed to blend in.
+    </p>
+    <div class="code-window">
+      <div class="code-window-bar">
+        <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+        <span class="filename">scanner_pattern.py (structure, see project/ for the full version)</span>
+      </div>
+      <pre><code>def flag_rare_phrase_label_correlation(records, min_support=3, min_lift=4.0):
+    """Flag any rare phrase that appears disproportionately often
+    alongside one specific outcome label, relative to that phrase's
+    overall base rate -- a real, if imperfect, signal for a planted
+    trigger-to-outcome association."""
+    phrase_counts, phrase_label_counts = count_phrase_occurrences(records)
+    flags = []
+    for phrase, count in phrase_counts.items():
+        if count < min_support:
+            continue  # too rare to compute a meaningful lift score
+        lift = compute_lift(phrase, phrase_label_counts, records)
+        if lift >= min_lift:
+            flags.append({"phrase": phrase, "support": count, "lift": lift})
+    return flags</code></pre>
+    </div>
+    <p>
+      <strong>An honest disclosure, following this course's established
+      practice even though this chapter's own content doesn't need a live
+      model:</strong> before writing this chapter, this session checked
+      Ollama's status directly — <code>ollama list</code> and
+      <code>curl http://localhost:11434/api/tags</code> both responded
+      normally this session, confirming <code>llama3.2:latest</code> is
+      pulled and the server is reachable. That check is recorded here for
+      completeness and consistency with Chapters 3&ndash;5's discipline, but
+      it has no bearing on this chapter's actual content: no lesson claim,
+      example, or project result in this chapter depends on a live model
+      call, so there is no live-vs-logical gap to disclose the way
+      Chapters 3&ndash;5 had to. Every synthetic example, every scanner
+      result, and every corpus-diff example in this chapter and its
+      project is produced by deterministic code operating on fabricated,
+      clearly-labeled data, and was actually executed this session — see
+      this chapter's quality audit for the itemized breakdown.
+    </p>
+    <p>
+      What the scanner illustrates, structurally: given a synthetic
+      200-record ticket set seeded with a deliberately small, 6-record
+      backdoor pattern (a rare phrase strongly correlated with one
+      outcome), a deliberately large, 40-record bias pattern (a broad,
+      moderate correlation spread across many records), and several small
+      clusters of purely coincidental "noise" phrases that happen, by
+      chance, to share the same support-and-lift profile as the real
+      backdoor, a real lift-based anomaly scan reliably surfaces the bias
+      pattern at a high-support threshold — its volume gives it a real
+      statistical footprint no matter how strict the threshold — while
+      catching the small backdoor pattern requires lowering that threshold
+      far enough that the coincidental noise phrases get flagged too,
+      scoring statistically indistinguishable from the real attack. The
+      scanner's own report literally cannot tell, from the lift number
+      alone, which flagged phrase is the planted backdoor and which are
+      harmless coincidences — exactly the honest limit Defense 2 names
+      above, made concrete and directly observable in the scanner's own
+      output rather than only asserted in prose.
+    </p>
+  </section>
+
+  <section id="thought-process" class="subtopic">
+    <h2>GenAI Builder Thought Process</h2>
+    <div class="thinking-box">
+      <p><strong>Problem:</strong> Meridian's security team, after learning
+      about the 46-ticket backdoor, proposes a fix: "add anomaly detection
+      to the training pipeline and re-run it before every future
+      fine-tune." Leadership treats this as closing the issue.</p>
+      <p><strong>Assumption being made:</strong> that adding one defense
+      layer (Defense 2) is equivalent to solving the problem class Category
+      1 represents — the same "we added a defense, ticket closed" shape
+      Chapter 5 named as the single-attempt trap, now recurring one module
+      later against a different attack surface.</p>
+      <p><strong>What actually distinguishes a real defensive posture:</strong>
+      this chapter's own Defense 2 section states plainly that anomaly
+      detection is weakest exactly where Category 1 backdoors are designed
+      to operate — low volume, high plausibility, blended into a much
+      larger legitimate dataset. A backdoor built by an attacker who has
+      read the same published research this chapter cites (which any
+      well-resourced attacker eventually will) is specifically constructed
+      to sit under whatever threshold a detector uses. A real posture
+      layers Defense 2 with Defense 1 (provenance, which narrows who can
+      even attempt an attack), Defense 3 (behavior auditing against a
+      deliberately wide, adversarial input distribution, which can surface
+      a trigger anomaly detection missed), and an explicit, honest
+      acceptance that residual risk remains — the same layered,
+      no-single-point-of-failure posture Chapter 5 built for prompt
+      injection, applied here to the data pipeline instead of the runtime
+      path.</p>
+      <p><strong>Why this matters as Module 3 opens:</strong> Modules 1
+      and 2 built the instinct to threat-model the runtime request path.
+      This chapter's entire point is that the request path is not the only
+      attack surface a real LLM system has — the data and training
+      pipeline is a separate, equally real surface, with its own separate
+      set of defenses, and treating "we hardened the runtime path" as
+      equivalent to "we secured the system" leaves this entire category
+      of risk completely unaddressed. Chapters 7 and 8 continue exactly
+      this direction: attacks on what the model's weights reveal
+      (extraction/theft) and on what the model and its dependencies were
+      actually built from (supply chain) — neither one is a runtime
+      request-path attack either.</p>
+      <p><strong>Working definition to carry forward:</strong> data
+      poisoning means an attacker shapes a model's future behavior by
+      influencing its training, fine-tuning, or retrieval-corpus data,
+      not its runtime inputs — via a narrow, triggered backdoor (Category
+      1), a broad quality/bias degradation (Category 2), or a corrupted
+      retrieval corpus (Category 3) — and defending against it means
+      pipeline-stage practices (provenance vetting, anomaly detection,
+      wide-distribution behavior auditing, corpus version-diffing), each
+      with a real, honestly-stated limit, layered together rather than
+      trusted individually.</p>
+    </div>
+  </section>
+
+  <section id="recap-points" class="subtopic">
+    <div class="points-to-remember">
+      <h2>Points To Remember</h2>
+      <ul>
+        <li>Data poisoning is a pipeline-stage attack, not a runtime one:
+        the attacker influences training, fine-tuning, or retrieval-corpus
+        data before the model or index is ever used, and the payoff is
+        persistent — every future use, not one session. This is a
+        genuinely different mechanism from every Module 2 attack, not
+        "injection during training."</li>
+        <li>Three real categories: targeted/backdoor poisoning (a small
+        number of examples creating one narrow, triggered behavior,
+        invisible to aggregate metrics — Meridian's 46-ticket backdoor);
+        availability/bias poisoning (a large volume of low-quality or
+        slanted data degrading overall quality or introducing a systematic
+        bias); RAG/retrieval corpus poisoning (compromising the corpus
+        itself before ingestion, so every future retrieval is affected —
+        distinct from Chapter 4's single-session indirect injection via
+        RAG, and distinct from Chapter 1's LLM08 retrieval-access-control
+        weaknesses).</li>
+        <li>Real, cited research confirms every category's danger:
+        Anthropic's Sleeper Agents (arXiv:2401.05566) showed backdoors
+        persist through standard safety training; the Anthropic/UK
+        AISI/Alan Turing Institute study (arXiv:2510.07192) showed as few
+        as 250 documents can backdoor models regardless of overall
+        training-set size; Carlini et al. (arXiv:2302.10149) showed
+        poisoning large, web-scale training corpora is practical and cheap.</li>
+        <li>Four real defenses, each with an honestly-stated limit: data
+        provenance/vetting (stops illegitimate sources, not an attacker
+        using the legitimate channel patiently); anomaly detection in
+        training data (catches broad Category 2 patterns better than
+        low-volume, deliberately-blended Category 1 backdoors); output/
+        behavior auditing after training (only surfaces triggers the audit
+        actually probes for, so it needs a deliberately wide distribution,
+        not just the held-out test set); provenance tracking for RAG
+        corpora (surfaces that a change happened, not automatically whether
+        the change is legitimate).</li>
+        <li>No combination of these defenses eliminates the risk against a
+        sufficiently patient, well-resourced attacker who uses only
+        legitimate channels and stays under detection thresholds — the
+        same honest, no-guarantee framing Chapter 5 held prompt-injection
+        defenses to, now applied to the data pipeline. Layering all four,
+        with a stated residual-risk posture, is the real, achievable goal.</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="what-is">
+    <span class="label">Interview questions (4 levels)</span>
+    Practice explaining this distinction and taxonomy out loud — see
+    <a href="interview-questions.html">Chapter 6 interview questions</a>,
+    covering beginner through architect level.
+  </div>
+
+  <div class="chapter-nav">
+    <a href="../../index.html">&larr; All Chapters</a>
+    <a href="quiz.html">Take the Quiz &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+    <span><a href="https://github.com/TechNaom/ai-security-for-everyone">github.com/TechNaom/ai-security-for-everyone</a></span>
+  </div>
+</footer>
+
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/chapters-data.js"></script>
+<script src="../../assets/sidebar.js"></script>
+</body>
+</html>

@@ -68,7 +68,8 @@ window.AISFE_MODULES = [
         id: "chapter-06",
         num: 6,
         title: "Data Poisoning",
-        description: "How training and fine-tuning data becomes an attack vector."
+        description: "How training and fine-tuning data becomes an attack vector.",
+        path: "chapters/chapter-06-data-poisoning/lesson.html"
       },
       {
         id: "chapter-07",
