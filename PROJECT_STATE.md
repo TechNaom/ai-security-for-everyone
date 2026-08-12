@@ -1,6 +1,6 @@
 # PROJECT_STATE.md — AI Security for Everyone
 
-Last updated: 2026-08-12
+Last updated: 2026-08-12 (Chapter 10 / Module 4 complete)
 
 ## Course Objective
 
@@ -317,11 +317,82 @@ original content only).
       the L1 project across Chapters 1-2. 8 exercises (5
       production-gear), 8 practice scenarios, 8 interview questions
       across all 4 levels.
+- [x] **Chapter 10 built and live — completes Module 4**: "Securing
+      Agentic Systems Against Adversarial Tool Output." `lesson.html`
+      (836 lines) was written by a prior session interrupted mid-build
+      by a rate limit; this session read it in full first, confirmed it
+      was complete, internally consistent, free of truncation/leftover
+      TODOs, and already had the interview-questions callout and footer
+      GitHub link, and built the rest of the chapter on top of it rather
+      than rewriting it. Completes what Chapter 1's Excessive Agency
+      (LLM06) section and Chapter 8's Category 3 both explicitly
+      deferred to "Module 4's future agentic-systems chapter": an
+      agent's runtime defense against an already-connected tool's
+      adversarial *result*, distinct from Chapter 8's adoption-time
+      trust decision to connect the tool at all. Hook: Ferngate
+      Logistics' Dispatch Copilot, where a partner carrier API's
+      free-text `delivery_notes` field carries a planted instruction
+      that nearly triggers an unauthorized `issue_reship_credit` call —
+      caught only by a dispatcher's personal habit, not the
+      architecture. Organizes tool-call risk by three round-trip moments
+      (result arrival, context assembly, action proposal) — deliberately
+      NOT a reuse of Chapter 9's pipeline-stage device, since a tool
+      call's request/response shape is genuinely different from a
+      pipeline's, with the reasoning stated explicitly in the lesson.
+      Six real defenses (two per moment: schema/type validation and
+      content sanitization at result arrival; structural separation and
+      field-level provenance tagging at context assembly; permission/
+      capability scoping and a human-in-the-loop least-privilege
+      backstop with sandboxed, rate-limited execution at action
+      proposal), grounded in real cited research independently verified
+      via live web search the prior session: OWASP LLM06:2025 (Excessive
+      Agency), the OWASP GenAI Security Project's Top 10 for Agentic
+      Applications (v1.0, December 2025 — ASI02 Tool Misuse, ASI03
+      Identity & Privilege Abuse), InjecAgent (arXiv:2403.02691, ACL 2024
+      Findings, 24% base attack-success rate against ReAct-prompted
+      GPT-4), and AgentDojo (arXiv:2406.13352, ~48% targeted
+      attack-success rate against GPT-4o across 629 test cases). Ollama's
+      `/api/tags` responded normally, `/api/chat` hung again (curl exit
+      code 28), same persistent issue as Chapters 3-5 and 9, disclosed
+      directly in the lesson text and re-confirmed in this chapter's own
+      audit's exact wording (not re-tested this session, per the task's
+      instruction to match the lesson's existing claim). Ships the
+      course's real, final **L3 Independent project**
+      (`chapters/chapter-10-.../project/`) — genuinely no-scaffold
+      (`starter.py` has zero `# TODO` markers, a complete runnable
+      vulnerable pipeline), extending Chapter 9's own Vesper Cloud
+      corpus (confirmed identical by direct diff this session) with a
+      new tool call, `check_partner_sync_diagnostic`, whose
+      `diagnostic_note` field can carry a planted instruction the same
+      way a RAG chunk can — a query that triggers both channels for the
+      incident account gets two independent nudges toward the same
+      unauthorized action, verified in real executed output.
+      `solution.py` is one valid reference fix (not a scored answer key)
+      combining Chapter 9's RAG defenses with this chapter's own six,
+      including a combined least-privilege backstop that inspects the
+      fully-assembled prompt regardless of which channel a phrase came
+      from — demonstrated via a simulated double-quarantine-bypass that
+      still resolves `DENIED`. 8 exercises (5 production-gear, new
+      scenario: Talbridge Health Network/Rounds Assistant), 8 practice
+      scenarios (8 new fictional orgs, none reused), 8 interview
+      questions across all 4 levels. **Module 4 (Chapters 9-10) is now
+      fully built and live.**
+- [x] **Module 4 exam decision: no separate written exam** — Module 4's
+      assessment type ("applied security-review exercise") is satisfied
+      almost verbatim by Chapter 10's own L3 project, which is framed
+      explicitly as a real internal security-review request (see
+      `project/README.md`), not a fill-in-the-blank exercise. Same
+      judgment call as Modules 1 and 3: the module's own project already
+      is the assessment type named in the curriculum map, so a separate
+      written exam would be redundant. `assets/chapters-data.js` leaves
+      Module 4's `examPath` as `null`, now a final decision (previously
+      deferred/shared with Chapter 9).
 
 ## Pending / Not Started
 
-(Updated 2026-08-12 — most items below from the original scaffold plan
-are now done; keeping this section current rather than stale.)
+(Updated 2026-08-12 (Chapter 10 complete) — most items below from the
+original scaffold plan are now done; keeping this section current
+rather than stale.)
 
 - [x] Push to GitHub, verify CI/Pages green — done since the initial
       scaffold, re-verified after every single chapter/doc push since.
@@ -333,18 +404,20 @@ are now done; keeping this section current rather than stale.)
       late in `ai-coding-agents-for-everyone`'s build, avoided here).
 - [x] Chapter 8 ("Supply-Chain Risk," Module 3) — completes Module 3.
 - [x] Chapter 9 ("Securing RAG Pipelines Against Injection," Module 4) —
-      starts Module 4. See "Next Recommended Task" below for the
-      Chapter 10 brief.
-- [ ] Chapters 10-13 (rest of Module 4, Modules 5-6) — not yet built.
-- [ ] Module 3's written exam (if warranted — pending the Module 3
-      assessment-type judgment call, see "Next Recommended Task").
+      starts Module 4.
+- [x] Chapter 10 ("Securing Agentic Systems Against Adversarial Tool
+      Output," Module 4) — completes Module 4, ships the L3 project. See
+      "Next Recommended Task" below for the Module 5 (Chapters 11-12)
+      brief.
+- [ ] Chapters 11-13 (Modules 5-6) — not yet built.
 - [ ] Capstone (Chapter 13).
 - [ ] Final polish pass once all 13 chapters exist.
 
 ## Known Issues
 
-- None yet — repo is freshly scaffolded, no chapter content written,
-  not yet pushed to GitHub.
+- None. All local checks (`scripts/local_check.sh`) pass as of Chapter
+  10; CI and GitHub Pages verified green on real runners after every
+  chapter push through Chapter 10.
 
 ## Open Decisions
 
@@ -368,62 +441,153 @@ writing).
 
 ## Next Recommended Task
 
-**Chapter 9 ("Securing RAG Pipelines Against Injection," Module 4,
-Advanced) is complete and live, starting Module 4.** Next: Chapter 10
-("Securing Agentic Systems Against Adversarial Tool Output," Module 4,
-Advanced) — completes Module 4 AND ships the course's real L3
-Independent project ("find and fix a real injection vector in a
-provided RAG pipeline or agent, no scaffold") per
-`docs/curriculum/CURRICULUM_MAP.md`'s Projects section. This is the
-one this course has been previewing since Chapter 9's own project was
-explicitly framed as real-but-not-final.
+**Chapter 10 ("Securing Agentic Systems Against Adversarial Tool
+Output," Module 4, Advanced) is complete and live — Module 4 (Chapters
+9-10) is fully built, and the course's real, final L3 Independent
+project has shipped.** Next: **Module 5 — Chapters 11 ("Red-Teaming an
+LLM System: Methodology and Practice") and 12 ("Handling LLM Output
+Safely: PII and Downstream Injection Risk").**
 
-**What Chapter 10 needs to do, concretely:**
+### Module 5's full curriculum-map text (`docs/curriculum/CURRICULUM_MAP.md`)
 
-1. Deepen what Chapter 1's Excessive Agency (LLM06) section and Module
-   3's tool-trust material (Chapter 8's Category 3, specifically scoped
-   away from runtime tool-output defenses at the time) only touched —
-   an agent's runtime defenses against an adversarial tool *result*,
-   distinct from Chapter 8's adoption-time trust decision to connect a
-   tool in the first place. Chapter 8's lesson text itself already
-   drew this exact line ("Module 4's future agentic-systems chapter
-   will cover an agent's runtime defenses against an adversarial tool
-   result... This category [Ch8's Category 3] is about the decision
-   made before either of those defenses ever gets a chance to run") —
-   read that section before writing Chapter 10 to avoid re-deriving or
-   contradicting it.
-2. **Build directly on Chapter 9's Vesper Cloud RAG lab, don't start a
-   new pipeline from scratch.** Chapter 9's project (`chapters/
-   chapter-09-securing-rag-pipelines-against-injection/project/`)
-   ships a working, tested RAG pipeline (naive + six-defense-secured)
-   for Vesper Assistant. Chapter 10's real L3 project should extend
-   that exact pipeline with an agentic/tool-output angle — e.g., give
-   Vesper Assistant a tool call (an account-lookup or ticket-update
-   API) whose *returned result* can itself carry an adversarial
-   instruction, the same way a retrieved RAG chunk can, and require the
-   learner to find and fix an injection vector spanning BOTH channels
-   (a poisoned retrieved chunk AND a poisoned tool result) with no
-   scaffold — genuinely combining Chapter 9's RAG depth with Chapter
-   10's own agentic depth, not just two separate labs bolted together.
-3. Check Ollama status fresh at the start of that session (don't assume
-   Chapter 9's `curl` result — it was `/api/tags` OK, `/api/chat` hung,
-   exit code 28) and follow the same honest-disclosure discipline as
-   every prior chapter that hit this if it's still hanging.
-4. A new fictional org for Chapter 10's own lesson hook, distinct from
-   every org already used across Chapters 1-9 (GreenCart, Waypoint,
+> ### Module 5 — Red-Teaming & Output Handling
+> **Purpose:** the practitioner half — running a real red-team exercise
+> and handling what an LLM outputs safely.
+> **Prerequisites:** Module 4
+> **Outcomes:** run a structured red-team methodology against a target
+> system; handle LLM output safely (PII leakage, downstream
+> injection risk in generated content).
+> **Chapters:** 11, 12
+> **Labs:** a full red-team exercise against a provided target, with a
+> real findings report
+> **Assessment:** red-team report graded against a rubric
+
+Chapter roadmap entries:
+- **Chapter 11** — "Red-Teaming an LLM System: Methodology and
+  Practice," Module 5, Advanced. Description: "A structured red-team
+  exercise against a real target, with a findings report."
+- **Chapter 12** — "Handling LLM Output Safely: PII and Downstream
+  Injection Risk," Module 5, Advanced. Description: "What a model
+  outputs can itself be an attack vector."
+
+Cross-course links relevant to Module 5 (from CURRICULUM_MAP.md's
+"Cross-Course Links" section): builds on `mcp-for-everyone` Module 5
+(permission scoping, sandboxing, prompt injection via tool output) and
+`ai-coding-agents-for-everyone` Chapter 11 (agent sandboxing,
+permissions, destructive commands) as soft prerequisites — this course
+deepens both rather than re-teaching them; link back, don't duplicate.
+
+### What makes Module 5 genuinely different from what's come before
+
+This is the first module whose **assessment type is explicitly a graded
+artifact, not a project or exam** — "red-team report graded against a
+rubric." That's a new deliverable shape for this course: Chapters 1-10
+each shipped a project/lab plus exercises/practice/interview content;
+Module 5's own outcome requires producing a genuine findings report as
+the primary artifact, which changes what "the project" looks like for
+Chapter 11 specifically (a rubric-graded report structure, not just a
+find-and-fix Python lab) and probably needs its own rubric document
+somewhere in `assessments/` or the chapter's own `project/` folder —
+worth deciding explicitly, the same kind of judgment call this course
+made for each module's exam/project balance so far (documented per-
+module in the "Completed" section above).
+
+### Chapter 11 build notes
+
+1. **Red-teaming methodology, not attack techniques re-taught.**
+   Chapters 3-5 (Module 2) already built direct/indirect injection and
+   jailbreak *technique* depth; Chapter 6 built data-poisoning depth;
+   Chapter 7 built extraction depth. Chapter 11 should NOT re-derive any
+   of those attack mechanisms — it should teach the *process* of running
+   a structured red-team exercise: scoping, threat-informed test-case
+   design drawing on this course's own prior chapters' taxonomies,
+   execution discipline, and — critically — how to write up findings in
+   a way a real security or engineering team could act on. This is the
+   same "process/methodology chapter building on established mechanism"
+   pattern Chapter 2 used for attack-surface mapping and Chapter 5 used
+   for defense evaluation — both are worth re-reading before writing
+   Chapter 11.
+2. **Real, cited methodology sources exist and should be verified live**,
+   the same discipline every prior chapter followed: OWASP has red-
+   teaming-adjacent guidance (check the OWASP GenAI Security Project's
+   current publications, not just the LLM Top 10, since a dedicated
+   red-teaming guide or checklist may exist or have been updated);
+   NIST's AI Risk Management Framework has red-teaming provisions worth
+   checking; Anthropic, OpenAI, and Microsoft have all published red-
+   teaming methodology writeups worth checking for current, citable
+   process guidance (not attack payloads) — verify all of this via live
+   search before writing, since some of it may postdate training-data
+   cutoff.
+3. **Project must produce a real findings report against a provided
+   target**, per the module's own "Labs" line. Consider whether the
+   target should be a fresh, self-contained system (new fictional org)
+   or whether it should deliberately red-team one of this course's own
+   prior labs (e.g., an intentionally-not-fully-hardened variant of an
+   earlier chapter's pipeline) — either is defensible, but the choice
+   should be stated and justified explicitly in the lesson, the same way
+   Chapter 9 and Chapter 10 each justified their own structural framing
+   choice in the lesson text itself.
+4. New fictional org for Chapter 11's own lesson hook, distinct from
+   every org already used across Chapters 1-10 (GreenCart, Waypoint,
    AskHR, Anchorline, Northline Digest, Meridian, Halcyon, Solstice,
-   Coppervale, Vesper Cloud, Thornbury Legal, and the eight Chapter 9
-   practice-bank orgs) — though the L3 project itself should stay on
-   Vesper Cloud, per point 2 above, since it's explicitly extending
-   Chapter 9's own lab.
-5. After Chapter 10, decide whether Module 4 needs a separate written
-   exam (`assessments/written-exams/module-4-exam.*`) or whether the
-   L3 project satisfies the assessment type the way Chapters 1-2's and
-   6-8's projects did for Modules 1 and 3 — Module 4's `examPath` is
-   currently `null` in `assets/chapters-data.js`, left that way
-   deliberately since it's shared between Chapters 9-10.
+   Coppervale, Vesper Cloud, Thornbury Legal, Ferngate Logistics,
+   Talbridge Health Network, Chapter 9's eight practice-bank orgs, and
+   Chapter 10's eight practice-bank orgs: Pemberton Insurance Group,
+   Kestrel Robotics, Fairhaven School District, Journeywell Travel,
+   Brightloom Retail, Oakstead Manufacturing, Silverline Broadcasting,
+   Cascade Ridge Outfitters).
+5. Check Ollama status fresh at the start of that session (don't assume
+   Chapter 9/10's `curl` result — it was `/api/tags` OK, `/api/chat`
+   hung, exit code 28) and follow the same honest-disclosure discipline
+   as every prior chapter that hit this if it's still hanging. A
+   red-teaming chapter is exactly the kind of chapter that would
+   *benefit* most from a live model if the hang has resolved — worth
+   testing directly rather than assuming it's still broken.
 
-Then Module 5 (Chapters 11-12: red-teaming, output handling), then
-Chapter 13 (capstone). Continue module by module, validating each with
-a `quality-audits/chapter-0N-audit.md` before moving on. Don't
-mass-generate ahead of validation.
+### Chapter 12 build notes
+
+1. **"Handling LLM output safely" is a genuinely different risk
+   direction from everything Chapters 1-11 covered** — this course has
+   so far focused almost entirely on untrusted *input* reaching the
+   model (direct/indirect injection, RAG chunks, tool output). Chapter
+   12 is about the *output* side: what the model generates becoming a
+   downstream attack vector (e.g., generated content containing an
+   unescaped payload that executes when rendered elsewhere, PII leakage
+   in generated text, generated content that itself carries a planted
+   instruction for whatever system consumes the model's output next).
+   Chapter 1 already named Improper Output Handling (LLM05) as one of
+   its three deep-dive categories and flagged it as "Chapter 12 builds a
+   full chapter on exactly this" — read that section before writing
+   Chapter 12, the same "read what an earlier chapter deferred to you"
+   discipline Chapter 10 followed for Chapter 1/Chapter 8.
+2. PII handling needs its own real, cited grounding — check current
+   OWASP guidance (LLM02:2025 Sensitive Information Disclosure is the
+   input-side entry; verify whether there's output-specific guidance
+   too), and consider whether real regulatory framing (GDPR, CCPA) is
+   worth a brief, appropriately-scoped mention — this course's
+   curriculum map explicitly defers deep compliance/regulatory framing
+   to a future `AI Governance for Everyone` course, so keep any
+   regulatory mention brief and technical-practitioner-focused, not a
+   compliance deep dive.
+3. "Downstream injection risk in generated content" is the more novel
+   half — a model's own output being consumed by another system (a
+   rendered webpage, another agent, a downstream API) and carrying an
+   injection payload FROM the model's generation, not TO it. This is
+   architecturally the mirror image of everything Modules 2 and 4
+   covered (untrusted input reaching the model) — worth naming that
+   inversion explicitly in the lesson, the way Chapter 7 named its own
+   "attacker touches neither the model nor its training data" inversion
+   relative to Chapters 3-6.
+4. This chapter closes Module 5, so its project (or Chapter 11's, if the
+   module's single red-team-report deliverable spans both chapters —
+   decide and state this explicitly) should account for Module 5's
+   "red-team report graded against a rubric" assessment type.
+5. New fictional org, distinct from every org listed in the Chapter 11
+   notes above plus whatever Chapter 11 adds.
+
+Then Chapter 13 (capstone, Module 6, architect-level, per
+CURRICULUM_MAP.md: "design and defend a security architecture for a
+realistic LLM system, with real trade-off reasoning," assessed by "a
+capstone rubric — architecture challenge, Level 4"). Continue module by
+module, validating each with a `quality-audits/chapter-0N-audit.md`
+before moving on. Don't mass-generate ahead of validation.
