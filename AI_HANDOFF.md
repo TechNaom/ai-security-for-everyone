@@ -96,30 +96,36 @@ payloads.
 
 ## Current task
 
-**Chapters 6-7 (data poisoning, model extraction) are done and live**
-— both confirmed no live-model dependency needed. Build Chapter 8
-("Supply-Chain Risk: Weights, Dependencies, and Provenance," Module 3,
-Advanced) next — completes Module 3. Read Chapters 6-7 fully first,
-including their comparison-table pattern (each extended the prior
-chapter's table by one column) — decide whether Chapter 8 should
-extend it again or whether supply-chain risk is different enough in
-kind to warrant its own framing device. Chapter 1's LLM03 (Supply
-Chain) briefly named this — build on it. Research current, real
-supply-chain security practice/incidents in the ML ecosystem via web
-search before writing — don't work from stale memory. Likely
-conceptual, matching Chapters 6-7, but check Ollama status regardless
-for consistency.
+**Chapters 1-8 (Modules 1-3) are done and live, plus the Module 2
+written exam.** Module 3 confirmed not needing a separate written exam
+— same judgment call as Module 1 (satisfied by the chapters' own
+exercises/project). Build Chapter 9 ("Securing RAG Pipelines Against
+Injection," Module 4, Advanced) next. Per CURRICULUM_MAP.md, Module
+4's purpose is applying this course's depth to the two system shapes
+most real LLM products actually take — this is a RETURN to runtime
+attacks (Module 2's territory), not a new pipeline-surface chapter
+like Module 3 was. Read Chapter 4 (indirect injection, which already
+covered RAG as one of five delivery channels) first — Chapter 9 should
+go DEEPER on RAG-specific injection defense than Chapter 4's brief
+mention did. Chapter 9's own project should be a real, substantial
+RAG-specific lab (finding/fixing a RAG-corpus injection vector) but
+should NOT be the final L3 deliverable. Check Ollama status before
+writing — RAG-injection content may plausibly want a live-model
+demonstration, unlike Module 3's chapters — and follow the same
+honest-disclosure discipline as every Module 2 chapter if it's still
+hanging.
 
 ## Next task after that
 
-Continue through Module 3 (Chapters 6-8), checking whether its
-"concept + risk-assessment exercise" assessment type (per
-CURRICULUM_MAP.md) needs a separate written exam or is satisfied by
-the chapters' own exercises/project (a judgment call, similar to how
-Module 1 didn't need one). Then Module 4 (Chapters 9-10: securing RAG
-and agentic systems). Continue module by module, validating each with
-a `quality-audits/chapter-0N-audit.md` before moving on. Don't
-mass-generate ahead of validation.
+Chapter 10 ("Securing Agentic Systems Against Adversarial Tool
+Output," Module 4, Advanced) — completes Module 4 and ships the real
+L3 Independent project ("find and fix a real injection vector in a
+provided RAG pipeline or agent, no scaffold"), per
+CURRICULUM_MAP.md's Projects section — this ships after Chapter 10,
+not Chapter 9. Then Module 5 (Chapters 11-12: red-teaming, output
+handling), then Chapter 13 (capstone). Continue module by module,
+validating each with a `quality-audits/chapter-0N-audit.md` before
+moving on. Don't mass-generate ahead of validation.
 
 ## Important architectural decisions (see PROJECT_STATE.md for full detail)
 

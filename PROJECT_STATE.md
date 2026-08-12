@@ -237,6 +237,38 @@ original content only).
       legitimate power user scored only ~10 points below a real
       extraction campaign). 8 exercises (5 production-gear), 8 practice
       scenarios, 8 interview questions across all 4 levels.
+- [x] **Chapter 8 built and live — completes Module 3**: "Supply-Chain
+      Risk: Weights, Dependencies, and Provenance." Deliberately breaks
+      Chapters 6-7's comparison-table pattern, with the reasoning
+      stated directly in the lesson: supply-chain risk usually has no
+      discrete attacker action against your system at all — it's a
+      trust decision made at adoption time, upstream of everything
+      else. Uses a lifecycle timeline instead (supply chain ->
+      poisoning -> injection -> extraction). Hook: Solstice Diagnostics'
+      TriageAssist, where three individually reasonable deadline-driven
+      decisions (an unvetted community adapter, default pickle-based
+      loading, an unvetted third-party vendor) each turn out to be live
+      liabilities nobody attacked, just inherited. Three categories
+      (compromised/backdoored weights, malicious/vulnerable ML-toolchain
+      dependencies, excessive trust in third-party tools at adoption
+      time), grounded in real current research (JFrog's 2024 pickle-
+      backdoor disclosure, Sonatype's 2025 PickleScan bypass findings,
+      Kellas et al.'s PickleBall paper — ACM CCS 2025, arXiv:2508.15987
+      — Mend.io's 2024 PyPI typosquatting campaign, the December 2024
+      ultralytics compromise, Safetensors, SLSA, Spoczynski et al.'s
+      Atlas framework — arXiv:2502.19567). Four defenses. Ships a
+      self-contained provenance/integrity checker project. 8 exercises
+      (5 production-gear), 8 practice scenarios, 8 interview questions
+      across all 4 levels. **Module 3 (Chapters 6-8) is now fully built
+      and live.**
+- [x] **Module 3 exam decision: no separate written exam** — Module
+      3's assessment type ("concept + risk-assessment exercise")
+      mirrors Module 1's phrasing exactly, and Module 1 didn't need a
+      separate exam (its L1 project satisfied it). Chapters 6-8 already
+      shipped substantial risk-assessment-style project tools (a
+      corpus-anomaly scanner, a query-pattern scorer, a provenance
+      checker) that collectively satisfy this assessment type. Same
+      judgment call as Module 1, applied consistently.
 
 ## Pending / Not Started
 
@@ -286,33 +318,36 @@ writing).
 
 ## Next Recommended Task
 
-**Chapter 7 is done** — also confirmed no live-model dependency
-needed. Next: Chapter 8 ("Supply-Chain Risk: Weights, Dependencies,
-and Provenance," Module 3, Advanced) — completes Module 3. Read
-Chapters 6-7 fully first for the module's established framing
-(pipeline/model-surface attacks, not Module 2's runtime attacks) and
-its three-way comparison table pattern (Chapter 7 extended Chapter 6's
-two-way table to three ways — consider whether Chapter 8 needs its own
-extension, or whether supply-chain risk is different enough in kind
-that a comparison table isn't the right device this time; use
-judgment, don't force the pattern if it doesn't fit). Chapter 1's
-LLM03 (Supply Chain) section already briefly named this — build on it,
-don't re-derive. Cover real supply-chain risk categories: compromised/
-backdoored pretrained model weights pulled from public hubs, malicious
-or vulnerable dependencies in the ML toolchain itself, third-party
-plugins/tools with excessive trust, and the practical question of how
-an organization actually verifies provenance (checksums, signed
-model cards, vetted internal registries) before trusting an external
-model or component in production. Research real, current supply-chain
-security guidance/incidents in the ML ecosystem via web search — don't
-assume from stale memory. Likely conceptual, no live-model dependency,
-matching Chapters 6-7's pattern — but check Ollama status regardless,
-for consistency, and don't force a live-model example if the content
-doesn't need one.
+**Modules 1-3 (Chapters 1-8, the Module 2 written exam) are complete;
+Module 3 confirmed not needing a separate written exam (same judgment
+as Module 1).** Next: Module 4 — Chapter 9 ("Securing RAG Pipelines
+Against Injection," Advanced), then Chapter 10 ("Securing Agentic
+Systems Against Adversarial Tool Output," Advanced). Per
+CURRICULUM_MAP.md, Module 4's purpose is applying this course's depth
+to the two system shapes most real LLM products actually take — this
+is a RETURN to runtime attacks (Module 2's territory), not a new
+pipeline-surface chapter like Module 3 was. Read Chapter 4 (indirect
+injection, which already covered RAG as one of five delivery channels)
+and Chapter 9 of `ai-coding-agents-for-everyone` (a SIBLING course
+covering MCP/agentic tool connection — structural reference only, not
+content) if useful for grounding, but Chapter 9 here should go DEEPER
+on RAG-specific injection defense than Chapter 4's brief channel
+mention did — this is the payoff chapter for that specific delivery
+channel. Chapter 10 similarly deepens what Chapter 1's Excessive
+Agency (LLM06) section and Module 3's tool-trust material touched.
 
-After Chapter 8, decide whether Module 3 needs a separate written exam
-— its assessment type per CURRICULUM_MAP.md is "concept +
-risk-assessment exercise," which may already be satisfied by the three
-chapters' own exercises/projects (a judgment call, similar to how
-Module 1 didn't need a separate exam). Then Module 4 (Chapters 9-10:
-securing RAG and agentic systems specifically) is next.
+**Important**: Module 4's L3 Independent project ("find and fix a real
+injection vector in a provided RAG pipeline or agent, no scaffold")
+ships after CHAPTER 10, not Chapter 9 — per
+`docs/curriculum/CURRICULUM_MAP.md`'s Projects section. Chapter 9's own
+project should be a real, substantial RAG-specific lab (finding/fixing
+a RAG-corpus injection vector) but should NOT be the final L3
+deliverable — that combines both RAG and agentic/tool-output angles
+and belongs in Chapter 10. Follow the same "short preview, real
+project ships in the next chapter" pattern this course used for the L1
+project across Chapters 1-2.
+
+Check Ollama status before writing (RAG-injection content may
+plausibly want a live-model demonstration, unlike Module 3's chapters
+— use judgment, and if attempted, follow the same honest-disclosure
+discipline as every Module 2 chapter if it's still hanging).
