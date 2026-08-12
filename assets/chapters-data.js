@@ -82,7 +82,8 @@ window.AISFE_MODULES = [
         id: "chapter-08",
         num: 8,
         title: "Supply-Chain Risk: Weights, Dependencies, and Provenance",
-        description: "Trusting what you didn't train yourself."
+        description: "Trusting what you didn't train yourself.",
+        path: "chapters/chapter-08-supply-chain-risk-weights-dependencies-and-provenance/lesson.html"
       }
     ]
   },

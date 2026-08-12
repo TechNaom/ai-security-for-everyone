@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Supply-Chain Risk: Weights, Dependencies, and Provenance — AI Security for Everyone</title>
+<meta name="description" content="What you trusted before you ever deployed anything: the base model, fine-tuned adapters, embedding models, the ML framework stack, and third-party plugins/tools your LLM system depends on. Compromised weights, vulnerable ML-toolchain dependencies, and excessive trust in third-party tools, each with real cited research (JFrog, Mend.io, PickleBall, Atlas, SLSA), paired with real, working defenses. Completes Module 3.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-08">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../index.html">All Chapters</a>
+      <a href="../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="../../index.html">&larr; Back to all chapters</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 8</span>
+    <span class="badge-difficulty">Advanced</span>
+    <span class="reading-time">~40 min</span>
+  </div>
+
+  <h1>Supply-Chain Risk: Weights, Dependencies, and Provenance</h1>
+  <p class="lede">
+    Chapters 6 and 7 both assumed a target: a model your organization
+    actually trained (Chapter 6) or actually deployed and serves through
+    an API (Chapter 7), and an attacker doing something <em>to</em> it —
+    planting poisoned examples, querying it systematically. This chapter
+    asks a question that comes <em>before</em> either of those: where did
+    the model, its weights, its libraries, and everything it talks to
+    actually come from, and did anyone check? Chapter 1 named this in one
+    paragraph as OWASP's LLM03:2025, Supply Chain: <em>"pulling a
+    community fine-tuned model or a third-party embedding model from a
+    public hub without verifying its provenance, and later discovering it
+    was fine-tuned to behave normally except under a specific trigger
+    phrase."</em> This chapter is that paragraph, built out to real depth
+    — completing Module 3 with the risk that sits earliest in an LLM
+    system's entire lifecycle: not what an attacker does to your model or
+    pipeline, but what you agreed to trust before either one existed.
+  </p>
+
+  <nav class="page-toc" aria-label="On this page">
+    <span class="toc-label">On this page</span>
+    <a href="#hook">1. Solstice Diagnostics' TriageAssist</a>
+    <a href="#what-is-it">2. What supply-chain risk actually is — and why this chapter isn't a fourth comparison column</a>
+    <a href="#categories">3. Three real risk categories</a>
+    <a href="#research">4. What the real, cited research shows</a>
+    <a href="#defenses">5. Four real defenses</a>
+    <a href="#lab">6. Hands-on lab: a provenance and integrity checker</a>
+    <a href="#thought-process">7. GenAI Builder Thought Process</a>
+    <a href="#recap-points">8. Points to remember — and Module 3, complete</a>
+  </nav>
+
+  <div class="hook" id="hook">
+    <p>
+      <strong>Solstice Diagnostics</strong> is a fictional telehealth
+      startup. Its flagship feature, <strong>TriageAssist</strong>, is a
+      symptom-intake chatbot: a patient describes what's wrong, and
+      TriageAssist drafts a preliminary triage note and urgency flag for
+      a human nurse to review before any care decision is made. Solstice
+      had six weeks to ship it. Under that deadline, three separate,
+      individually reasonable-sounding engineering decisions got made —
+      none of them malicious, none of them even unusual by the standards
+      of a normal fast-moving team:
+    </p>
+    <p>
+      First, rather than fine-tuning a symptom-classification model from
+      scratch, an ML engineer found a community-published adapter on a
+      public model hub, already fine-tuned for exactly this task and
+      scoring well on a public benchmark. It was pulled and deployed the
+      same afternoon it was found — no one checked who published it,
+      whether its listed training data matched what it actually did, or
+      whether anyone else had reviewed it. Second, to get the adapter
+      loading quickly in the inference service, the team used the
+      framework's default checkpoint-loading call — the same one every
+      tutorial they'd ever followed used — without checking what file
+      format the adapter actually shipped in or what that format is
+      capable of doing when a file is opened. Third, to satisfy a
+      last-minute product request ("warn the nurse about drug
+      interactions"), the team wired TriageAssist to a third-party
+      drug-interaction-lookup tool from a small vendor, integrated over
+      an afternoon, because it was the first result that worked in a demo
+      and the vendor's own security practices were never actually asked
+      about.
+    </p>
+    <p>
+      None of these three decisions individually looked like a security
+      incident. Each one looked like exactly what shipping fast on a
+      real deadline looks like. Three months later, a security review —
+      prompted by nothing more dramatic than a routine annual audit —
+      found all three had real, live consequences: the community adapter
+      contained a narrow, planted behavior that suppressed urgency
+      flagging whenever a specific, rare phrasing appeared in a symptom
+      description (the exact mechanism Chapter 1 named for LLM03, now at
+      full resolution); the checkpoint-loading call had, for three
+      months, been one dependency update away from executing arbitrary
+      code from any tampered file that made it into that same file path,
+      because the format it used allows exactly that, by design; and the
+      drug-interaction vendor had no meaningful security practices at
+      all — a fact Solstice only learned by asking, after the fact, a
+      question it should have asked before the integration existed. This
+      chapter is about exactly this shape of risk: not a system being
+      attacked, but a system built from parts nobody checked.
+    </p>
+  </div>
+
+  <section id="what-is-it" class="subtopic">
+    <h2>What Supply-Chain Risk Actually Is — And Why This Chapter Isn't a Fourth Comparison Column</h2>
+    <div class="what-is">
+      <span class="label">What is... supply-chain risk for an LLM system?</span>
+      An LLM-powered application has a real, expanded dependency graph
+      that a traditional web application mostly doesn't: the base model
+      itself (whose full training process you almost certainly did not
+      audit), any fine-tuning or adapter weights pulled from a public
+      hub, embedding models used for retrieval, the ML framework and
+      library stack that loads and runs all of it, and any third-party
+      plugins, tools, or MCP servers the system connects to at runtime.
+      Supply-chain risk is the possibility that any node in that graph
+      was tampered with, is malicious, or is simply unsafe by
+      construction — <strong>before you ever wrote a line of your own
+      application code</strong>, and often before your organization ever
+      decided to use it.
+    </div>
+    <p>
+      Chapters 6 and 7 both opened with a table extending the previous
+      chapter's own comparison table by one more column — Chapter 6
+      distinguished data poisoning from Module 2's prompt injection;
+      Chapter 7 added model extraction as a third column against both.
+      It's worth explaining, directly, why this chapter does <em>not</em>
+      extend that table to a fourth column, rather than silently doing
+      something different.
+    </p>
+    <p>
+      Every one of those three columns shared a structural feature: a
+      specific attacker takes a specific action against a system your
+      organization already built and controls — sending manipulated
+      tokens into a live session (Module 2), planting examples into data
+      you chose to train on (Chapter 6), querying an API you chose to
+      expose (Chapter 7). Each row in that table answered "what does the
+      attacker do to <em>our</em> system." Supply-chain risk doesn't fit
+      that shape cleanly, because there often isn't a discrete attacker
+      action against your system at all. In Solstice's story, no one
+      attacked TriageAssist. The community adapter was tampered with —
+      if it was deliberately tampered with at all, rather than simply
+      trained carelessly on bad data — by someone unrelated to Solstice,
+      at some earlier point, for reasons that may have had nothing to do
+      with Solstice specifically. The pickle-based loading path wasn't
+      exploited by anyone during those three months; it was a live
+      liability the entire time regardless of whether anyone ever used
+      it. The drug-interaction vendor's weak security posture wasn't an
+      attack either — it was a pre-existing condition Solstice inherited
+      the moment it chose that vendor. The common thread across all three
+      isn't "what did an attacker do," it's <strong>"what did we agree to
+      trust, and did we ever check."</strong>
+    </p>
+    <p>
+      That's a real, substantive difference in kind, not just packaging
+      — which is why this chapter uses a different framing device: not a
+      wider version of Chapters 6&ndash;7's attacker-action table, but a
+      <strong>lifecycle timeline</strong> that places all four of this
+      course's Module-2-and-3 attack surfaces on one line, ordered by
+      when the risk actually enters the system. This does the same job
+      the earlier tables did — holding each surface's vocabulary next to
+      the others so the distinctions stay sharp — while being honest
+      that supply-chain risk is chronologically and causally
+      <em>upstream</em> of everything else this course has covered so
+      far, not a peer category sitting beside it.
+    </p>
+    <table class="lesson-table">
+      <thead>
+        <tr><th>Stage in the lifecycle</th><th>Attack surface (where)</th><th>What actually happens</th><th>What you trusted</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Before you build anything</strong></td><td>Supply chain (this chapter)</td><td>An artifact — model weights, a library, a plugin — is tampered with, malicious, or unsafe by construction, upstream of your own code, possibly before your organization even exists as a customer of it</td><td>The artifact's origin and integrity — a trust decision made once, often silently, at adoption time</td></tr>
+        <tr><td><strong>While training or fine-tuning</strong></td><td>Data poisoning (Chapter 6)</td><td>An attacker influences data you deliberately chose to train, fine-tune, or index from</td><td>Your own data sources and the review process that let examples in</td></tr>
+        <tr><td><strong>Every live request</strong></td><td>Prompt injection (Module 2)</td><td>An attacker manipulates tokens inside one live conversation's context window</td><td>The (nonexistent) architectural separation between instructions and data</td></tr>
+        <tr><td><strong>After deployment, via ordinary use</strong></td><td>Model extraction (Chapter 7)</td><td>An attacker queries a deployed model at volume and reconstructs something valuable from ordinary responses</td><td>The assumption that ordinary, designed-for use couldn't be weaponized at scale</td></tr>
+      </tbody>
+    </table>
+    <p>
+      Reading the table this way makes the connection back to Chapters
+      6&ndash;7's own vocabulary explicit rather than assumed: supply-chain
+      risk is a genuine <strong>precursor</strong> to Chapter 6's
+      pipeline-stage attacks and to every trust assumption Chapters
+      1&ndash;7 quietly made about "the model" being a known, audited
+      quantity in the first place. If the community adapter Solstice
+      pulled had already been backdoored by whoever trained and published
+      it, no amount of Chapter 6's data-provenance vetting on
+      <em>Solstice's own</em> fine-tuning data would ever catch it —
+      Solstice never trained anything; it inherited someone else's
+      already-poisoned artifact, fully formed, with Chapter 6's entire
+      defense surface (vetting what goes <em>into</em> a training run)
+      never coming into play at all. That's the precise, sharp
+      distinction this chapter needs to draw before going further: this
+      isn't "data poisoning but the poisoning happened somewhere else" —
+      it's a genuinely separate failure mode, because the persistent,
+      structural change Chapter 6 described (the model's weights
+      themselves change, permanently, until retrained) can arrive
+      already-built, with no training step of your own anywhere in the
+      story for any of Chapter 6's defenses to attach to.
+    </p>
+  </section>
+
+  <section id="categories" class="subtopic">
+    <h2>Three Real Risk Categories</h2>
+    <p>
+      Solstice's three decisions map onto three genuinely different
+      supply-chain risk categories, each with a different mechanism, a
+      different point of failure, and a different real-world example.
+    </p>
+
+    <div class="lesson-card">
+      <h3>Category 1 — Compromised or Backdoored Pretrained/Fine-Tuned Weights</h3>
+      <p>
+        <strong>Mechanism:</strong> a model or adapter published to a
+        public hub was deliberately backdoored, or trained on tampered
+        data, by whoever built and published it — and you downloaded and
+        deployed it without any independent verification that its
+        behavior matches what it claims to do. This is the exact
+        mechanism Chapter 1's LLM03 paragraph named, and it's worth
+        stating the distinction from Chapter 6 as precisely as the
+        timeline above implies: Chapter 6's Meridian scenario is a
+        company poisoning <em>its own</em> training data, through its
+        <em>own</em> intake process, using data it chose to trust. This
+        category is different in a way that matters for defense design —
+        <strong>you never trained anything at all</strong>. There is no
+        data-provenance step in your own pipeline to strengthen, because
+        the weights arrived already formed, already trained, already
+        potentially backdoored, from an organization or individual you
+        may know nothing about beyond a username on a hub.
+      </p>
+      <p>
+        <strong>Example:</strong> Solstice's community-published
+        symptom-classification adapter, above — a rare, specific phrasing
+        pattern in a symptom description reliably suppressed the
+        urgency-flag output, regardless of the actual clinical content,
+        exactly the "behaves normally except under a specific trigger
+        phrase" mechanism Chapter 1 named. Whether this was planted
+        deliberately by the publisher or was an artifact of careless or
+        adversarial training data the publisher themselves never audited
+        is, from Solstice's position, unknowable and — for defense
+        purposes — beside the point: either way, Solstice deployed it
+        without any check that would have caught it either way.
+      </p>
+      <p>
+        <strong>Why it's dangerous:</strong> a publicly hosted model with
+        a good benchmark score and a plausible-looking model card carries
+        an implicit, unearned credibility — nothing about a hub listing
+        distinguishes "trained carefully by a reputable lab and
+        independently reviewed" from "trained by an anonymous account
+        with no verifiable history, on data no one has ever inspected."
+        The same asymmetry Chapter 6's Sleeper Agents research described
+        for a company's own training data — a small, surgical change
+        producing narrow, hard-to-detect behavior — applies with equal or
+        greater force here, because the downstream adopter has
+        <em>zero</em> visibility into the training process at all, not
+        even the limited visibility a company has into its own intake
+        pipeline.
+      </p>
+    </div>
+
+    <div class="lesson-card">
+      <h3>Category 2 — Malicious or Vulnerable Dependencies in the ML Toolchain</h3>
+      <p>
+        <strong>Mechanism:</strong> this is a real, well-documented,
+        traditional software-supply-chain risk class that applies with
+        full force to the ML ecosystem specifically, for two distinct
+        reasons: (a) the Python/JavaScript package ecosystems ML teams
+        depend on (PyPI, npm) are targeted by the same malicious-package,
+        typosquatting, and compromised-maintainer attacks that target any
+        software supply chain, and (b) ML has its own additional,
+        ML-specific version of this risk — the file formats used to
+        serialize and load model weights themselves. Python's
+        <code>pickle</code> module, the historical default for saving and
+        loading PyTorch checkpoints, is not just a data format; it's
+        capable of executing arbitrary Python code during deserialization
+        by design, via its <code>__reduce__</code> mechanism. Loading a
+        pickle-based model file is not "reading data" the way loading a
+        JSON or CSV file is — it's closer to running a program whose
+        source you haven't reviewed, and the file loads and behaves
+        completely normally from the user's perspective whether or not it
+        also silently does something malicious.
+      </p>
+      <p>
+        <strong>Example (weights format):</strong> Solstice's default use
+        of the framework's standard checkpoint-loading call, above — the
+        adapter file happened to be a legitimate (if backdoored, per
+        Category 1) pickle-format checkpoint, but the loading path itself
+        was, for three months, capable of executing arbitrary code from
+        <em>any</em> file that reached that path, tampered or not. This
+        is not a hypothetical: JFrog's security research team identified
+        roughly 100 malicious models hosted on Hugging Face using exactly
+        this mechanism — a pickle payload embedded via
+        <code>__reduce__</code> that established a reverse shell on the
+        loading machine, with the model itself loading and appearing to
+        function normally, no error, no warning, no visible difference in
+        behavior. Independent research has also shown the scanning tools
+        meant to catch this (PickleScan, used by Hugging Face itself) can
+        themselves be bypassed: Sonatype's security research disclosed
+        four distinct vulnerabilities in PickleScan in 2025 that let a
+        crafted file evade detection entirely, and an academic paper
+        (Kellas, Christou, Jiang, Li, Simon, David, Kemerlis, Davis, and
+        Yang, <em>"PickleBall: Secure Deserialization of Pickle-based
+        Machine Learning Models"</em>, ACM CCS 2025, arXiv:2508.15987)
+        found that as of their study, 44.9% of popular Hugging Face
+        models still shipped in the insecure pickle format, and that
+        existing scanners have real, measured false-positive and
+        false-negative rates against a systematically constructed set of
+        evasion techniques.
+      </p>
+      <p>
+        <strong>Example (package ecosystem):</strong> in March 2024,
+        Mend.io's research team identified more than 100 malicious
+        packages on PyPI specifically impersonating popular ML libraries
+        (including PyTorch) through typosquatting — a campaign large
+        enough that PyPI temporarily suspended new project creation and
+        user registration to contain it. Separately, in December 2024,
+        the official <code>ultralytics</code> PyPI package (a widely used
+        YOLO object-detection library, not a fringe or unknown package)
+        was itself compromised through a vulnerability in its GitHub
+        Actions build pipeline, and a malicious release containing
+        cryptomining code was published under the real, trusted package
+        name — a reminder that this risk isn't confined to obviously
+        sketchy, unknown packages; a legitimate, widely-trusted
+        dependency's own build pipeline is itself part of the supply
+        chain.
+      </p>
+      <p>
+        <strong>Why it's dangerous:</strong> unlike a targeted, narrow
+        backdoor (Category 1), a compromised loading path or a malicious
+        package doesn't need the attacker to know anything about your
+        specific application at all — it's a generic capability
+        (arbitrary code execution on load, or on import) that works
+        against any target using the same vulnerable mechanism, which
+        makes it attractive to attack at the ecosystem level (publish
+        once, compromise everyone who pulls it) rather than the
+        individual-target level.
+      </p>
+    </div>
+
+    <div class="lesson-card">
+      <h3>Category 3 — Excessive Trust in Third-Party Plugins, Tools, and MCP Servers</h3>
+      <p>
+        <strong>Mechanism:</strong> a system that connects to an external
+        tool, plugin, or MCP server is implicitly trusting that
+        component's own security posture — its input validation, its
+        own dependencies, how it stores and protects any data it
+        touches, whether it can be compromised independently of your
+        system entirely. It's important to be precise here about what's
+        genuinely <em>new</em> in this category, since Chapters 1&ndash;2
+        and this course's own Module 3 scope already touch tool-related
+        risk from other angles: Chapter 2's attack-surface mapping method
+        already teaches treating every tool's output as untrusted input
+        requiring re-checking, and Module 4's future agentic-systems
+        chapter will cover an agent's runtime defenses against an
+        adversarial tool <em>result</em>. Neither of those is what this
+        category is about. This category is about the decision made
+        <em>before</em> either of those defenses ever gets a chance to
+        run — <strong>the initial choice to add the dependency in the
+        first place</strong>, made once, often under time pressure, often
+        without asking whether the vendor has any security practices at
+        all. A perfectly-implemented runtime defense against adversarial
+        tool output (Module 4's eventual territory) still assumes the
+        tool itself isn't the compromised party — it defends against a
+        malicious <em>result</em> coming back through a trusted tool, not
+        against the tool itself being an insecure or malicious
+        dependency you chose to connect to.
+      </p>
+      <p>
+        <strong>Example:</strong> Solstice's drug-interaction-lookup
+        integration, above — added in an afternoon, from a vendor whose
+        own security practices were never evaluated before the
+        integration shipped. The security review's later finding wasn't
+        that the tool had already been exploited or that it returned
+        malicious data during those three months (Chapter 2's and Module
+        4's territory, if it had) — it was that Solstice had no idea
+        whether it could be, because no one had ever asked the vendor a
+        single question about how it handled the patient-symptom data
+        TriageAssist was sending it, what it did with that data
+        afterward, or what its own dependency chain looked like.
+      </p>
+      <p>
+        <strong>Why it's dangerous:</strong> this category compounds with
+        the other two rather than sitting apart from them — a
+        third-party tool is itself a piece of software with its own
+        supply chain (Category 2's risk, one level removed), and if the
+        tool is itself an ML-powered service, it may carry its own
+        Category 1 risk (a model behind that tool's API that no one at
+        your organization has ever inspected). The trust decision to
+        connect to a new dependency is a single moment that's easy to
+        make quickly and never revisit — Solstice's integration wasn't
+        re-evaluated even once in three months, not because anyone
+        decided it didn't need re-evaluation, but because no process
+        existed that would have prompted anyone to ask.
+      </p>
+    </div>
+  </section>
+
+  <section id="research" class="subtopic">
+    <h2>What the Real, Cited Research Shows</h2>
+    <p>
+      Supply-chain risk in the ML ecosystem isn't a theoretical concern
+      this course is speculating about — it's an active area of both
+      industry security research and academic work, with results mapping
+      directly onto the three categories above. All of the following was
+      independently verified via live web search this session, not
+      carried over from stale memory.
+    </p>
+    <div class="lesson-card">
+      <h3>Malicious pickle-format models were found live on a major public hub</h3>
+      <p>
+        JFrog's security research team, in a 2024 disclosure ("Data
+        Scientists Targeted by Malicious Hugging Face ML Models with
+        Silent Backdoor"), identified approximately 100 models hosted on
+        Hugging Face carrying malicious payloads embedded via Python
+        pickle's <code>__reduce__</code> mechanism — code that executes
+        automatically during model deserialization, in these cases
+        establishing a reverse shell on the loading machine. The models
+        were overwhelmingly PyTorch-format (roughly 95% of those found,
+        with the remainder TensorFlow/Keras), and loaded and appeared to
+        function completely normally from a user's perspective, with no
+        visible sign anything unusual had happened. This is Category 2's
+        weights-format mechanism, demonstrated as an already-realized,
+        live incident on the exact kind of public hub Chapter 1's LLM03
+        paragraph and this chapter's own hook describe pulling from, not
+        a hypothetical risk.
+      </p>
+    </div>
+    <div class="lesson-card">
+      <h3>Scanners built to catch this can themselves be bypassed, and adoption of safe formats is incomplete</h3>
+      <p>
+        Sonatype's security research disclosed four distinct
+        vulnerabilities in PickleScan (the open-source pickle-scanning
+        tool Hugging Face itself uses, built with Microsoft) in 2025 —
+        including a static-analysis bypass and file-format tricks that
+        let a malicious pickle file evade detection entirely.
+        Separately, Kellas, Christou, Jiang, Li, Simon, David, Kemerlis,
+        Davis, and Yang, <em>"PickleBall: Secure Deserialization of
+        Pickle-based Machine Learning Models"</em> (ACM CCS 2025,
+        arXiv:2508.15987), found that 44.9% of popular Hugging Face
+        models still ship in the insecure pickle format despite the
+        existence of a safe alternative (below), that 15% of those
+        pickle-format models cannot even be loaded under the most
+        restrictive available loading policies (forcing a real
+        usability-versus-safety tradeoff for anyone trying to lock this
+        down), and that existing scanning approaches have real, measured
+        false-positive and false-negative rates against systematically
+        constructed evasion techniques. Together, these findings say
+        something precise: the field's own defensive tooling (scanning)
+        is a real, useful layer, and it is <strong>not</strong>, by
+        itself, a solved problem — this is the same honest, no-guarantee
+        pattern Chapters 6 and 7 documented for their own defenses,
+        showing up again at the file-format layer.
+      </p>
+    </div>
+    <div class="lesson-card">
+      <h3>The package ecosystem itself is an active, ongoing target</h3>
+      <p>
+        Mend.io's research team documented, in March 2024, a campaign of
+        more than 100 malicious PyPI packages specifically impersonating
+        popular ML libraries (PyTorch among them) through typosquatting —
+        a wave large enough that PyPI temporarily suspended new project
+        creation and user registration to contain it. Separately, and
+        distinctly, in December 2024 the official <code>ultralytics</code>
+        package — a real, widely used, legitimately popular YOLO
+        object-detection library, not an obscure or fake one — was
+        compromised through a vulnerability in its own GitHub Actions
+        build pipeline, and a tampered release containing cryptomining
+        code was published under the genuine, trusted package name before
+        it was caught. This is Category 2's package-ecosystem mechanism
+        demonstrated at two different points on the trust spectrum: an
+        obviously fake package relying on a typo, and a genuinely
+        legitimate, popular package compromised through its own CI/CD
+        pipeline — the second case matters specifically because "we only
+        use well-known, popular packages" is not, by itself, a complete
+        answer to this risk.
+      </p>
+    </div>
+    <div class="lesson-card">
+      <h3>Provenance and attestation frameworks are actively being adapted to ML specifically</h3>
+      <p>
+        SLSA (Supply-chain Levels for Software Artifacts), a framework
+        originating at Google and now developed under the Linux
+        Foundation/OpenSSF umbrella, defines a maturity model and a
+        signed-attestation format (built on the in-toto attestation
+        standard) for verifying how a software artifact was actually
+        built — who built it, from what source, under what process. It
+        was designed for traditional software artifacts first, and is
+        now, per current industry and research writing, being actively
+        extended toward ML models specifically. Spoczynski, Melara, and
+        Szyller (Intel Labs), <em>"Atlas: A Framework for ML Lifecycle
+        Provenance &amp; Transparency"</em> (arXiv:2502.19567, 2025),
+        propose exactly this: a framework using open supply-chain
+        provenance specifications (in the same family SLSA belongs to) to
+        produce verifiable, signed records of an ML artifact's actual
+        lineage across data processing, training, evaluation, and
+        deployment — explicitly framed by the authors as addressing both
+        data-poisoning risk (Chapter 6's territory) and supply-chain risk
+        (this chapter's territory) with the same underlying mechanism:
+        cryptographically verifiable provenance metadata, rather than an
+        unverified claim on a model card.
+      </p>
+    </div>
+    <div class="what-is">
+      <span class="label">What this research does — and doesn't — establish</span>
+      All four results are about mechanism, prevalence, and feasibility:
+      malicious models have been found live on a major public hub;
+      the tools built to catch them have real, disclosed gaps; the
+      package ecosystem ML teams depend on is an active, ongoing target,
+      including against legitimate, popular packages; and real,
+      credible work exists on cryptographic provenance for ML artifacts
+      specifically. None of this is presented by its own authors as proof
+      the problem is unsolvable — JFrog's and Sonatype's own disclosures
+      exist specifically to get scanners fixed and adoption of safer
+      formats increased; the PickleBall and Atlas papers are both,
+      explicitly, proposed defenses, not just problem statements. This
+      chapter's own defenses, below, are a direct, real response to
+      exactly what this research identifies as the open gap.
+    </div>
+  </section>
+
+  <section id="defenses" class="subtopic">
+    <h2>Four Real Defenses</h2>
+    <p>
+      Each defense below states plainly what it actually stops and what
+      it doesn't — the same discipline this course has held every
+      attack surface to since Chapter 3, applied here to the trust
+      decisions made before a system is ever deployed.
+    </p>
+
+    <div class="lesson-card">
+      <h3>Defense 1 — Provenance Verification Before Trusting an External Model or Component</h3>
+      <p>
+        <strong>What it is:</strong> before pulling any model, adapter,
+        embedding model, or library into a production system, actually
+        check where it came from — cryptographic checksums against a
+        value published by a source you independently trust (not just
+        the value listed next to the download, which an attacker who
+        tampered with the file could also tamper with), signed model
+        cards or attestations (the SLSA/Atlas-style provenance metadata
+        described above, where it exists), and a real judgment about
+        whether the publisher is a known, accountable entity or an
+        anonymous account with no verifiable history. For Solstice, this
+        means the community adapter should never have reached production
+        without someone asking, and answering, "who published this, and
+        is there any independently verifiable record of what it was
+        actually trained on."
+      </p>
+      <p>
+        <strong>What it stops:</strong> the easiest, most opportunistic
+        supply-chain risks — a model published under a fresh, anonymous
+        account with no history, a checksum mismatch indicating tampering
+        after the fact, a typosquatted package name close to a real one.
+        These are all things a real provenance-check step catches
+        directly and cheaply.
+      </p>
+      <p>
+        <strong>What it doesn't stop:</strong> a sophisticated attacker
+        (or a careless publisher) whose artifact carries a legitimate-
+        looking history, a plausible model card, and a good benchmark
+        score, but was backdoored or trained on bad data anyway — a
+        checksum only proves a file matches what the publisher uploaded,
+        not that what the publisher uploaded is safe. This is the same
+        honest limit Chapter 6's Defense 1 (data provenance) named for a
+        company's own intake channel: provenance vetting catches an
+        illegitimate source, not a source that looks completely
+        legitimate and simply wasn't checked carefully enough — the
+        ultralytics compromise, above, happened to a legitimately
+        popular, real package, precisely the kind provenance checking
+        alone would have waved through.
+      </p>
+    </div>
+
+    <div class="lesson-card">
+      <h3>Defense 2 — Safe Model-Loading Practices</h3>
+      <p>
+        <strong>What it is:</strong> using a serialization format that is
+        structurally incapable of executing code during load — most
+        concretely, Safetensors (created by Hugging Face specifically to
+        eliminate pickle's arbitrary-code-execution risk, and, as of
+        2026, a PyTorch Foundation project and Hugging Face Hub's default
+        checkpoint format) instead of pickle-based formats — combined
+        with, where a pickle-format file genuinely cannot be avoided,
+        loading it inside a sandboxed, isolated environment with no
+        access to sensitive credentials, network resources, or production
+        data, so that even a successful code-execution attempt has
+        nothing valuable to reach.
+      </p>
+      <p>
+        <strong>What it stops:</strong> the actual, structural mechanism
+        behind Category 2's weights-format risk. A file in Safetensors
+        format cannot execute arbitrary code on load, by construction —
+        it stores only tensor data and a metadata header, not
+        instructions for Python to run — which is a categorically
+        stronger guarantee than any scanner-based approach, because it
+        removes the vulnerable mechanism rather than trying to detect
+        misuse of it.
+      </p>
+      <p>
+        <strong>What it doesn't stop:</strong> Category 1's actual
+        backdoor risk at all. Converting a maliciously fine-tuned
+        adapter's file format from pickle to Safetensors changes nothing
+        about the model's learned weights or its trigger-conditioned
+        behavior — it only removes the additional, separate risk that
+        loading the file itself executes attacker code. This is a real,
+        important distinction to hold precisely: Solstice's three
+        problems weren't one problem wearing three names. Safe loading
+        would have closed the file-format risk from Solstice's second
+        decision completely, while doing nothing at all about the
+        backdoor already baked into the adapter's actual weights from
+        its first decision — the PickleBall research above also names
+        this honestly, with its own finding that 15% of currently
+        pickle-format models can't even be loaded under the most
+        restrictive safe policies without breaking, which is a real,
+        practical adoption cost, not a free upgrade.
+      </p>
+    </div>
+
+    <div class="lesson-card">
+      <h3>Defense 3 — Dependency Scanning and Pinning for the ML Toolchain</h3>
+      <p>
+        <strong>What it is:</strong> the same discipline traditional
+        software-supply-chain security already applies to any dependency
+        tree, applied here without exception to the ML-specific parts of
+        the stack — software composition analysis (SCA) scanning for
+        known-vulnerable package versions, pinned/locked dependency
+        versions rather than always pulling the latest release
+        unreviewed, and monitoring advisories for the specific libraries
+        a system actually depends on (the framework itself, tokenizers,
+        embedding libraries, and any MCP-server or plugin client
+        libraries).
+      </p>
+      <p>
+        <strong>What it stops:</strong> known, already-disclosed
+        vulnerabilities and already-identified malicious packages —
+        exactly the Mend.io-documented typosquatting campaign above,
+        which pinned, scanned dependencies with verified package names
+        would never pull in the first place, since the malicious packages
+        relied on a name close enough to a real one to fool a rushed,
+        unscanned <code>pip install</code>.
+      </p>
+      <p>
+        <strong>What it doesn't stop:</strong> a compromise of a
+        legitimate, already-trusted, already-pinned package's own build
+        pipeline — precisely the ultralytics incident above, where the
+        real package name, already known and already trusted by anyone
+        depending on it, was the vector, not a fake name a scanner would
+        catch. Pinning a version helps only if the pin predates the
+        compromised release and the team has a real process for
+        deliberately, carefully reviewing version bumps rather than
+        auto-updating on a schedule that outruns any actual review —
+        pinning without a real review discipline behind each version bump
+        just delays exposure to a compromised update, it doesn't prevent
+        it.
+      </p>
+    </div>
+
+    <div class="lesson-card">
+      <h3>Defense 4 — An Internal Vetted Registry and Approval Process</h3>
+      <p>
+        <strong>What it is:</strong> the organizational, process-level
+        control — a real, non-technical layer, the same genuine kind of
+        control Chapter 7's Defense 3 (legal/ToS deterrence) was for the
+        API-extraction surface. Every new model, adapter, embedding
+        model, or third-party tool/plugin/MCP server goes through a
+        defined internal review and approval step <em>before</em>
+        production use, not after — checking provenance (Defense 1),
+        confirming a safe loading path exists (Defense 2), confirming the
+        dependency has been scanned (Defense 3), and, for any third-party
+        tool specifically, actually asking the vendor what its own
+        security practices are, rather than assuming an afternoon
+        integration test is equivalent to a security review. Once
+        approved, a component lives in an internal registry other teams
+        can pull from with that vetting already done, instead of every
+        team independently re-deciding whether to trust the same public
+        hub listing.
+      </p>
+      <p>
+        <strong>What it stops:</strong> exactly the failure mode in
+        Solstice's own story — not a sophisticated attack that evaded a
+        technical control, but the complete <em>absence</em> of any
+        control at all, three separate times, under deadline pressure.
+        A real approval gate would have forced the "who published this,
+        and did anyone check" question to actually get asked before any
+        of the three components reached production, regardless of how
+        good or bad the individual technical answer would have turned
+        out to be.
+      </p>
+      <p>
+        <strong>What it doesn't stop:</strong> a process that exists on
+        paper but isn't actually followed under pressure, or a review
+        that rubber-stamps "it's on the internal registry" without
+        anyone re-checking whether the registry entry itself is still
+        current — the same honest limit Chapter 6's Defense 4 named for
+        corpus-diffing review: infrastructure for a real defense is not
+        the same thing as the defense actually being operated critically,
+        every time, including the times a deadline makes skipping it
+        tempting. An approval process is only as strong as an
+        organization's actual willingness to enforce it when enforcing it
+        is inconvenient — which is precisely when Solstice's own three
+        decisions were made.
+      </p>
+    </div>
+
+    <div class="what-is">
+      <span class="label">No combination of these eliminates the risk</span>
+      Stated as plainly as Chapters 6 and 7 stated the same honest limit
+      for their own attack surfaces: provenance verification, safe
+      loading, dependency scanning/pinning, and an internal approval
+      process are each real, and layering all four measurably raises the
+      bar for what reaches production unexamined. None of them, alone or
+      combined, guarantees catching a sufficiently well-disguised
+      backdoor in an upstream artifact whose publisher has a plausible
+      history, or a compromise of an already-trusted package's own build
+      pipeline that no amount of scanning your own dependency tree would
+      surface before the compromised release ships — which is precisely
+      what the ultralytics incident and the PickleBall research's own
+      measured scanner gaps both show is realistic, not hypothetical.
+    </div>
+  </section>
+
+  <section id="lab" class="subtopic">
+    <h2>Hands-On Lab: A Provenance and Integrity Checker</h2>
+    <p>
+      Like Chapters 6 and 7, this chapter is conceptual and architectural
+      by nature — supply-chain defenses are provenance-verification and
+      organizational practices, not runtime model interactions, so this
+      chapter does not depend on a live model call at all. Its
+      <a href="project/index.html">project</a> builds a real,
+      self-contained tool instead: a provenance and integrity checker
+      that verifies a set of synthetic, clearly-labeled model/dependency
+      artifacts against an expected manifest, flags any artifact using an
+      unsafe serialization format, and produces a real, structured
+      vetting report — Defenses 1&ndash;3, actually implemented, over
+      fabricated data.
+    </p>
+    <div class="code-window">
+      <div class="code-window-bar">
+        <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+        <span class="filename">checker_pattern.py (structure, see project/ for the full version)</span>
+      </div>
+      <pre><code>def vet_artifact(artifact, manifest):
+    """Check one artifact (a model file, adapter, or dependency entry)
+    against its expected manifest record: does its checksum match what
+    was independently recorded at approval time, is its serialization
+    format on the safe list, and is its publisher on the vetted-source
+    list -- three independent checks, combined into one verdict, none
+    of them individually sufficient."""
+    findings = []
+    if not checksum_matches(artifact, manifest):
+        findings.append("CHECKSUM_MISMATCH")
+    if artifact["format"] not in SAFE_FORMATS:
+        findings.append("UNSAFE_SERIALIZATION_FORMAT")
+    if artifact["publisher"] not in manifest["vetted_publishers"]:
+        findings.append("UNVETTED_PUBLISHER")
+    return {"artifact_id": artifact["id"], "findings": findings,
+            "verdict": "BLOCK" if findings else "APPROVE"}</code></pre>
+    </div>
+    <p>
+      <strong>An honest disclosure, following this course's established
+      practice even though this chapter's own content doesn't need a live
+      model:</strong> before writing this chapter, this session checked
+      Ollama's status directly — <code>ollama list</code> and
+      <code>curl http://localhost:11434/api/tags</code> both responded
+      normally this session, confirming <code>llama3.2:latest</code> is
+      pulled and the server is reachable. That check is recorded here for
+      completeness and consistency with Chapters 3&ndash;7's discipline,
+      but it has no bearing on this chapter's actual content: no lesson
+      claim, example, or project result in this chapter depends on a live
+      model call, so there is no live-vs-logical gap to disclose the way
+      Chapters 3&ndash;5 had to. Every synthetic manifest, every artifact
+      record, and every vetting-report line in this chapter and its
+      project is produced by deterministic code operating on fabricated,
+      clearly-labeled data, and was actually executed this session — see
+      this chapter's quality audit for the itemized breakdown.
+    </p>
+    <p>
+      What the checker illustrates, structurally: given a synthetic
+      manifest of expected artifacts (modeled directly on Solstice's
+      scenario above — a base model, a fine-tuned adapter, an embedding
+      model, and a handful of ML-toolchain library entries, each
+      clearly labeled as fabricated) and a synthetic "as-found" set of
+      artifacts that mostly match but include a deliberately tampered
+      checksum on one entry, one entry in an unsafe pickle-based format
+      with no safe alternative recorded, and one entry from a publisher
+      never added to the vetted-source list, the checker reliably flags
+      all three planted problems by name and blocks them from an
+      "approved" verdict — while also, honestly, being unable to say
+      anything at all about whether an artifact that passes every one of
+      its three checks is actually safe in the deeper sense Category 1
+      describes: a checksum match only proves the file matches what was
+      recorded at approval time, not that what was recorded at approval
+      time was itself free of a well-disguised backdoor. The checker's
+      own report says exactly this in its output — a real, useful gate on
+      the checks it can mechanically perform, not a guarantee about
+      everything this chapter names as a risk.
+    </p>
+  </section>
+
+  <section id="thought-process" class="subtopic">
+    <h2>GenAI Builder Thought Process</h2>
+    <div class="thinking-box">
+      <p><strong>Problem:</strong> after Solstice's security review
+      surfaces all three findings, leadership's first instinct is to ask
+      engineering to "just use models from reputable sources going
+      forward" and treat the finding as addressed.</p>
+      <p><strong>Assumption being made:</strong> that "reputable source"
+      is a clear, checkable property rather than a judgment call that
+      still needs a real process behind it — the same "we added a rule,
+      ticket closed" shape Chapter 5 named as the single-attempt trap,
+      Chapter 6 named recurring at the data-pipeline layer, and Chapter 7
+      named recurring again at the API layer, now showing up a fourth
+      time at the point of adoption itself. "Only use reputable sources"
+      sounds like a real fix and is actually just Defense 1 restated as
+      a slogan, with none of Defenses 2&ndash;4 behind it, and no
+      answer at all for the ultralytics-shaped case where the source
+      genuinely was reputable.</p>
+      <p><strong>What actually distinguishes a real defensive posture:</strong>
+      this chapter's own defenses each admit a real gap the others have
+      to cover — provenance verification (Defense 1) doesn't catch a
+      well-disguised backdoor in an artifact with a clean-looking
+      history; safe loading (Defense 2) does nothing about the model's
+      actual learned behavior, only the separate risk of code execution
+      on load; dependency scanning and pinning (Defense 3) doesn't catch
+      a compromise of an already-trusted package's own build pipeline;
+      and an approval process (Defense 4) is only as strong as an
+      organization's actual willingness to enforce it under the exact
+      deadline pressure that produced Solstice's three decisions in the
+      first place. A real posture layers all four, with an explicit,
+      honest acceptance that residual risk remains — the same
+      no-single-point-of-failure posture Chapters 6 and 7 both built for
+      their own attack surfaces, applied here to the trust decisions made
+      before a system exists at all.</p>
+      <p><strong>Why this matters as Module 3 closes:</strong> Chapter 6
+      showed the training/data pipeline is a real attack surface separate
+      from the runtime request path. Chapter 7 showed the API surface
+      itself is a third, unavoidable extraction surface. This chapter
+      shows the surface that sits before either one: what you agreed to
+      trust, often once, often quickly, before your own pipeline or API
+      ever existed. A team that has fully hardened Modules 1&ndash;2's
+      runtime attacks, Chapter 6's data pipeline, and Chapter 7's API
+      surface, but never asked "where did our base model, our
+      dependencies, and our tools actually come from, and did anyone
+      check," has secured everything downstream of a foundation nobody
+      actually inspected. That's the precise, closing point of Module 3
+      as a whole: Chapter 6 (data poisoning), Chapter 7 (model
+      extraction), and Chapter 8 (supply chain) are three genuinely
+      different ways a model or system can be compromised without a
+      single runtime request ever being manipulated — poisoning corrupts
+      what you deliberately build, extraction steals what you
+      deliberately expose, and supply-chain risk means you may never
+      have started from a trustworthy foundation at all. Module 4 picks
+      back up at the runtime request path — securing RAG pipelines and
+      agentic systems — but does so knowing, from this module, that
+      "the model is trustworthy" was never a safe assumption to leave
+      unexamined.</p>
+      <p><strong>Working definition to carry forward:</strong> supply-
+      chain risk means an LLM system's real dependency graph — base
+      model, fine-tuned/adapter weights, embedding models, the ML
+      framework and library stack, and third-party plugins/tools/MCP
+      servers — can be compromised, malicious, or unsafe by construction
+      before your own code or pipeline ever runs, via backdoored upstream
+      weights (Category 1), a malicious or vulnerable ML-toolchain
+      dependency (Category 2), or an under-vetted third-party tool
+      connection (Category 3) — and defending against it means adoption-
+      time practices (provenance verification, safe serialization
+      formats, dependency scanning/pinning, an internal vetted-approval
+      process), each with a real, honestly-stated limit, layered
+      together and actually enforced under the deadline pressure that
+      makes skipping them tempting.</p>
+    </div>
+  </section>
+
+  <section id="recap-points" class="subtopic">
+    <div class="points-to-remember">
+      <h2>Points To Remember — And Module 3, Complete</h2>
+      <ul>
+        <li>Supply-chain risk is upstream of every other attack surface
+        this course has covered: it's about what an organization agreed
+        to trust — a base model, fine-tuned weights, an embedding model,
+        the ML framework stack, or a third-party plugin/tool/MCP server —
+        before its own pipeline or runtime request path ever existed.
+        This chapter used a lifecycle timeline rather than extending
+        Chapters 6&ndash;7's attacker-action table, because supply-chain
+        risk usually has no discrete attacker action against your system
+        at all — the point of failure is a trust decision, not an
+        attack.</li>
+        <li>Three real categories: compromised/backdoored upstream
+        weights (you inherit an already-poisoned artifact, with no
+        training step of your own for Chapter 6's defenses to attach to);
+        malicious or vulnerable ML-toolchain dependencies (unsafe
+        pickle-based deserialization enabling arbitrary code execution on
+        load, and malicious/compromised packages in the PyPI/npm
+        ecosystem ML teams depend on); excessive trust in third-party
+        plugins/tools/MCP servers (the initial, often-unrevisited
+        decision to add a dependency, distinct from Chapter 2's and
+        Module 4's runtime defenses against an already-added tool's
+        adversarial output).</li>
+        <li>Real, cited research confirms every category's danger: JFrog
+        found roughly 100 malicious pickle-format models live on Hugging
+        Face using a reverse-shell payload; Sonatype and the PickleBall
+        paper (arXiv:2508.15987, ACM CCS 2025) both show the scanning
+        tools meant to catch this have real, disclosed gaps, and that
+        44.9% of popular hub models still use the unsafe format; Mend.io
+        documented a 100+-package typosquatting campaign against ML
+        libraries on PyPI, and the real, popular <code>ultralytics</code>
+        package was itself compromised via its build pipeline in December
+        2024; and SLSA-family provenance/attestation frameworks (Atlas,
+        arXiv:2502.19567) are actively being extended to ML artifacts
+        specifically.</li>
+        <li>Four real defenses, each with an honestly-stated limit:
+        provenance verification (stops opportunistic, illegitimate
+        sources, not a well-disguised backdoor in an artifact with a
+        clean history); safe model-loading practices like Safetensors
+        (structurally removes code-execution-on-load risk, but does
+        nothing about a model's actual learned backdoor behavior);
+        dependency scanning and pinning (catches known-vulnerable and
+        typosquatted packages, not a compromise of an already-trusted
+        package's own build pipeline); an internal vetted-registry and
+        approval process (the real, organizational layer that forces the
+        other three to actually get checked — but only as strong as an
+        organization's willingness to enforce it under the exact deadline
+        pressure that makes skipping it tempting).</li>
+        <li><strong>Module 3, complete:</strong> Chapter 6 (data
+        poisoning) showed an attacker can corrupt what you deliberately
+        build. Chapter 7 (model extraction) showed an attacker can steal
+        what you deliberately expose, using nothing but ordinary access.
+        Chapter 8 (supply chain) showed you may never have started from a
+        trustworthy foundation at all. None of Module 3's nine defenses,
+        across all three chapters, eliminates its own risk alone or in
+        combination — the same honest, no-guarantee framing this course
+        has held every attack surface to since Chapter 3. Module 4 turns
+        back to the runtime request path — securing RAG pipelines and
+        agentic systems — carrying forward a working assumption Modules
+        1&ndash;2 never had to question and Module 3 now requires: that
+        "the model" and everything it depends on is itself a thing that
+        has to be verified, not simply trusted.</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="what-is">
+    <span class="label">Interview questions (4 levels)</span>
+    Practice explaining this distinction and taxonomy out loud — see
+    <a href="interview-questions.html">Chapter 8 interview questions</a>,
+    covering beginner through architect level.
+  </div>
+
+  <div class="chapter-nav">
+    <a href="../../index.html">&larr; All Chapters</a>
+    <a href="quiz.html">Take the Quiz &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+    <span><a href="https://github.com/TechNaom/ai-security-for-everyone">github.com/TechNaom/ai-security-for-everyone</a></span>
+  </div>
+</footer>
+
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/chapters-data.js"></script>
+<script src="../../assets/sidebar.js"></script>
+</body>
+</html>

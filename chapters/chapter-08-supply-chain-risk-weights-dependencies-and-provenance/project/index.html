@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project: A Provenance and Integrity Checker — AI Security for Everyone</title>
+<meta name="description" content="Build a real, self-contained supply-chain defense tool: a provenance and integrity checker over a synthetic manifest of Solstice Diagnostics artifacts, combining checksum, safe-format, publisher-vetting, and scan signals -- with no live-model dependency, and an honest, directly observable limit.">
+<link rel="stylesheet" href="../../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-08">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../../index.html">All Chapters</a>
+      <a href="../../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="../interview-questions.html">&larr; Back to interview questions</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 8 Project</span>
+    <span class="reading-time">~75 min, hands-on</span>
+  </div>
+  <h1>Project: A Provenance and Integrity Checker</h1>
+  <p class="lede">
+    Build the real tool the lesson's lab section only showed the structure
+    of: a checker that vets a synthetic manifest of Solstice Diagnostics
+    artifacts — Defenses 1&ndash;3, actually implemented — combining
+    checksum verification, safe-serialization-format checking, and
+    publisher vetting into one structured report, including the honest
+    limit the lesson's own defense sections name in prose: passing every
+    mechanical check this tool can perform does not prove an artifact's
+    actual learned behavior is safe.
+  </p>
+
+  <div class="hook">
+    <p>
+      The target is <strong>Solstice Diagnostics' TriageAssist</strong>,
+      continuing the lesson's own scenario. This project builds the tool
+      Solstice's security review should have run <em>before</em> any of
+      its three under-deadline decisions — the unverified community
+      adapter, the pickle-based loading path, the unaudited third-party
+      tool — ever reached production. The full synthetic six-artifact
+      manifest and as-found artifact set are already written for you in
+      <code>starter.py</code> — your job is to build the vetting logic
+      around it.
+    </p>
+  </div>
+
+  <h2>Your task</h2>
+  <p>Download <code>starter.py</code> and fill in its four parts:</p>
+  <div class="task-card">
+    <h3><span class="task-num">1</span> <code>checksum_matches()</code></h3>
+    <p>Confirm an artifact's as-found checksum matches the value independently recorded in the manifest at approval time.</p>
+  </div>
+  <div class="task-card">
+    <h3><span class="task-num">2</span> <code>format_is_safe()</code></h3>
+    <p>Confirm an artifact's serialization format is on the safe list, not a pickle-based format capable of arbitrary code execution on load.</p>
+  </div>
+  <div class="task-card">
+    <h3><span class="task-num">3</span> <code>publisher_is_vetted()</code></h3>
+    <p>Confirm an artifact's publisher is on the organization's vetted-source list.</p>
+  </div>
+  <div class="task-card">
+    <h3><span class="task-num">4</span> <span class="badge-coming-soon">Production-gear</span> <code>vet_artifact()</code></h3>
+    <p>Combine the three checks above, plus a provided scan-clean flag, into one finding list and a BLOCK/APPROVE verdict — deliberately conservative: any single finding blocks the artifact.</p>
+  </div>
+
+  <div class="what-is">
+    <span class="label">What the finished report shows</span>
+    Three report sections: <strong>Step A</strong> — the checker's own
+    logic self-test against small, synthetic cases (9 checks, independent
+    of the full artifact set); <strong>Step B</strong> — all six
+    synthetic artifacts vetted and reported, from a fully clean approval
+    down to four distinct blocked findings (a tampered checksum, an
+    unsafe format, an unvetted publisher, a flagged scan); <strong>Step
+    C</strong> — the honest hard case: an artifact that passes every
+    single mechanical check and is APPROVEd, with an explicit statement
+    of exactly what that verdict does and doesn't prove.
+  </div>
+
+  <div class="what-is">
+    <span class="label">No live model dependency at all</span>
+    Like Chapters 6 and 7's projects, this one never imports
+    <code>openai</code>, never calls Ollama, and has no graceful-
+    degradation branch to test, because there's no live-model call
+    anywhere in this file to degrade. Every function is pure,
+    deterministic Python operating on fabricated, clearly-labeled
+    synthetic artifact records. This matches this chapter's own subject:
+    provenance and integrity checking is an adoption-time, offline
+    practice, not a runtime model interaction.
+  </div>
+
+  <div class="download-links">
+    <a href="starter.py">starter.py</a>
+    <a href="solution.py">solution.py (reference)</a>
+  </div>
+
+  <div class="points-to-remember">
+    <h2>What "done" looks like</h2>
+    <p>
+      <code>verify_logic()</code> reports 9/9 with all four parts filled
+      in correctly. Then run the full report and look closely at Step C:
+      confirm for yourself that <code>quiet_backdoor_candidate</code> —
+      an artifact with a matching checksum, a safe format, a vetted
+      publisher, and a clean scan — genuinely gets an <code>APPROVE</code>
+      verdict with zero findings, and read the report's own printed
+      explanation of why that verdict is real and useful without being a
+      guarantee. That observation — not just reading about it in the
+      lesson — is the actual point of this project: a provenance and
+      integrity checker is a real, necessary gate that catches exactly
+      the failure modes it's built to catch (a tampered checksum, an
+      unsafe format, an unvetted source, a flagged scan), and it
+      genuinely cannot, by itself, tell a security team whether an
+      artifact that clears every one of those checks is free of a
+      well-disguised backdoor in its actual learned weights — which is
+      exactly why this chapter's Defense 4 (an organizational approval
+      process, not just a technical tool) and Chapter 6's behavior-
+      auditing defense both still matter even after this tool gives an
+      artifact a clean bill of health.
+    </p>
+  </div>
+
+  <div class="chapter-nav">
+    <a href="../interview-questions.html">&larr; Interview Questions</a>
+    <a href="../../../index.html">All Chapters &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+    <span><a href="https://github.com/TechNaom/ai-security-for-everyone">github.com/TechNaom/ai-security-for-everyone</a></span>
+  </div>
+</footer>
+
+<script src="../../../assets/progress.js"></script>
+<script src="../../../assets/chapters-data.js"></script>
+<script src="../../../assets/sidebar.js"></script>
+</body>
+</html>
