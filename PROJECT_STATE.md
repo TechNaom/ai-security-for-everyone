@@ -216,32 +216,48 @@ original content only).
       became statistically indistinguishable at low support). 8
       exercises (5 production-gear), 8 practice scenarios, 8 interview
       questions across all 4 levels.
+- [x] **Chapter 7 built and live**: "Model Extraction and Theft." A
+      third distinct attack surface, extending Chapter 6's two-way
+      pipeline-vs-runtime table into a three-way comparison: unlike
+      Module 2 (manipulates one session) and Chapter 6 (poisons data
+      before training), this chapter's attacker touches neither the
+      target model nor its training data — only ordinary API queries,
+      at volume, turning the model's output channel into a query
+      oracle. Hook: Halcyon Research's ClauseFinder, hit by both a
+      rival's query-based distillation campaign and a casual
+      system-prompt extraction (tied to Chapter 1's LLM07). Three
+      techniques (query-based distillation, training-data extraction/
+      membership inference, system-prompt extraction) grounded in real
+      cited research (Tramèr et al. arXiv:1609.02943, Krishna et al.
+      arXiv:1910.12366, Carlini et al. arXiv:2012.07805 and
+      arXiv:2311.17035). Four defenses including legal/ToS deterrence
+      as a genuine non-technical control. Ships a self-contained
+      query-pattern anomaly scorer that honestly demonstrated the same
+      detection-defense false-positive tension Chapter 5 named (a
+      legitimate power user scored only ~10 points below a real
+      extraction campaign). 8 exercises (5 production-gear), 8 practice
+      scenarios, 8 interview questions across all 4 levels.
 
 ## Pending / Not Started
 
-- [ ] Push to GitHub, verify CI/Pages green on real GitHub Actions
-      runners (this is the immediate next step).
-- [ ] `CONTRIBUTING.md`, `CHANGELOG.md` — not yet written, adapt from
-      `ai-coding-agents-for-everyone`.
-- [ ] Step 4: Build Chapter 1 ("Threat Modeling LLM Systems: The OWASP
-      Top 10 for LLM Applications") as the reference chapter. This
-      chapter is conceptual (no live-model dependency), so it does not
-      block on the Ollama/model-policy question below.
-- [ ] Step 5: Validate reference chapter, refine template if needed.
-- [ ] Step 6: Build remaining 12 chapters module by module, validating
-      after each module. Modules 1 is fully conceptual — good to build
-      first. Module 2 onward (Chapter 3+) needs a real model for
-      constructing/testing prompt injections — verify Ollama's current
-      model recommendation and its actual behavior under
-      injection/jailbreak testing before writing that content (do not
-      assume a technique works against the installed model without
-      testing it first).
-- [ ] Step 7-8: Projects, assessments beyond per-chapter content.
-- [ ] Step 9: Website — root `index.html`, styled roadmap, GitHub Pages
-      deploy (`pages.yml` already staged, same as
-      `ai-coding-agents-for-everyone`'s).
-- [ ] Step 10: Capstone (Chapter 13).
-- [ ] Step 12: Polish.
+(Updated 2026-08-12 — most items below from the original scaffold plan
+are now done; keeping this section current rather than stale.)
+
+- [x] Push to GitHub, verify CI/Pages green — done since the initial
+      scaffold, re-verified after every single chapter/doc push since.
+- [x] `CONTRIBUTING.md`, `CHANGELOG.md` — written as part of the
+      initial scaffold.
+- [x] Reference chapter (Chapter 1) built and validated.
+- [x] Website (root `index.html`, styled roadmap) — built as part of
+      the initial scaffold, not deferred to a later step (a gap found
+      late in `ai-coding-agents-for-everyone`'s build, avoided here).
+- [ ] Chapter 8 ("Supply-Chain Risk," Module 3) — completes Module 3.
+      See "Next Recommended Task" below for full detail.
+- [ ] Chapters 9-13 (Modules 4-6) — not yet built.
+- [ ] Module 3's written exam (if warranted — pending the Module 3
+      assessment-type judgment call, see "Next Recommended Task").
+- [ ] Capstone (Chapter 13).
+- [ ] Final polish pass once all 13 chapters exist.
 
 ## Known Issues
 
@@ -270,27 +286,33 @@ writing).
 
 ## Next Recommended Task
 
-**Chapter 6 is done** — confirmed conceptual/pipeline-focused, no
-live-model dependency needed, matching the prediction. Next: Chapter
-7 ("Model Extraction and Theft," Module 3, Advanced). Read Chapter 6
-fully first for the module's established distinction (pipeline/
-training-time attacks vs. Module 2's runtime attacks) — Chapter 7
-extends that same framing to a new attack: an attacker who ONLY has
-API access to a deployed model (no training-data access at all) can
-still steal its behavior or approximate its weights through repeated,
-systematic querying. This is a third genuinely different attack
-surface from both Module 2 (runtime prompt manipulation) and Chapter
-6 (training-data poisoning) — the attacker here is neither manipulating
-inputs nor poisoning data, they're treating the model's own API as an
-oracle to reconstruct what's inside it. Consider whether a real,
-hands-on demonstration (e.g. a toy model-distillation-via-querying
-example against a small, local, non-Ollama model, or a clearly-labeled
-synthetic illustration) is feasible without needing the still-unreliable
-Ollama generation endpoint — check Ollama status first regardless, and
-if any live-model content is attempted, follow the same honest-
-disclosure discipline as every prior chapter. Chapter 8 (supply-chain
-risk) completes Module 3 after this. Module 3's assessment type per
-CURRICULUM_MAP.md is "concept + risk-assessment exercise" — after
-Chapter 8, decide whether a separate written exam is warranted or the
-chapters' own exercises/projects satisfy it (a judgment call, similar
-to Module 1's).
+**Chapter 7 is done** — also confirmed no live-model dependency
+needed. Next: Chapter 8 ("Supply-Chain Risk: Weights, Dependencies,
+and Provenance," Module 3, Advanced) — completes Module 3. Read
+Chapters 6-7 fully first for the module's established framing
+(pipeline/model-surface attacks, not Module 2's runtime attacks) and
+its three-way comparison table pattern (Chapter 7 extended Chapter 6's
+two-way table to three ways — consider whether Chapter 8 needs its own
+extension, or whether supply-chain risk is different enough in kind
+that a comparison table isn't the right device this time; use
+judgment, don't force the pattern if it doesn't fit). Chapter 1's
+LLM03 (Supply Chain) section already briefly named this — build on it,
+don't re-derive. Cover real supply-chain risk categories: compromised/
+backdoored pretrained model weights pulled from public hubs, malicious
+or vulnerable dependencies in the ML toolchain itself, third-party
+plugins/tools with excessive trust, and the practical question of how
+an organization actually verifies provenance (checksums, signed
+model cards, vetted internal registries) before trusting an external
+model or component in production. Research real, current supply-chain
+security guidance/incidents in the ML ecosystem via web search — don't
+assume from stale memory. Likely conceptual, no live-model dependency,
+matching Chapters 6-7's pattern — but check Ollama status regardless,
+for consistency, and don't force a live-model example if the content
+doesn't need one.
+
+After Chapter 8, decide whether Module 3 needs a separate written exam
+— its assessment type per CURRICULUM_MAP.md is "concept +
+risk-assessment exercise," which may already be satisfied by the three
+chapters' own exercises/projects (a judgment call, similar to how
+Module 1 didn't need a separate exam). Then Module 4 (Chapters 9-10:
+securing RAG and agentic systems specifically) is next.

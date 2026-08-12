@@ -96,17 +96,19 @@ payloads.
 
 ## Current task
 
-**Chapter 6 ("Data Poisoning") is done and live** — confirmed no
-live-model dependency needed (genuinely conceptual/pipeline-focused).
-Build Chapter 7 ("Model Extraction and Theft," Module 3, Advanced)
-next. This is a THIRD distinct attack surface, different from both
-Module 2 (runtime prompt manipulation) and Chapter 6 (poisoning the
-training data): an attacker with ONLY API access (no training-data
-access) systematically queries a deployed model to steal its behavior
-or approximate its weights, treating the API as an oracle. Read
-Chapter 6 fully first for the module's established pipeline-vs-runtime
-framing. Check Ollama status before writing, same as always — but this
-chapter may not need it either; use judgment, don't assume.
+**Chapters 6-7 (data poisoning, model extraction) are done and live**
+— both confirmed no live-model dependency needed. Build Chapter 8
+("Supply-Chain Risk: Weights, Dependencies, and Provenance," Module 3,
+Advanced) next — completes Module 3. Read Chapters 6-7 fully first,
+including their comparison-table pattern (each extended the prior
+chapter's table by one column) — decide whether Chapter 8 should
+extend it again or whether supply-chain risk is different enough in
+kind to warrant its own framing device. Chapter 1's LLM03 (Supply
+Chain) briefly named this — build on it. Research current, real
+supply-chain security practice/incidents in the ML ecosystem via web
+search before writing — don't work from stale memory. Likely
+conceptual, matching Chapters 6-7, but check Ollama status regardless
+for consistency.
 
 ## Next task after that
 
