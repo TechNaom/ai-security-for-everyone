@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Securing Agentic Systems Quiz — AI Security for Everyone</title>
+<meta name="description" content="Interactive quiz for Securing Agentic Systems Against Adversarial Tool Output.">
+<link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-10" data-chapter-id="chapter-10">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../index.html">All Chapters</a>
+      <a href="../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="lesson.html">&larr; Back to the lesson</a></p>
+
+  <span class="chapter-badge">Chapter 10 Quiz</span>
+  <h1>Securing Agentic Systems Against Adversarial Tool Output</h1>
+  <p>Fill in each blank, then check your answers. A perfect score marks this chapter complete.</p>
+
+  <div class="quiz-progress-wrap" aria-hidden="true">
+    <div class="quiz-progress-fill" id="quiz-progress-fill"></div>
+  </div>
+
+  <form onsubmit="return false;">
+
+    <div class="quiz-question">
+      <label for="q1"><span class="q-num">1</span> This chapter organizes agentic tool-call risk by three round-trip ______: result arrival, context assembly, and action proposal.</label>
+      <div class="fib-row">
+        <input type="text" id="q1" class="fib-blank" data-answers="moments,moment" aria-label="Answer for question 1">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q2"><span class="q-num">2</span> Unlike a RAG chunk, a tool result is often a structured object with fields of differing ______ -- some system-generated and trustworthy by construction, others free text an external party could have populated.</label>
+      <div class="fib-row">
+        <input type="text" id="q2" class="fib-blank" data-answers="trust" aria-label="Answer for question 2">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q3"><span class="q-num">3</span> OWASP's ______:2025 category, Excessive Agency, is the risk this chapter completes -- a system granting a tool more functionality, permission, or autonomy than a task requires.</label>
+      <div class="fib-row">
+        <input type="text" id="q3" class="fib-blank" data-answers="LLM06,llm06" aria-label="Answer for question 3">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q4"><span class="q-num">4</span> InjecAgent measured a strong, widely-deployed model manipulated via tool output ______% of the time in its base setting, nearly doubling under a reinforced-attacker-instruction variant.</label>
+      <div class="fib-row">
+        <input type="text" id="q4" class="fib-blank" data-answers="24,twenty-four,twenty four" aria-label="Answer for question 4">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q5"><span class="q-num">5</span> AgentDojo measured a targeted attack success rate of roughly ______% against GPT-4o across 629 realistic security test cases.</label>
+      <div class="fib-row">
+        <input type="text" id="q5" class="fib-blank" data-answers="48,forty-eight,forty eight" aria-label="Answer for question 5">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q6"><span class="q-num">6</span> Putting a tool result inside a correctly-labeled tool-role message is necessary ______, not a content-level defense by itself -- it says nothing about whether the model treats the text inside as reference information or an instruction.</label>
+      <div class="fib-row">
+        <input type="text" id="q6" class="fib-blank" data-answers="scaffolding" aria-label="Answer for question 6">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q7"><span class="q-num">7</span> Defense 6's hard rule states that no tool result can itself ______ a privileged, side-effecting action -- the deliberate backstop that doesn't depend on the other five defenses having worked.</label>
+      <div class="fib-row">
+        <input type="text" id="q7" class="fib-blank" data-answers="authorize" aria-label="Answer for question 7">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q8"><span class="q-num">8</span> Chapter 10 ships the course's real, final L3 Independent project, extending Chapter ______'s own Vesper Cloud RAG lab with a combined RAG-plus-tool-output vector.</label>
+      <div class="fib-row">
+        <input type="text" id="q8" class="fib-blank" data-answers="9,nine" aria-label="Answer for question 8">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div id="check-all-wrap">
+      <button type="button" id="check-all-btn" class="check-btn">Check All Answers</button>
+      <span id="quiz-score"></span>
+    </div>
+
+    <div class="quiz-celebration" id="quiz-celebration" aria-live="polite">
+      Perfect score. Chapter complete -- Module 4 done.
+    </div>
+  </form>
+
+  <div class="chapter-nav">
+    <a href="lesson.html">&larr; Back to Lesson</a>
+    <a href="exercises/index.html">Exercises &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+  </div>
+</footer>
+
+<script src="../../assets/quiz-engine.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/chapters-data.js"></script>
+<script src="../../assets/sidebar.js"></script>
+</body>
+</html>

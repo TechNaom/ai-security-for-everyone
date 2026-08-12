@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project: The L3 Independent Project — Combined RAG-Plus-Tool-Output Vector — AI Security for Everyone</title>
+<meta name="description" content="The course's real, final L3 Independent project: find and fix a genuinely combined RAG-plus-tool-output injection vector in an extended Vesper Cloud pipeline, no scaffold, no TODO markers, no fixed answer key.">
+<link rel="stylesheet" href="../../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-10">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../../index.html">All Chapters</a>
+      <a href="../../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="../interview-questions.html">&larr; Back to interview questions</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 10 Project — L3 Independent</span>
+    <span class="reading-time">~120 min, hands-on, no scaffold</span>
+  </div>
+  <h1>Project: The Course's L3 Independent Project — Combined RAG-Plus-Tool-Output Vector</h1>
+  <p class="lede">
+    Per the curriculum map: "find and fix a real injection vector in a
+    provided RAG pipeline or agent, no scaffold." This is that project.
+    It extends Chapter 9's own Vesper Cloud / Vesper Assistant pipeline
+    directly with a new tool call whose returned result can itself carry
+    an adversarial instruction — the same query can trigger both the
+    RAG channel's own poisoned forum post AND the new tool channel's
+    poisoned diagnostic note at once, two independent nudges toward the
+    same unauthorized action.
+  </p>
+
+  <div class="hook">
+    <p>
+      <code>project/starter.py</code> is a complete, runnable, genuinely
+      vulnerable pipeline — not a worksheet. Run it as-is and it
+      reproduces the compounding incident directly: for Vesper's real
+      incident account, both channels independently contribute a
+      privileged-action phrase to the assembled prompt, with no
+      structural or trust distinction stopping either one. There are no
+      <code>&#35; TODO</code> markers anywhere in the file. Your job is to
+      read it, trace both vectors yourself, and write your own fix.
+    </p>
+  </div>
+
+  <div class="what-is">
+    <span class="label">Why this is genuinely combined, not two labs bolted together</span>
+    The provided pipeline is vulnerable through both channels at once,
+    and for the incident account they reinforce each other — a query
+    that retrieves the Chapter 9 forum plant AND triggers the new
+    diagnostic tool call receives two structurally different pushes
+    toward the same unauthorized action. A fix that only closes one
+    channel is an incomplete fix; catching this kind of compounding risk
+    across an entire system, not one channel at a time, is exactly what
+    a real security review has to do.
+  </div>
+
+  <h2>The brief</h2>
+  <div class="lesson-card">
+    <p>
+      Vesper Assistant now also calls a third-party sync-integration
+      partner's diagnostic API to help resolve customer sync issues. A
+      recent near-miss suggests the assistant may be exposed to
+      manipulated content through more than one channel at once for the
+      same query. Review <code>project/starter.py</code>, identify every
+      vector by which untrusted content can reach the assembled prompt
+      with no structural or trust distinction, and implement a fix. Your
+      fix needs to hold up even if one of its own layers fails — assume
+      it will, eventually, and design accordingly. It also needs to not
+      break the assistant's legitimate use of either the community forum
+      or the partner diagnostic tool for ordinary, non-privileged
+      questions.
+    </p>
+  </div>
+
+  <div class="what-is">
+    <span class="label">No scaffold, on purpose — what that actually means here</span>
+    Unlike Chapter 9's project, there's no list of pre-named functions
+    with <code>&#35; TODO</code> markers, and no fixed answer key scoring your
+    work. <code>project/solution.py</code> is <strong>one valid reference
+    fix, not the only correct one</strong> — the actual bar is whether
+    your own approach closes both channels together, leaves ordinary use
+    intact, and survives a simulated failure in one of its own layers.
+    See <code>project/README.md</code> for the full task description and
+    what "done" looks like, written the way a real security-review
+    request would be, not as a fill-in-the-blank exercise.
+  </div>
+
+  <div class="download-links">
+    <a href="starter.py">starter.py</a>
+    <a href="solution.py">solution.py (one reference approach)</a>
+  </div>
+
+  <div class="what-is">
+    <span class="label">No required live-model dependency</span>
+    Every function in both files is pure, deterministic Python operating
+    on fabricated, clearly-labeled synthetic data, with zero network
+    dependency — matching this chapter's own honest disclosure (Ollama's
+    generation endpoint hung again this session, see
+    <a href="../lesson.html">lesson.html</a>). An optional
+    <code>call_model_live()</code> function is included in both files for
+    learners who want to try a real Ollama call; it degrades gracefully
+    and isn't required for, or checked by, anything else in either file.
+  </div>
+
+  <div class="points-to-remember">
+    <h2>What "done" looks like</h2>
+    <p>
+      Run your own fix against both <code>acct_7734</code> (the incident
+      account) and <code>acct_9142</code> (an ordinary account) with the
+      demo query. For the incident account, confirm no privileged-action
+      phrase reaches the model unmarked through either channel — or, if
+      one somehow does, that a final output-side check denies the
+      resulting action before it executes. For the ordinary account,
+      confirm the assistant still gets useful, non-quarantined
+      troubleshooting content — your fix should target the specific
+      vector, not disable all community-forum or tool-diagnostic content
+      wholesale. Then simulate one upstream layer failing (mislabel the
+      poisoned chunk's trust tier, or force a sanitizer flag off) and
+      confirm your final backstop alone still catches it. Compare your
+      approach against <code>solution.py</code> afterward — agreement
+      isn't required, a real justified design is.
+    </p>
+  </div>
+
+  <div class="chapter-nav">
+    <a href="../interview-questions.html">&larr; Interview Questions</a>
+    <a href="../../../index.html">All Chapters &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+    <span><a href="https://github.com/TechNaom/ai-security-for-everyone">github.com/TechNaom/ai-security-for-everyone</a></span>
+  </div>
+</footer>
+
+<script src="../../../assets/progress.js"></script>
+<script src="../../../assets/chapters-data.js"></script>
+<script src="../../../assets/sidebar.js"></script>
+</body>
+</html>

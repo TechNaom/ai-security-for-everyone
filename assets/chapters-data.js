@@ -103,7 +103,8 @@ window.AISFE_MODULES = [
         id: "chapter-10",
         num: 10,
         title: "Securing Agentic Systems Against Adversarial Tool Output",
-        description: "Extending an agent's permission model against a malicious tool result."
+        description: "Extending an agent's permission model against a malicious tool result.",
+        path: "chapters/chapter-10-securing-agentic-systems-against-adversarial-tool-output/lesson.html"
       }
     ]
   },
