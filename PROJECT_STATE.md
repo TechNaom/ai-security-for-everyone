@@ -1,6 +1,6 @@
 # PROJECT_STATE.md — AI Security for Everyone
 
-Last updated: 2026-08-10
+Last updated: 2026-08-12
 
 ## Course Objective
 
@@ -269,6 +269,54 @@ original content only).
       corpus-anomaly scanner, a query-pattern scorer, a provenance
       checker) that collectively satisfy this assessment type. Same
       judgment call as Module 1, applied consistently.
+- [x] **Chapter 9 built and live — starts Module 4**: "Securing RAG
+      Pipelines Against Injection." Goes deep on Chapter 4's own
+      "preview of that depth" line (RAG chunks as the single most
+      consequential indirect-injection channel), organizing by three
+      genuinely distinct pipeline stages instead of extending Chapter
+      4's five-channel taxonomy or Chapters 6-8's comparison-table/
+      timeline pattern — ingestion-time risk (what gets indexed, with
+      what or no review), retrieval-time risk (a pure similarity search
+      with no trust concept, the moment planted content activates), and
+      generation/output-time risk (Module 2's no-architectural-
+      separation mechanism reappearing inside RAG's own common naive
+      prompt-assembly pattern). This framing is independently validated
+      by real, current external guidance, not invented: the OWASP Cheat
+      Sheet Series' RAG Security Cheat Sheet (added 2026, confirmed live
+      via WebFetch this session) organizes its own recommended controls
+      by the identical three-stage structure. Hook: Vesper Cloud's
+      Vesper Assistant, a support RAG bot blending reviewed KB articles,
+      an unreviewed public forum, and per-session uploads, where a forum
+      post planted six weeks earlier is retrieved for an unrelated
+      query and nearly causes a support agent to bypass identity
+      verification and approve a quota override — caught by a second-
+      reviewer check, not by the pipeline itself. Six real defenses, two
+      per stage (content sanitization, provenance/trust tagging,
+      retrieval-result quarantining, namespace isolation, structural
+      separation, output-side least-privilege), grounded in real cited
+      research: OWASP LLM01:2025 and the new LLM08:2025 (Vector and
+      Embedding Weaknesses) category, Greshake et al.'s foundational
+      indirect-injection paper (arXiv:2302.12173), and Zou, Geng, Wang,
+      and Jia's PoisonedRAG (arXiv:2402.07867, USENIX Security 2025,
+      ~90-99% attack success injecting as few as five malicious texts).
+      Ollama's `/api/tags` responded normally this session but
+      `/api/chat` hung again (curl exit code 28, re-confirmed directly),
+      the same persistent issue Chapters 3-5 documented — this chapter's
+      core mechanism and defense claims are demonstrated with
+      deterministic, fully-executed code inspecting assembled prompt
+      text directly, honestly disclosed in the lesson text itself as
+      not a live-model-observed claim, following Chapter 5's exact
+      disclosure pattern; an optional `call_model_live()` bonus function
+      is included, not required for or checked by the project's
+      scoring. Ships a real, complete RAG-specific lab (find and fix the
+      exact injection vector from the lesson's own incident in a
+      provided pipeline) — explicitly and repeatedly framed as NOT the
+      course's final L3 Independent project, which ships after Chapter
+      10 per CURRICULUM_MAP.md's Projects section, following the same
+      "short preview, real project ships next chapter" pattern used for
+      the L1 project across Chapters 1-2. 8 exercises (5
+      production-gear), 8 practice scenarios, 8 interview questions
+      across all 4 levels.
 
 ## Pending / Not Started
 
@@ -283,9 +331,11 @@ are now done; keeping this section current rather than stale.)
 - [x] Website (root `index.html`, styled roadmap) — built as part of
       the initial scaffold, not deferred to a later step (a gap found
       late in `ai-coding-agents-for-everyone`'s build, avoided here).
-- [ ] Chapter 8 ("Supply-Chain Risk," Module 3) — completes Module 3.
-      See "Next Recommended Task" below for full detail.
-- [ ] Chapters 9-13 (Modules 4-6) — not yet built.
+- [x] Chapter 8 ("Supply-Chain Risk," Module 3) — completes Module 3.
+- [x] Chapter 9 ("Securing RAG Pipelines Against Injection," Module 4) —
+      starts Module 4. See "Next Recommended Task" below for the
+      Chapter 10 brief.
+- [ ] Chapters 10-13 (rest of Module 4, Modules 5-6) — not yet built.
 - [ ] Module 3's written exam (if warranted — pending the Module 3
       assessment-type judgment call, see "Next Recommended Task").
 - [ ] Capstone (Chapter 13).
@@ -318,36 +368,62 @@ writing).
 
 ## Next Recommended Task
 
-**Modules 1-3 (Chapters 1-8, the Module 2 written exam) are complete;
-Module 3 confirmed not needing a separate written exam (same judgment
-as Module 1).** Next: Module 4 — Chapter 9 ("Securing RAG Pipelines
-Against Injection," Advanced), then Chapter 10 ("Securing Agentic
-Systems Against Adversarial Tool Output," Advanced). Per
-CURRICULUM_MAP.md, Module 4's purpose is applying this course's depth
-to the two system shapes most real LLM products actually take — this
-is a RETURN to runtime attacks (Module 2's territory), not a new
-pipeline-surface chapter like Module 3 was. Read Chapter 4 (indirect
-injection, which already covered RAG as one of five delivery channels)
-and Chapter 9 of `ai-coding-agents-for-everyone` (a SIBLING course
-covering MCP/agentic tool connection — structural reference only, not
-content) if useful for grounding, but Chapter 9 here should go DEEPER
-on RAG-specific injection defense than Chapter 4's brief channel
-mention did — this is the payoff chapter for that specific delivery
-channel. Chapter 10 similarly deepens what Chapter 1's Excessive
-Agency (LLM06) section and Module 3's tool-trust material touched.
+**Chapter 9 ("Securing RAG Pipelines Against Injection," Module 4,
+Advanced) is complete and live, starting Module 4.** Next: Chapter 10
+("Securing Agentic Systems Against Adversarial Tool Output," Module 4,
+Advanced) — completes Module 4 AND ships the course's real L3
+Independent project ("find and fix a real injection vector in a
+provided RAG pipeline or agent, no scaffold") per
+`docs/curriculum/CURRICULUM_MAP.md`'s Projects section. This is the
+one this course has been previewing since Chapter 9's own project was
+explicitly framed as real-but-not-final.
 
-**Important**: Module 4's L3 Independent project ("find and fix a real
-injection vector in a provided RAG pipeline or agent, no scaffold")
-ships after CHAPTER 10, not Chapter 9 — per
-`docs/curriculum/CURRICULUM_MAP.md`'s Projects section. Chapter 9's own
-project should be a real, substantial RAG-specific lab (finding/fixing
-a RAG-corpus injection vector) but should NOT be the final L3
-deliverable — that combines both RAG and agentic/tool-output angles
-and belongs in Chapter 10. Follow the same "short preview, real
-project ships in the next chapter" pattern this course used for the L1
-project across Chapters 1-2.
+**What Chapter 10 needs to do, concretely:**
 
-Check Ollama status before writing (RAG-injection content may
-plausibly want a live-model demonstration, unlike Module 3's chapters
-— use judgment, and if attempted, follow the same honest-disclosure
-discipline as every Module 2 chapter if it's still hanging).
+1. Deepen what Chapter 1's Excessive Agency (LLM06) section and Module
+   3's tool-trust material (Chapter 8's Category 3, specifically scoped
+   away from runtime tool-output defenses at the time) only touched —
+   an agent's runtime defenses against an adversarial tool *result*,
+   distinct from Chapter 8's adoption-time trust decision to connect a
+   tool in the first place. Chapter 8's lesson text itself already
+   drew this exact line ("Module 4's future agentic-systems chapter
+   will cover an agent's runtime defenses against an adversarial tool
+   result... This category [Ch8's Category 3] is about the decision
+   made before either of those defenses ever gets a chance to run") —
+   read that section before writing Chapter 10 to avoid re-deriving or
+   contradicting it.
+2. **Build directly on Chapter 9's Vesper Cloud RAG lab, don't start a
+   new pipeline from scratch.** Chapter 9's project (`chapters/
+   chapter-09-securing-rag-pipelines-against-injection/project/`)
+   ships a working, tested RAG pipeline (naive + six-defense-secured)
+   for Vesper Assistant. Chapter 10's real L3 project should extend
+   that exact pipeline with an agentic/tool-output angle — e.g., give
+   Vesper Assistant a tool call (an account-lookup or ticket-update
+   API) whose *returned result* can itself carry an adversarial
+   instruction, the same way a retrieved RAG chunk can, and require the
+   learner to find and fix an injection vector spanning BOTH channels
+   (a poisoned retrieved chunk AND a poisoned tool result) with no
+   scaffold — genuinely combining Chapter 9's RAG depth with Chapter
+   10's own agentic depth, not just two separate labs bolted together.
+3. Check Ollama status fresh at the start of that session (don't assume
+   Chapter 9's `curl` result — it was `/api/tags` OK, `/api/chat` hung,
+   exit code 28) and follow the same honest-disclosure discipline as
+   every prior chapter that hit this if it's still hanging.
+4. A new fictional org for Chapter 10's own lesson hook, distinct from
+   every org already used across Chapters 1-9 (GreenCart, Waypoint,
+   AskHR, Anchorline, Northline Digest, Meridian, Halcyon, Solstice,
+   Coppervale, Vesper Cloud, Thornbury Legal, and the eight Chapter 9
+   practice-bank orgs) — though the L3 project itself should stay on
+   Vesper Cloud, per point 2 above, since it's explicitly extending
+   Chapter 9's own lab.
+5. After Chapter 10, decide whether Module 4 needs a separate written
+   exam (`assessments/written-exams/module-4-exam.*`) or whether the
+   L3 project satisfies the assessment type the way Chapters 1-2's and
+   6-8's projects did for Modules 1 and 3 — Module 4's `examPath` is
+   currently `null` in `assets/chapters-data.js`, left that way
+   deliberately since it's shared between Chapters 9-10.
+
+Then Module 5 (Chapters 11-12: red-teaming, output handling), then
+Chapter 13 (capstone). Continue module by module, validating each with
+a `quality-audits/chapter-0N-audit.md` before moving on. Don't
+mass-generate ahead of validation.
