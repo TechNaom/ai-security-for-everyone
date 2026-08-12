@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project: Find and Fix a RAG-Corpus Injection Vector — AI Security for Everyone</title>
+<meta name="description" content="Build the real fix for a RAG-corpus injection vector: implement content sanitization, query-sensitivity classification, retrieval-result quarantining, structural separation, and output-side least-privilege enforcement against a naive, vulnerable Vesper Cloud RAG pipeline -- and prove the fix works with real, executed output.">
+<link rel="stylesheet" href="../../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-09">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../../index.html">All Chapters</a>
+      <a href="../../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="../interview-questions.html">&larr; Back to interview questions</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 9 Project</span>
+    <span class="reading-time">~90 min, hands-on</span>
+  </div>
+  <h1>Project: Find and Fix a RAG-Corpus Injection Vector</h1>
+  <p class="lede">
+    Build the real fix for the exact incident the lesson walked through: a
+    provided, deliberately naive RAG pipeline for Vesper Assistant, plus a
+    synthetic corpus containing a planted injection modeled directly on
+    <code>quietstorm77</code>'s forum post. Trace the vector through all
+    three pipeline stages, then implement five real defense functions —
+    Defenses 1, 3, 5, and 6, made concrete — and prove, with real executed
+    output, that your fix closes the vector without breaking the
+    assistant's legitimate use of community content.
+  </p>
+
+  <div class="hook">
+    <p>
+      The target is <strong>Vesper Cloud's Vesper Assistant</strong>,
+      continuing the lesson's own scenario. The naive retrieval and
+      prompt-assembly functions, the synthetic six-chunk corpus, and the
+      exact incident query are already written for you in
+      <code>starter.py</code> — running them as-is reproduces the
+      lesson's incident: the poisoned forum chunk gets retrieved and its
+      planted instruction reaches the model with no structural or trust
+      distinction at all. Your job is to build the defense functions
+      around it.
+    </p>
+  </div>
+
+  <div class="what-is">
+    <span class="label">This is Chapter 9's own real, complete project — not the final L3 project</span>
+    Per this course's curriculum map, the L3 Independent project ("find
+    and fix a real injection vector in a provided RAG pipeline or agent,
+    no scaffold") ships after Chapter 10, which extends this exact
+    pipeline with the agentic/tool-output angle for a genuinely combined
+    challenge. This project is real and complete on its own — every
+    defense below is implemented, tested, and produces directly
+    observable, executed output — the same "short preview, real project
+    ships next chapter" pattern this course used for the L1 project
+    across Chapters 1-2.
+  </div>
+
+  <h2>Your task</h2>
+  <p>Download <code>starter.py</code> and fill in its five parts:</p>
+  <div class="task-card">
+    <h3><span class="task-num">1</span> <code>sanitize_content()</code></h3>
+    <p>Flag a chunk if it contains any instruction-like pattern addressed to an assistant/system (Defense 1).</p>
+  </div>
+  <div class="task-card">
+    <h3><span class="task-num">2</span> <code>is_query_sensitive()</code></h3>
+    <p>Classify whether a query touches a privileged-action topic, broadly by keyword — supports Defense 3's quarantining.</p>
+  </div>
+  <div class="task-card">
+    <h3><span class="task-num">3</span> <code>quarantine_filter()</code></h3>
+    <p>For a sensitivity-flagged query, exclude any chunk whose source wasn't independently reviewed (Defense 3).</p>
+  </div>
+  <div class="task-card">
+    <h3><span class="task-num">4</span> <code>build_prompt_secure()</code></h3>
+    <p>Wrap retrieved content in structural delimiters, reinforcing "reference material, not instructions" both before and after the retrieved content (Defense 5).</p>
+  </div>
+  <div class="task-card">
+    <h3><span class="task-num">5</span> <span class="badge-coming-soon">Production-gear</span> <code>enforce_least_privilege()</code></h3>
+    <p>The final backstop: block any privileged-action phrase from reaching the model, regardless of source or trust tier — deliberately independent of whether the earlier defenses already caught it (Defense 6).</p>
+  </div>
+
+  <div class="what-is">
+    <span class="label">What the finished report shows</span>
+    Four report sections: <strong>Step A</strong> — the defense
+    functions' own logic self-test against small, synthetic cases (11
+    checks); <strong>Step B</strong> — the naive pipeline run against the
+    real incident query, reproducing the vulnerability; <strong>Step
+    C</strong> — the secure pipeline run against the same query, showing
+    quarantining excludes the poisoned chunk and output validation
+    reports ALLOWED; <strong>Step D</strong> — a defense-in-depth check
+    simulating a quarantine failure, showing the least-privilege backstop
+    still catches the planted phrase and denies it.
+  </div>
+
+  <div class="what-is">
+    <span class="label">No required live-model dependency</span>
+    Every defense function operates on fabricated, clearly-labeled text
+    with zero network dependency — matching this chapter's own honest
+    disclosure (Ollama's generation endpoint hung again this session, see
+    <a href="../lesson.html">lesson.html</a>). An optional
+    <code>call_model_live()</code> function is included for learners who
+    want to try a real Ollama call; it degrades gracefully and isn't
+    required for, or checked by, <code>verify_logic()</code>.
+  </div>
+
+  <div class="download-links">
+    <a href="starter.py">starter.py</a>
+    <a href="solution.py">solution.py (reference)</a>
+  </div>
+
+  <div class="points-to-remember">
+    <h2>What "done" looks like</h2>
+    <p>
+      <code>verify_logic()</code> reports 11/11 with all five parts
+      filled in correctly. Then run the full report and confirm for
+      yourself: Step B's naive pipeline reports <code>Vulnerable: True</code>
+      against the real incident query; Step C's secure pipeline reports
+      <code>Query flagged sensitive: True</code>, excludes
+      <code>forum_poisoned_note</code> from the surviving chunks, and
+      reports an <code>ALLOWED</code> output-validation verdict; Step D's
+      simulated quarantine bypass still reports <code>DENIED</code> from
+      <code>enforce_least_privilege()</code> alone. Then check one more
+      thing the report doesn't print for you: run <code>is_query_sensitive()</code>
+      and <code>quarantine_filter()</code> against an ordinary, non-sensitive
+      query and confirm <code>forum_legit_tip</code> — a genuinely
+      harmless community tip — is never excluded. That's the actual point
+      of this project: a real fix closes the specific vector from the
+      lesson's incident without making all community-sourced content
+      unusable, and it survives even a simulated failure in one of its
+      own earlier layers.
+    </p>
+  </div>
+
+  <div class="chapter-nav">
+    <a href="../interview-questions.html">&larr; Interview Questions</a>
+    <a href="../../../index.html">All Chapters &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+    <span><a href="https://github.com/TechNaom/ai-security-for-everyone">github.com/TechNaom/ai-security-for-everyone</a></span>
+  </div>
+</footer>
+
+<script src="../../../assets/progress.js"></script>
+<script src="../../../assets/chapters-data.js"></script>
+<script src="../../../assets/sidebar.js"></script>
+</body>
+</html>

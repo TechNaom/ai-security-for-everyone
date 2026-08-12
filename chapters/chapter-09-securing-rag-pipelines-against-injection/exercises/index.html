@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Securing RAG Pipelines Exercises — AI Security for Everyone</title>
+<meta name="description" content="Hands-on exercises for Securing RAG Pipelines Against Injection.">
+<link rel="stylesheet" href="../../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-09">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../../index.html">All Chapters</a>
+      <a href="../../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="../quiz.html">&larr; Back to the quiz</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 9 Exercises</span>
+    <span class="reading-time">~40 min, hands-on</span>
+  </div>
+  <h1>Exercises: Securing RAG Pipelines Against Injection</h1>
+  <p>
+    These exercises use a new scenario, deliberately different from the
+    lesson's Vesper Cloud / Vesper Assistant example:
+    <strong>Thornbury Legal Research</strong>, a fictional law firm whose
+    CaseLens assistant blends reviewed firm memos, an unreviewed
+    third-party case-law feed, and per-matter client uploads into one
+    retrieval index. You'll classify scenarios by pipeline stage, compute
+    a real quarantine score from raw signals, judge honest claims versus
+    overclaims, match defenses to scenarios, match stages to their
+    defense, critique flawed reports, and match real research findings to
+    their actual published source.
+  </p>
+
+  <div class="what-is">
+    <span class="label">Exercise standard</span>
+    Eight tasks total. Five are marked production-gear — real
+    quarantine-score computation, defense/scenario matching, critiquing
+    flawed reports, research citation matching, and written reasoning —
+    not just concept recall.
+  </div>
+
+  <div class="what-is">
+    <span class="label">How to run these</span>
+    Download <code>starter.py</code>, fill in every <code>&#35; TODO</code>,
+    then run <code>python3 starter.py</code> to see an automated score
+    report. Compare against <code>solution.py</code>, which scores a
+    perfect 27/27.
+  </div>
+
+  <div class="download-links">
+    <a href="starter.py">starter.py</a>
+    <a href="solution.py">solution.py (reference)</a>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">1</span> Classify scenarios by pipeline stage</h3>
+    <p>Sort six scenarios into ingestion-time, retrieval-time, generation/output-time risk, or "not RAG-specific at all."</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">2</span> <span class="badge-coming-soon">Production-gear</span> Compute a real quarantine score</h3>
+    <p>Given four raw pass/fail signals (source reviewed, checksum stable, query flagged sensitive, structural tags present), compute a composite quarantine-risk score — real arithmetic, the same signal a real RAG triage tool computes.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">3</span> Honest claim vs. overclaim</h3>
+    <p>For four described defense claims, decide which are honest, limit-aware statements and which overclaim what a single defense actually guarantees.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">4</span> <span class="badge-coming-soon">Production-gear</span> Match defense to scenario</h3>
+    <p>Given four scenarios, name the single best-fit defense from this chapter's six.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">5</span> Match stage to its defense</h3>
+    <p>Map two of the three pipeline stages to the defense this chapter names as operating there most directly.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">6</span> <span class="badge-coming-soon">Production-gear</span> Critique flawed reports</h3>
+    <p>Given four report excerpts, decide which contain a real reasoning gap (an overclaim, or the wrong evidence for the claim) and which are sound.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">7</span> <span class="badge-coming-soon">Production-gear</span> Research citation matching</h3>
+    <p>Match four real, published-research/guidance findings to their actual source — OWASP's Top 10, Greshake et al., PoisonedRAG, or OWASP's RAG Security Cheat Sheet.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">8</span> <span class="badge-coming-soon">Production-gear</span> Written reasoning</h3>
+    <p>Write a real, justified sentence explaining why namespace isolation alone doesn't close within-namespace content-trust risk.</p>
+  </div>
+
+  <div class="chapter-nav">
+    <a href="../quiz.html">&larr; Back to Quiz</a>
+    <a href="../practice/index.html">Practice Bank &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+  </div>
+</footer>
+
+<script src="../../../assets/progress.js"></script>
+<script src="../../../assets/chapters-data.js"></script>
+<script src="../../../assets/sidebar.js"></script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Securing RAG Pipelines Practice Bank — AI Security for Everyone</title>
+<meta name="description" content="Eight fast scenario-based practice items for Securing RAG Pipelines Against Injection.">
+<link rel="stylesheet" href="../../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-09">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../../index.html">All Chapters</a>
+      <a href="../../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="../exercises/index.html">&larr; Back to exercises</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 9 Practice Bank</span>
+    <span class="reading-time">~25 min, judgment practice</span>
+  </div>
+  <h1>Practice Bank: Securing RAG Pipelines Against Injection</h1>
+  <p>
+    Eight short, independent scenarios, each with its own fictional
+    system — none of them Vesper Cloud / Vesper Assistant (the lesson) or
+    Thornbury Legal Research / CaseLens (the exercises). The first five
+    drill fast, accurate classification of pipeline stages and defenses;
+    the last three test real judgment: whether a claim is honestly
+    limit-aware, and how to prioritize a fix under launch time pressure.
+  </p>
+
+  <div class="what-is">
+    <span class="label">Why this bank leans on judgment, not recall</span>
+    Deciding whether a RAG-defense claim is well-supported is a judgment
+    skill, not a lookup — a control that's technically in place (isolated
+    namespaces, an ingestion scanner) can still support a wrong or
+    incomplete conclusion if it doesn't account for what that specific
+    control actually rules out. Scenarios 6-8 are built so there's no
+    single keyword to pattern-match against; you have to reason about
+    what a given control actually covers, and at which pipeline stage it
+    operates.
+  </div>
+
+  <div class="what-is">
+    <span class="label">How to run these</span>
+    Download <code>starter.py</code>, fill in every <code>&#35; TODO</code>,
+    then run <code>python3 starter.py</code> to see an automated score
+    report. Compare against <code>solution.py</code>, which scores a
+    perfect 9/9.
+  </div>
+
+  <div class="download-links">
+    <a href="starter.py">starter.py</a>
+    <a href="solution.py">solution.py (reference)</a>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 1</span>
+    <h3>Larkhollow Media</h3>
+    <p>A streaming platform's nightly job adds every new user review directly to its recommendation assistant's index, with no review step and no distinction from editorially-written show summaries. Which pipeline stage does this risk belong to?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 2</span>
+    <h3>Fennimore University</h3>
+    <p>An academic-advising bot's query about a "prerequisite override" retrieves a forum post from an anonymous student account purely because of keyword overlap with "override," with no concept of who posted it. Which pipeline stage?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 3</span>
+    <h3>Briarstone Bank</h3>
+    <p>A support bot's prompt-assembly code concatenates retrieved KB articles and forum posts directly into the prompt text with no delimiters, so a planted instruction inside a forum chunk is indistinguishable from the bank's own system instructions. Which pipeline stage?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 4</span>
+    <h3>Copperfield Realty</h3>
+    <p>A real-estate assistant recommends waiving a standard buyer-verification step based solely on wording found in a retrieved, unreviewed agent note, with no independent check anywhere in the pipeline. Which single defense would have stopped this most directly?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 5</span>
+    <h3>Slate Peak Outdoors</h3>
+    <p>Every chunk in a retail support bot's index is tagged at ingestion with its source (product manual vs. customer review) and whether it was reviewed, queryable by every later pipeline stage. Which single defense is this?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 6 &middot; Judgment</span>
+    <h3>Ivywood Pharmacy Network</h3>
+    <p>Ivywood's engineering team says: "We sanitize all content for instruction-like patterns at ingestion, so no injected instruction can ever reach our model." Is this conclusion sound?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 7 &middot; Judgment</span>
+    <h3>Wrenfield Aviation</h3>
+    <p>Wrenfield keeps its maintenance-manual index and its technician-forum index in separate, non-cross-searchable namespaces, and concludes: "Since the indexes are isolated, any content retrieved from either one is fully vetted." Is this conclusion sound?</p>
+  </div>
+
+  <div class="scenario-card">
+    <span class="scenario-tag">Scenario 8 &middot; Judgment, Production-gear</span>
+    <h3>Hollowbrook Nonprofit</h3>
+    <p>Hollowbrook is three weeks from launching a donor-support assistant. Right now: there is zero query-sensitivity classification before retrieval, AND the prompt-assembly code does raw concatenation with no structural tags. The team has also decided that blending donor-uploaded documents with public forum posts in one unscoped index is an acceptable gap to document and revisit post-launch. Given limited time, which single fix has the higher expected impact, and which gap is the one being explicitly accepted as residual risk for now?</p>
+  </div>
+
+  <div class="chapter-nav">
+    <a href="../exercises/index.html">&larr; Exercises</a>
+    <a href="../interview-questions.html">Interview Questions &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+  </div>
+</footer>
+
+<script src="../../../assets/progress.js"></script>
+<script src="../../../assets/chapters-data.js"></script>
+<script src="../../../assets/sidebar.js"></script>
+</body>
+</html>

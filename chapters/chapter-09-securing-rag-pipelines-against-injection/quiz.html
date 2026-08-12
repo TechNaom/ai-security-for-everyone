@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Securing RAG Pipelines Quiz — AI Security for Everyone</title>
+<meta name="description" content="Interactive quiz for Securing RAG Pipelines Against Injection.">
+<link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-09" data-chapter-id="chapter-09">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../index.html">All Chapters</a>
+      <a href="../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="lesson.html">&larr; Back to the lesson</a></p>
+
+  <span class="chapter-badge">Chapter 9 Quiz</span>
+  <h1>Securing RAG Pipelines Against Injection</h1>
+  <p>Fill in each blank, then check your answers. A perfect score marks this chapter complete.</p>
+
+  <div class="quiz-progress-wrap" aria-hidden="true">
+    <div class="quiz-progress-fill" id="quiz-progress-fill"></div>
+  </div>
+
+  <form onsubmit="return false;">
+
+    <div class="quiz-question">
+      <label for="q1"><span class="q-num">1</span> This chapter organizes RAG-specific risk by three pipeline ______: ingestion, retrieval, and generation/output.</label>
+      <div class="fib-row">
+        <input type="text" id="q1" class="fib-blank" data-answers="stages,stage" aria-label="Answer for question 1">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q2"><span class="q-num">2</span> Retrieval is a ______ search, not a trust check -- a chunk scores high because its embedding is close to the query's, which says nothing about whether its author had any right to instruct the model.</label>
+      <div class="fib-row">
+        <input type="text" id="q2" class="fib-blank" data-answers="similarity" aria-label="Answer for question 2">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q3"><span class="q-num">3</span> OWASP's ______:2025 category, Vector and Embedding Weaknesses, is new to the current Top 10 for LLM Applications and was added specifically because RAG architectures went mainstream.</label>
+      <div class="fib-row">
+        <input type="text" id="q3" class="fib-blank" data-answers="LLM08,llm08" aria-label="Answer for question 3">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q4"><span class="q-num">4</span> Greshake et al.'s foundational paper established ______ prompt injection through retrieved content as a real, remotely exploitable attack class (arXiv:2302.12173).</label>
+      <div class="fib-row">
+        <input type="text" id="q4" class="fib-blank" data-answers="indirect" aria-label="Answer for question 4">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q5"><span class="q-num">5</span> PoisonedRAG (Zou, Geng, Wang, and Jia) achieved roughly 90% attack success by injecting as few as ______ malicious texts into a knowledge database of millions of documents.</label>
+      <div class="fib-row">
+        <input type="text" id="q5" class="fib-blank" data-answers="five,5" aria-label="Answer for question 5">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q6"><span class="q-num">6</span> Defense 5, structural separation, wraps retrieved content in explicit delimiters and reinforces the "this is data, not instructions" framing both before AND ______ the retrieved content in the prompt.</label>
+      <div class="fib-row">
+        <input type="text" id="q6" class="fib-blank" data-answers="after" aria-label="Answer for question 6">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q7"><span class="q-num">7</span> Defense 6's hard rule states that retrieved content should never, by itself, ______ a privileged, side-effecting action -- the deliberate backstop that doesn't depend on the other five defenses having worked.</label>
+      <div class="fib-row">
+        <input type="text" id="q7" class="fib-blank" data-answers="authorize" aria-label="Answer for question 7">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q8"><span class="q-num">8</span> Chapter 9's own project is a real, complete RAG-specific lab, but the course's final L3 Independent project ships after Chapter ______, which extends it with the agentic/tool-output angle.</label>
+      <div class="fib-row">
+        <input type="text" id="q8" class="fib-blank" data-answers="10,ten" aria-label="Answer for question 8">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div id="check-all-wrap">
+      <button type="button" id="check-all-btn" class="check-btn">Check All Answers</button>
+      <span id="quiz-score"></span>
+    </div>
+
+    <div class="quiz-celebration" id="quiz-celebration" aria-live="polite">
+      Perfect score. Chapter complete.
+    </div>
+  </form>
+
+  <div class="chapter-nav">
+    <a href="lesson.html">&larr; Back to Lesson</a>
+    <a href="exercises/index.html">Exercises &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+  </div>
+</footer>
+
+<script src="../../assets/quiz-engine.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/chapters-data.js"></script>
+<script src="../../assets/sidebar.js"></script>
+</body>
+</html>

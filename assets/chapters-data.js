@@ -96,7 +96,8 @@ window.AISFE_MODULES = [
         id: "chapter-09",
         num: 9,
         title: "Securing RAG Pipelines Against Injection",
-        description: "Injection risk carried through retrieved documents."
+        description: "Injection risk carried through retrieved documents.",
+        path: "chapters/chapter-09-securing-rag-pipelines-against-injection/lesson.html"
       },
       {
         id: "chapter-10",
