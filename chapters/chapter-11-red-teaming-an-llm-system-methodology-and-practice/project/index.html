@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Red-Team Engagement Project — AI Security for Everyone</title>
+<meta name="description" content="Chapter 11 project: a structured red-team engagement and findings report against Alderglen Financial's Ledger Copilot, graded against a rubric -- Module 5's own new deliverable shape.">
+<link rel="stylesheet" href="../../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-11">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../../index.html">All Chapters</a>
+      <a href="../../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="../interview-questions.html">&larr; Back to interview questions</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 11 Project</span>
+    <span class="reading-time">~90 min, hands-on</span>
+  </div>
+  <h1>Project: Red-Team Engagement Against Ledger Copilot</h1>
+  <p>
+    Module 5's own new deliverable shape — per the curriculum map, "a
+    full red-team exercise against a provided target, with a real
+    findings report," assessed by "a red-team report graded against a
+    rubric," not a find-and-fix lab like Chapters 9-10's.
+  </p>
+
+  <div class="what-is">
+    <span class="label">The target</span>
+    <code>starter.py</code> ships a complete, runnable, intentionally
+    vulnerable version of <strong>Ledger Copilot</strong>, Alderglen
+    Financial's internal assistant — a fresh, self-contained target with
+    three planted vulnerabilities mirroring three techniques this course
+    already taught: indirect prompt injection via a wiki chunk (Chapter
+    4/9), adversarial tool output via an account note (Chapter 10), and
+    system-prompt flag leakage (Chapter 3).
+  </div>
+
+  <div class="what-is">
+    <span class="label">What you do</span>
+    Run the target as-is, then implement Phase 3 (execute and record),
+    Phase 4 (classify severity), and Phase 5 (write the findings report)
+    — Phase 1 (scope) and Phase 2 (test-case design) are already provided
+    in <code>starter.py</code>. Grade your finished report against
+    <code>RUBRIC.md</code>'s five criteria.
+  </div>
+
+  <div class="download-links">
+    <a href="starter.py">starter.py</a>
+    <a href="solution.py">solution.py (reference)</a>
+    <a href="RUBRIC.md">RUBRIC.md</a>
+    <a href="README.md">README.md (full brief)</a>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">1</span> Run the raw target</h3>
+    <p><code>python3 starter.py</code> demonstrates all three vulnerabilities against the deterministic target with zero edits needed.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">2</span> Implement Phase 3 — execution and documentation</h3>
+    <p>Fill in <code>run_test_case()</code> to call the target and record the real observed result for each test case.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">3</span> Implement Phase 4 — severity classification</h3>
+    <p>Fill in <code>classify_severity()</code> using the same likelihood-times-impact rubric as the exercises.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">4</span> Implement Phase 5 — the findings report</h3>
+    <p>Fill in <code>write_finding_report_entry()</code> with real reproduction steps, evidence, severity, and a recommended fix pointing back to the correct chapter's real defense.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">5</span> Complete and self-grade the report</h3>
+    <p>Add an executive summary and severity-ordered remediation list, then grade the finished report against <code>RUBRIC.md</code>'s five criteria (target: 18-20/20).</p>
+  </div>
+
+  <p>See <a href="README.md">README.md</a> for the full brief and <a href="RUBRIC.md">RUBRIC.md</a> for the complete grading rubric.</p>
+
+  <div class="chapter-nav">
+    <a href="../interview-questions.html">&larr; Back to Interview Questions</a>
+    <a href="../../../index.html">All Chapters &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+    <span><a href="https://github.com/TechNaom/ai-security-for-everyone">github.com/TechNaom/ai-security-for-everyone</a></span>
+  </div>
+</footer>
+
+<script src="../../../assets/progress.js"></script>
+<script src="../../../assets/chapters-data.js"></script>
+<script src="../../../assets/sidebar.js"></script>
+</body>
+</html>

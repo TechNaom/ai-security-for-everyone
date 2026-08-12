@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Red-Teaming an LLM System: Methodology and Practice — AI Security for Everyone</title>
+<meta name="description" content="Starts Module 5: a structured red-teaming methodology -- scoping and rules of engagement, threat-model-driven test-case design built on Chapter 1's OWASP Top 10 framework, systematic execution and documentation, severity classification, and writing a real findings report -- drawing on Chapters 3-10's own attack taxonomy as the arsenal, not re-teaching new attacks. Grounded in real, cited, current sources: the OWASP GenAI Security Project's GenAI Red Teaming Guide, NIST AI RMF's Generative AI Profile, Microsoft's Lessons from Red Teaming 100 Generative AI Products, OpenAI's approach to external red teaming, and Anthropic's Frontier Red Team methodology. Ships a rubric-graded findings-report lab against Alderglen Financial's Ledger Copilot.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-11">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../index.html">All Chapters</a>
+      <a href="../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="../../index.html">&larr; Back to all chapters</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 11</span>
+    <span class="badge-difficulty">Advanced</span>
+    <span class="reading-time">~48 min</span>
+  </div>
+
+  <h1>Red-Teaming an LLM System: Methodology and Practice</h1>
+  <p class="lede">
+    Chapters 1-10 built a deep, mechanistic arsenal: direct and indirect
+    prompt injection, jailbreaking, data poisoning, model extraction,
+    supply-chain risk, RAG-pipeline injection, and adversarial tool
+    output — each with real, cited attacks and real, cited defenses.
+    This chapter does not add a new attack family. It teaches the
+    <strong>process</strong> that turns that arsenal into a structured,
+    repeatable, defensible red-team exercise: how to scope one, how to
+    design test cases from a threat model instead of improvising, how to
+    execute and document systematically, how to classify what you find,
+    and how to write a findings report a real engineering team can act
+    on. This starts Module 5, whose own assessment is a genuinely new
+    shape for this course — a red-team report, graded against a rubric.
+  </p>
+
+  <nav class="page-toc" aria-label="On this page">
+    <span class="toc-label">On this page</span>
+    <a href="#hook">1. Alderglen Financial's unscoped afternoon</a>
+    <a href="#boundary">2. Why this is a process chapter, not a new attack chapter</a>
+    <a href="#methodology">3. A five-phase red-teaming methodology</a>
+    <a href="#research">4. What the real, cited methodology sources say</a>
+    <a href="#arsenal">5. This course's own arsenal, mapped to the OWASP Top 10</a>
+    <a href="#lab">6. The lab: a red-team engagement and findings report against Ledger Copilot</a>
+    <a href="#thought-process">7. GenAI Builder Thought Process</a>
+    <a href="#recap-points">8. Points to remember</a>
+  </nav>
+
+  <div class="hook" id="hook">
+    <p>
+      <strong>Alderglen Financial</strong> is a fictional regional bank.
+      Its relationship managers use <strong>Ledger Copilot</strong>, an
+      internal assistant that answers policy questions from an internal
+      knowledge wiki and can look up a customer account's relationship-
+      manager notes through a tool call. Six weeks before a planned
+      external launch of a customer-facing version, Alderglen's head of
+      engineering asked a security-minded engineer to "just try to break
+      it before we ship" — no scope document, no rules of engagement, no
+      deadline, no agreed severity scale. Two days of genuinely
+      resourceful, technically sound probing followed: a direct-injection
+      jailbreak attempt lifted straight from Chapter 3's mechanism, a
+      wiki-chunk indirect-injection test in the spirit of Chapter 4 and
+      Chapter 9, and a manual check of whether the account-notes tool
+      could be coaxed into leaking another customer's data.
+    </p>
+    <p>
+      The findings were real. The write-up wasn't usable. It was a
+      Slack thread: a paragraph of prose per finding, no severity
+      ratings, no reproduction steps precise enough for someone else to
+      re-run, and no distinction between "this is a five-minute config
+      fix" and "this requires re-architecting how tool results reach the
+      model." Engineering leadership's honest reaction wasn't "thank you,
+      we'll prioritize this" — it was "we don't know what to do with
+      this." The launch date didn't move. Two of the four real findings
+      got fixed before launch, by luck of which ones happened to be
+      easiest to act on from the prose alone; the other two, including
+      the more severe one, sat unaddressed for months because nobody
+      could tell from the write-up how bad it actually was relative to
+      everything else competing for the same engineering time.
+    </p>
+    <p>
+      Nothing about this was a skills problem. Every technique the
+      engineer used was sound, and every finding was real. What was
+      missing was <em>process</em> — a scope agreed in advance, test
+      cases derived from a threat model instead of improvisation,
+      systematic documentation as testing happened rather than
+      reconstructed from memory afterward, a real severity scale applied
+      consistently, and a report structured so a reader who wasn't in the
+      room could act on it. That gap — real technique, no process — is
+      exactly what this chapter closes.
+    </p>
+  </div>
+
+  <section id="boundary" class="subtopic">
+    <h2>Why This Is a Process Chapter, Not a New-Attack Chapter</h2>
+    <div class="what-is">
+      <span class="label">The relationship this chapter has to Chapters 2 and 5</span>
+      This is the same "process/methodology chapter building on established
+      mechanism" pattern this course has already used twice. Chapter 2 didn't
+      re-teach Chapter 1's OWASP Top 10 categories — it taught the
+      <em>method</em> of mapping a real feature's attack surface using that
+      framework. Chapter 5 didn't re-teach Chapters 3-4's injection and
+      jailbreak techniques — it taught the <em>method</em> of evaluating
+      whether a defense actually stops what it claims to. This chapter is
+      the third instance of that pattern: it doesn't re-derive direct
+      injection (Chapter 3), indirect injection or jailbreaking (Chapter 4),
+      data poisoning (Chapter 6), model extraction (Chapter 7), supply-chain
+      risk (Chapter 8), RAG-pipeline injection (Chapter 9), or adversarial
+      tool output (Chapter 10). It teaches the <em>method</em> of running a
+      structured exercise that draws on all of them.
+    </div>
+    <p>
+      That distinction matters for a practical reason, not just a tidy
+      one: a red-teamer who knows every attack technique in isolation but
+      has no process still produces exactly what Alderglen's engineer
+      produced — real findings, unusable output. A red-teamer with a
+      real process but a thinner technique arsenal will still produce an
+      actionable report, just a shorter one. Process is the
+      force-multiplier that turns individual technique knowledge into
+      something an organization can actually use, which is why this
+      chapter is worth a full chapter on its own even though it
+      introduces zero new attack mechanisms.
+    </p>
+  </section>
+
+  <section id="methodology" class="subtopic">
+    <h2>A Five-Phase Red-Teaming Methodology</h2>
+    <p>
+      Every real methodology cited in the next section — OWASP's, NIST's,
+      Microsoft's, OpenAI's, Anthropic's — converges on some version of
+      the same shape: agree the scope before testing, design tests from a
+      real threat model, execute and document as you go, classify what
+      you find by real severity, and write it up so someone else can act
+      on it without having watched you work. This chapter organizes that
+      shape into five phases.
+    </p>
+
+    <div class="lesson-card">
+      <h3>Phase 1 — Scoping and Rules of Engagement</h3>
+      <p>
+        <strong>What it is:</strong> before any testing happens, agree in
+        writing: which system components are in scope (Ledger Copilot's
+        wiki-retrieval path and account-notes tool, in Alderglen's case)
+        and which are explicitly out of scope (Alderglen's core banking
+        ledger itself, any real customer data, anything outside the
+        staging environment); what techniques are authorized (prompt
+        injection and jailbreak attempts, yes; anything that would touch
+        a real production credential or a real customer record, no);
+        who to contact and how if testing produces an unexpected,
+        higher-impact result than anticipated; and a firm start and end
+        date.
+      </p>
+      <p>
+        <strong>Why it's the phase everything else depends on:</strong>
+        Alderglen's engineer never had this conversation — nobody agreed
+        what "just try to break it" meant precisely enough to know
+        whether probing the account-notes tool for cross-customer data
+        leakage was in scope, encouraged, or a step too far. A rules-of-
+        engagement document isn't bureaucratic overhead; it's what turns
+        "an engineer poking at a system" into "an authorized security
+        exercise" in the first place, and it's the artifact that protects
+        both the tester (clear authorization, clear boundaries) and the
+        organization (a bounded, predictable exercise instead of an
+        open-ended one).
+      </p>
+    </div>
+
+    <div class="lesson-card">
+      <h3>Phase 2 — Threat-Model-Driven Test-Case Design</h3>
+      <p>
+        <strong>What it is:</strong> derive every test case from a real
+        threat model of the specific system in scope, using Chapter 1's
+        OWASP Top 10 for LLM Applications framework as the structuring
+        device — the same framework Chapter 1 taught as "a working
+        checklist, not trivia." For each of the ten categories that
+        plausibly applies to the system in scope, ask: does this system
+        have this category's attack surface at all, and if so, which of
+        this course's own established techniques (Chapters 3-10) is the
+        right one to attempt against it?
+      </p>
+      <p>
+        <strong>Why this beats improvisation:</strong> Alderglen's
+        engineer tested three things because three things happened to
+        come to mind in two days — a real risk of ad hoc testing missing
+        entire categories a structured pass wouldn't. Working through all
+        ten OWASP categories systematically against Ledger Copilot's
+        actual architecture (does it retrieve from a wiki that could be
+        indirectly poisoned? does it call a tool whose result could carry
+        an adversarial instruction? does its system prompt or its
+        account-notes tool response risk leaking sensitive data?) turns
+        "whatever I thought to try" into "a checklist-driven pass across
+        the framework this whole course has organized itself around
+        since Chapter 1."
+      </p>
+    </div>
+
+    <div class="lesson-card">
+      <h3>Phase 3 — Systematic Execution and Documentation</h3>
+      <p>
+        <strong>What it is:</strong> execute each planned test case one
+        at a time, and record, <em>at the moment of testing, not
+        afterward from memory</em>: the exact input or payload used, the
+        exact observed output, a timestamp, the environment tested
+        against, and an immediate note on whether the result matched the
+        threat model's prediction. Every real methodology cited below
+        stresses this same discipline — documentation as a first-class
+        part of testing, not an afterthought written up after the fact.
+      </p>
+      <p>
+        <strong>Why "reconstructed from memory" is the actual failure
+        mode:</strong> Alderglen's Slack-thread write-up wasn't vague
+        because the engineer was careless — it was vague because it was
+        written from memory two days after the fact, by which point exact
+        payload wording, exact model responses, and the order test cases
+        were tried in had all blurred together. A finding nobody else can
+        reproduce from the write-up alone is barely more useful than no
+        finding at all, because the team receiving it has no way to
+        verify it, prioritize it against other work with confidence, or
+        confirm a fix actually closed it later.
+      </p>
+    </div>
+
+    <div class="lesson-card">
+      <h3>Phase 4 — Severity and Impact Classification</h3>
+      <p>
+        <strong>What it is:</strong> score every confirmed finding on two
+        independent axes — <strong>likelihood</strong> (how easily and
+        reliably can this be triggered, by what class of attacker, with
+        what access) and <strong>impact</strong> (what's the actual
+        consequence if triggered — data exposure, an unauthorized action,
+        reputational harm, and to how many users or accounts) — then
+        combine them into a single Critical/High/Medium/Low rating using
+        a consistent, stated rubric, not a gut-feel label attached after
+        the fact.
+      </p>
+      <p>
+        <strong>Why "real, not real, but which one is real" matters:</strong>
+        this is the exact gap that cost Alderglen months on its most
+        severe finding — with no consistent rating scale, the four
+        findings from the unscoped test competed for engineering
+        attention purely on how persuasively each was described in
+        prose, not on their actual relative severity. A finding that lets
+        one relationship manager's account-notes query leak a different
+        customer's note text is categorically more severe than a
+        jailbreak that makes Ledger Copilot use an off-brand tone — but
+        nothing in an unrated Slack thread communicated that difference
+        to the people deciding what to fix first.
+      </p>
+    </div>
+
+    <div class="lesson-card">
+      <h3>Phase 5 — Writing the Findings Report</h3>
+      <p>
+        <strong>What it is:</strong> a structured document, not a prose
+        narrative, containing at minimum: an executive summary (what was
+        tested, what was found, at what overall risk level, in a few
+        sentences a non-technical stakeholder can act on); a scope and
+        methodology section (what Phase 1 and Phase 2 actually covered,
+        so a reader knows what was and wasn't tested); one entry per
+        finding with a title, severity rating, reproduction steps precise
+        enough for someone else to re-run, the observed evidence, the
+        OWASP Top 10 category it maps to, and — per this course's
+        non-negotiable framing — a real, specific, working recommended
+        fix pointing back to the actual named defense from whichever
+        chapter covers that category; and a prioritized remediation
+        summary ordering findings by severity.
+      </p>
+      <p>
+        <strong>Why this is the actual deliverable, not an afterthought:</strong>
+        every real methodology cited below treats the write-up as
+        integral to the exercise, not a summary tacked on after the real
+        work is done — a red-team exercise whose findings never reach
+        engineering in an actionable form has produced no security value
+        at all, no matter how sound the underlying technique was. This is
+        also precisely why Module 5's own assessment type is "a red-team
+        report graded against a rubric" rather than a project like every
+        prior module — the report <em>is</em> the skill being assessed
+        here, not a side effect of it.
+      </p>
+    </div>
+
+    <div class="what-is">
+      <span class="label">The five phases are sequential, not optional</span>
+      Skipping Phase 1 produces Alderglen's actual failure — an
+      unbounded, unauthorized-feeling exercise. Skipping Phase 2 produces
+      ad hoc, incomplete coverage. Skipping Phase 3 produces
+      unreproducible findings. Skipping Phase 4 produces findings nobody
+      can prioritize against each other. Skipping Phase 5 produces real
+      security work that generates zero organizational action. A real
+      red-team exercise runs all five, every time, not the ones that feel
+      most technically interesting.
+    </div>
+  </section>
+
+  <section id="research" class="subtopic">
+    <h2>What the Real, Cited Methodology Sources Say</h2>
+    <p>
+      All of the following was independently verified via live web search
+      this session, including confirming each source's current existence,
+      scope, and publication details.
+    </p>
+    <div class="lesson-card">
+      <h3>OWASP's own dedicated red-teaming guide</h3>
+      <p>
+        The OWASP GenAI Security Project published a
+        <strong>GenAI Red Teaming Guide</strong> (announced January 22,
+        2025, genai.owasp.org), organizing red-teaming into four areas:
+        <strong>model evaluation, implementation testing, infrastructure
+        assessment, and runtime behavior analysis</strong>. This is
+        direct, current, independent confirmation that structured
+        red-teaming — not just the underlying attack taxonomy Chapter 1's
+        Top 10 already names — is significant enough to warrant its own
+        dedicated methodology guide from the same body whose Top 10 for
+        LLM Applications this course has used as its structuring
+        framework since Chapter 1.
+      </p>
+    </div>
+    <div class="lesson-card">
+      <h3>NIST's AI Risk Management Framework names red-teaming as a required control</h3>
+      <p>
+        NIST's <strong>Generative Artificial Intelligence Profile</strong>
+        (NIST-AI-600-1, released July 26, 2024) extends the broader AI
+        RMF's four functions — Govern, Map, Measure, Manage — with
+        generative-AI-specific guidance, and explicitly names red-teaming
+        under the <strong>Measure</strong> function: models should be
+        evaluated for their capabilities and red-teamed both before and
+        after deployment, with organizations expected to establish real
+        protocols for it rather than treating it as ad hoc. This is
+        independent confirmation, from a US government standards body,
+        that structured red-teaming is a named, expected control in a
+        real risk-management framework — not a course-specific
+        invention.
+      </p>
+    </div>
+    <div class="lesson-card">
+      <h3>Microsoft's own operational experience, at real scale</h3>
+      <p>
+        Microsoft's AI Red Team published <em>"Lessons from Red Teaming
+        100 Generative AI Products"</em> (arXiv:2501.07238, January
+        2025), documenting an ontology and concrete lessons from
+        red-teaming over 100 real generative-AI products. Their most
+        relevant lesson to this chapter's own emphasis: red-teaming at
+        real scale can't be fully manual, but it also can't be fully
+        automated — human judgment on prioritization, severity, and
+        report quality remains essential even as tooling (their own
+        open-source <strong>PyRIT</strong> framework) helps scale test
+        execution. This directly supports this chapter's Phase 4 and
+        Phase 5 emphasis: the technical testing can scale, the judgment
+        applied to what's found and how it's communicated is where the
+        real, hard-to-automate skill lives.
+      </p>
+    </div>
+    <div class="lesson-card">
+      <h3>OpenAI's structured approach to external red teaming</h3>
+      <p>
+        OpenAI published <em>"OpenAI's Approach to External Red Teaming
+        for AI Models and Systems"</em> (arXiv:2503.16431, March 2025),
+        describing a structured process built around defining testing
+        scope and composing the right team before testing begins,
+        deciding access levels deliberately, and synthesizing findings
+        into concrete, actionable outputs afterward — the same
+        scope-first, structured-write-up-last shape this chapter's five
+        phases follow, independently confirmed from a different major
+        lab's own published process.
+      </p>
+    </div>
+    <div class="lesson-card">
+      <h3>Anthropic's Frontier Red Team methodology classes</h3>
+      <p>
+        Anthropic's public writeups on its <strong>Frontier Red
+        Team</strong> (anthropic.com, "Challenges in Red Teaming AI
+        Systems" and related team pages) describe a team spanning
+        multiple deliberate methodology classes — benchmark-based
+        capability evaluation, direct adversarial-task red-teaming,
+        controlled human-AI uplift studies, and deployed-agent
+        observation — reporting through a policy-facing structure
+        specifically to avoid incentives to soften negative findings.
+        That structural detail is directly relevant to Phase 1's rules-
+        of-engagement discipline: who a red team reports to, and what
+        incentive structure that creates around honest findings, is
+        itself part of running a credible exercise, not an
+        afterthought.
+      </p>
+    </div>
+    <div class="what-is">
+      <span class="label">What this research does — and doesn't — establish</span>
+      Together, these five independent sources — a dedicated OWASP guide,
+      a US government risk-management standard, and three different
+      major labs' own published operational experience — converge on the
+      same underlying shape this chapter's five phases describe: scope
+      first, design from a real threat model, document systematically,
+      classify by real severity, and treat the write-up as the actual
+      deliverable. None of this establishes a single universally
+      "correct" methodology — organizations adapt these phases to their
+      own context, team size, and risk tolerance. It does establish that
+      the shape itself (not any one source's exact wording) is convergent
+      across genuinely independent, current, credible sources, not a
+      framing this course invented.
+    </div>
+  </section>
+
+  <section id="arsenal" class="subtopic">
+    <h2>This Course's Own Arsenal, Mapped to the OWASP Top 10</h2>
+    <p>
+      Phase 2's test-case design draws on Chapters 3-10's own techniques
+      as the working arsenal, structured by Chapter 1's OWASP Top 10 for
+      LLM Applications categories. Every technique referenced here was
+      already taught in full mechanistic depth in its own chapter — this
+      table is a pointer back, not a re-teaching — and every technique
+      still pairs with the real, working defense that chapter already
+      established, restated briefly here as the recommended-fix language
+      a real findings report would use.
+    </p>
+    <div class="code-window">
+      <div class="code-window-bar">
+        <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+        <span class="filename">this course's own arsenal, by OWASP category</span>
+      </div>
+      <pre><code>LLM01 Prompt Injection (direct + indirect)
+  -> Chapter 3 (direct), Chapter 4 (indirect + jailbreaking), Chapter 9 (RAG-chunk channel)
+  -> Defense pointer: role-reinforced framing, sanitization, privileged-action
+     gating (Ch3/4/9's own defense sets)
+
+LLM02 Sensitive Information Disclosure
+  -> Chapter 3's system-prompt-leakage variants, Chapter 9's retrieval-boundary risk
+  -> Defense pointer: output-side filtering, least-privilege retrieval scoping
+
+LLM03 Supply Chain
+  -> Chapter 8 (weights, dependencies, provenance)
+  -> Defense pointer: Chapter 8's provenance-verification and vendor-vetting practice
+
+LLM04 Data and Model Poisoning
+  -> Chapter 6 (data poisoning), Chapter 9's ingestion-stage poisoning
+  -> Defense pointer: Chapter 6/9's ingestion-time validation and provenance tagging
+
+LLM05 Improper Output Handling
+  -> Named in Chapter 1, full depth deferred to Chapter 12 (next)
+  -> This chapter's test cases flag it; Chapter 12 supplies the full defense set
+
+LLM06 Excessive Agency
+  -> Chapter 1 (named), Chapter 10 (full tool-output depth)
+  -> Defense pointer: Chapter 10's six defenses (schema validation through the
+     human-in-the-loop least-privilege backstop)
+
+LLM07 System Prompt Leakage
+  -> Chapter 3's direct-injection extraction techniques
+  -> Defense pointer: Chapter 3's framing and boundary-reinforcement defenses
+
+LLM08 Vector and Embedding Weaknesses
+  -> Chapter 9 (RAG pipeline's retrieval-stage risk)
+  -> Defense pointer: Chapter 9's retrieval-stage defenses
+
+LLM09 Misinformation
+  -> Touched by Chapter 5's defense-evaluation honesty standard
+  -> Defense pointer: Chapter 5's "what a defense actually stops" discipline,
+     applied to output-confidence claims
+
+LLM10 Unbounded Consumption
+  -> Chapter 7 (model extraction and theft, query-budget-driven attacks)
+  -> Defense pointer: Chapter 7's rate-limiting and query-pattern-detection defenses</code></pre>
+    </div>
+    <div class="what-is">
+      <span class="label">Why this table is the real point of Phase 2</span>
+      A red-teamer working through Ledger Copilot's actual architecture
+      against this table doesn't ask "what attacks do I know" in the
+      abstract — they ask, category by category, "does this specific
+      system have this category's attack surface, and if so, which of
+      this course's already-proven techniques applies." Ledger Copilot's
+      wiki retrieval maps to LLM01/LLM08 (Chapter 4/9's techniques); its
+      account-notes tool maps to LLM06 (Chapter 10's techniques); its
+      system prompt maps to LLM07 (Chapter 3's techniques). That mapping
+      — not raw technique count — is what makes a red-team pass
+      systematic instead of improvised.
+    </div>
+  </section>
+
+  <section id="lab" class="subtopic">
+    <h2>The Lab: A Red-Team Engagement and Findings Report Against Ledger Copilot</h2>
+    <p>
+      This chapter's <a href="project/index.html">project</a> is Module
+      5's own new deliverable shape: not a find-and-fix lab like Chapters
+      9-10's, but a full red-team engagement producing a real
+      <strong>findings report, graded against a rubric</strong> — per the
+      curriculum map's own stated assessment type for this module.
+    </p>
+    <p>
+      <strong>The target — a fresh, self-contained system, deliberately,
+      not a byte-identical reuse of Chapter 9/10's Vesper Cloud
+      pipeline:</strong> a red-team report is its own assessable artifact
+      independent of which specific pipeline it's written against, and a
+      focused, single-session target sized for one engagement teaches the
+      report-writing skill more cleanly than reusing the larger, two-
+      channel L3 project would. <code>project/starter.py</code> ships a
+      complete, runnable, intentionally vulnerable version of Ledger
+      Copilot — wiki retrieval with an indirect-injection vector, an
+      account-notes tool call with an adversarial-tool-output vector, and
+      a system prompt with an extractable internal-only flag — built
+      using the exact same mechanisms Chapters 3, 4, 9, and 10 already
+      taught, applied to a new fictional target.
+    </p>
+    <p>
+      <strong>What you actually do:</strong> run the provided target,
+      work through Phase 1's scoping template (already partly filled in
+      as the engagement brief), execute Phase 2's OWASP-mapped test cases
+      against the running target and record real observed output, apply
+      Phase 4's Critical/High/Medium/Low rubric to what you find, and
+      produce a real Phase 5 findings report using the provided template
+      — then grade it yourself against <code>project/RUBRIC.md</code>,
+      the same rubric a reviewer would use.
+    </p>
+    <div class="code-window">
+      <div class="code-window-bar">
+        <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+        <span class="filename">target_pattern.py (structure, see project/starter.py for the full vulnerable target)</span>
+      </div>
+      <pre><code>def retrieve_wiki_chunks(query):
+    """Naive retrieval: returns raw wiki chunk text with no trust tagging
+    and no sanitization -- including a chunk anyone with wiki-edit access
+    could have planted, the same ingestion-stage gap Chapter 9 named."""
+    return WIKI_INDEX.search(query)
+
+def check_account_note(account_id):
+    """Naive tool call: returns the relationship-manager note field raw,
+    with no schema separation between it and any structured fields --
+    the same result-arrival gap Chapter 10 named."""
+    return ACCOUNT_NOTES[account_id]
+
+def assemble_context_naive(system_prompt, question, wiki_chunks, account_note):
+    """Naive context assembly: system prompt, wiki chunks, and the tool
+    result all concatenated with no structural separation and no framing
+    -- reproduces Chapter 3/4/9/10's core no-architectural-separation
+    mechanism in one target."""
+    return f"{system_prompt}\n\n{wiki_chunks}\n\n{account_note}\n\nQ: {question}"</code></pre>
+    </div>
+    <p>
+      <strong>Honest disclosure on Ollama, checked fresh this session:</strong>
+      before writing this chapter, Ollama's status was re-checked from
+      scratch, not assumed to carry forward from Chapter 10. <code>curl -s
+      -m 5 http://localhost:11434/api/tags</code> responded normally,
+      confirming <code>llama3.2:latest</code> (3.2B parameters) is pulled
+      and the server is reachable. A direct generation request against
+      <code>/api/chat</code>, tested independently via raw
+      <code>curl</code> with a 20-second timeout, returned no response
+      and timed out (<code>curl</code> exit code 28) — the same
+      persistent, previously-disclosed, sandbox-wide generation hang
+      Chapters 3, 4, 5, 9, and 10 all documented, re-confirmed directly
+      this session with a longer timeout than prior sessions used, still
+      with no change in outcome. That means this chapter's methodology
+      claims (how the five phases work, how the target's vulnerabilities
+      are structurally present, how each test case's expected result
+      follows from the target's actual code) are accurate,
+      deterministic-code-verified claims — every test case in this
+      chapter's project is real, executed code whose behavior was
+      actually observed this session. What is <strong>not</strong> a
+      claim this chapter makes is that a specific live model was observed
+      generating a specific compliant-versus-refusing response this
+      session. Any transcript-shaped example is representative of
+      documented behavior for its technique class (per the real,
+      cited research in Chapters 3, 4, 9, and 10), never a claim of
+      output actually observed live this session. The project's optional
+      live-model hook is built to run a real generation call the moment
+      Ollama's endpoint is reachable and degrades gracefully when it
+      isn't — see this chapter's quality audit for the full breakdown.
+    </p>
+  </section>
+
+  <section id="thought-process" class="subtopic">
+    <h2>GenAI Builder Thought Process</h2>
+    <div class="thinking-box">
+      <p><strong>Problem:</strong> Alderglen's head of engineering, after
+      seeing the unusable Slack-thread write-up, considers a quick fix:
+      "next time, just ask the tester to write it up more formally."</p>
+      <p><strong>Assumption being made:</strong> that the write-up was
+      the only broken phase, and that a formatting request fixes it. It
+      doesn't — a more formally worded document built from the same
+      two-days-later memory reconstruction, with the same absent scope
+      agreement and the same absent severity rubric, is still
+      unreproducible and still unprioritizable, just in nicer prose. The
+      actual gaps were in Phases 1, 3, and 4 — the write-up (Phase 5) can
+      only be as good as what it's built from.</p>
+      <p><strong>What actually distinguishes a real red-team process:</strong>
+      each of the five phases in this chapter closes a specific gap the
+      others can't compensate for. No scope (Phase 1) means testing has
+      no boundary and no shared understanding of what "in scope" even
+      means. No threat-model-driven design (Phase 2) means coverage is
+      whatever came to mind, not a real pass across the actual attack
+      surface. No real-time documentation (Phase 3) means findings can't
+      be reproduced or verified later. No consistent severity rubric
+      (Phase 4) means findings compete for attention on writing quality,
+      not actual risk. No structured report (Phase 5) means even good
+      findings generate no organizational action. A real methodology
+      runs all five, in order, every engagement.</p>
+      <p><strong>Why this matters as Module 5 begins:</strong> Module 5's
+      own outcome, per the curriculum map, is to "run a structured
+      red-team methodology against a target system" and produce "a
+      red-team report graded against a rubric" — a genuinely different
+      assessment shape than every module before it. This chapter is the
+      full answer to the first half of that outcome; its project is the
+      first artifact of the second half.</p>
+      <p><strong>Working definition to carry forward:</strong> red-
+      teaming an LLM system means running a structured, five-phase
+      process — scope and rules of engagement, threat-model-driven
+      test-case design against a real framework (this course's own OWASP-
+      Top-10-mapped arsenal), systematic real-time execution and
+      documentation, consistent severity classification, and a
+      structured findings report a real team can act on — not simply
+      knowing a wide range of attack techniques and applying them ad hoc.</p>
+    </div>
+  </section>
+
+  <section id="recap-points" class="subtopic">
+    <div class="points-to-remember">
+      <h2>Points To Remember</h2>
+      <ul>
+        <li>This chapter teaches red-teaming <em>process</em>, not new
+        attack techniques — the same "process chapter building on
+        established mechanism" pattern Chapter 2 used for attack-surface
+        mapping and Chapter 5 used for defense evaluation, applied here
+        to the full arsenal Chapters 3-10 already built.</li>
+        <li>A five-phase methodology: scoping and rules of engagement;
+        threat-model-driven test-case design using Chapter 1's OWASP Top
+        10 framework as the structuring device; systematic real-time
+        execution and documentation; severity and impact classification
+        on a consistent rubric; and a structured findings report — the
+        real deliverable, not an afterthought.</li>
+        <li>Real, cited, independently-verified sources confirm this
+        shape converges across multiple independent bodies: the OWASP
+        GenAI Security Project's dedicated GenAI Red Teaming Guide
+        (January 2025); NIST's Generative AI Profile (NIST-AI-600-1, July
+        2024), naming red-teaming under its Measure function; Microsoft's
+        "Lessons from Red Teaming 100 Generative AI Products"
+        (arXiv:2501.07238); OpenAI's "Approach to External Red Teaming
+        for AI Models and Systems" (arXiv:2503.16431); and Anthropic's
+        published Frontier Red Team methodology.</li>
+        <li>This course's own arsenal (Chapters 3-10) mapped to all ten
+        OWASP categories is the working test-case library for Phase 2 —
+        every technique still pairs with the real, working defense its
+        own chapter already established.</li>
+        <li>The lab is Module 5's new assessment shape: a real red-team
+        engagement against a fresh, self-contained target (Alderglen
+        Financial's Ledger Copilot) producing a findings report, graded
+        against a stated rubric — not a find-and-fix lab. Chapter 12
+        closes Module 5 next, covering the output side of LLM risk: PII
+        handling and downstream injection risk in generated content.</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="what-is">
+    <span class="label">Interview questions (4 levels)</span>
+    Practice explaining the five-phase methodology and the OWASP-mapped
+    arsenal out loud — see
+    <a href="interview-questions.html">Chapter 11 interview questions</a>,
+    covering beginner through architect level.
+  </div>
+
+  <div class="chapter-nav">
+    <a href="../../index.html">&larr; All Chapters</a>
+    <a href="quiz.html">Take the Quiz &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+    <span><a href="https://github.com/TechNaom/ai-security-for-everyone">github.com/TechNaom/ai-security-for-everyone</a></span>
+  </div>
+</footer>
+
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/chapters-data.js"></script>
+<script src="../../assets/sidebar.js"></script>
+</body>
+</html>

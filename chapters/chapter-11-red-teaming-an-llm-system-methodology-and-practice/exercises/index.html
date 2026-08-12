@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Red-Teaming an LLM System Exercises — AI Security for Everyone</title>
+<meta name="description" content="Hands-on exercises for Red-Teaming an LLM System: Methodology and Practice.">
+<link rel="stylesheet" href="../../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-11">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../../index.html">All Chapters</a>
+      <a href="../../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="../quiz.html">&larr; Back to the quiz</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 11 Exercises</span>
+    <span class="reading-time">~40 min, hands-on</span>
+  </div>
+  <h1>Exercises: Red-Teaming an LLM System: Methodology and Practice</h1>
+  <p>
+    These exercises use a new scenario, deliberately different from the
+    lesson's Alderglen Financial example: <strong>Corvette Bay
+    Utilities</strong>, a fictional regional electric utility whose
+    Outage Assistant helps call-center staff answer outage questions,
+    retrieving from an internal wiki and calling a partner smart-meter
+    vendor's diagnostic tool. You'll classify process events by phase,
+    compute a real severity rating, judge honest claims versus
+    overclaims, map system features to OWASP categories, order findings
+    by severity, critique flawed report excerpts, and match real
+    research findings to their actual published source.
+  </p>
+
+  <div class="what-is">
+    <span class="label">Exercise standard</span>
+    Eight tasks total. Five are marked production-gear — real severity-
+    rating computation, feature-to-category mapping, ordering findings by
+    severity, critiquing flawed reports, and research citation matching —
+    not just concept recall.
+  </div>
+
+  <div class="what-is">
+    <span class="label">How to run these</span>
+    Download <code>starter.py</code>, fill in every <code>&#35; TODO</code>,
+    then run <code>python3 starter.py</code> to see an automated score
+    report. Compare against <code>solution.py</code>, which scores a
+    perfect 26/26.
+  </div>
+
+  <div class="download-links">
+    <a href="starter.py">starter.py</a>
+    <a href="solution.py">solution.py (reference)</a>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">1</span> Classify events by red-teaming phase</h3>
+    <p>Sort six process events into scoping, test design, execution, classification, or reporting.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">2</span> <span class="badge-coming-soon">Production-gear</span> Compute a real severity rating</h3>
+    <p>Given a likelihood and impact score, compute a combined severity rating using this chapter's own formula — real arithmetic, not a guess.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">3</span> Honest claim vs. overclaim/process gap</h3>
+    <p>For four described statements, decide which reflect sound red-team process and which contain a real gap.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">4</span> <span class="badge-coming-soon">Production-gear</span> Map feature to OWASP category</h3>
+    <p>Given four Outage Assistant features, name the single best-fit OWASP Top 10 category.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">5</span> <span class="badge-coming-soon">Production-gear</span> Order findings by severity</h3>
+    <p>Given four findings' likelihood/impact pairs, order them from highest to lowest combined severity.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">6</span> <span class="badge-coming-soon">Production-gear</span> Critique flawed report excerpts</h3>
+    <p>Given four report excerpts, decide which contain a real reasoning gap and which are sound.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">7</span> <span class="badge-coming-soon">Production-gear</span> Research source matching</h3>
+    <p>Match four real, published findings to their actual source — OWASP's GenAI Red Teaming Guide, NIST's Generative AI Profile, Microsoft's 100-products lessons, or OpenAI's external red-teaming approach.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">8</span> Written reasoning</h3>
+    <p>Write a real, justified sentence explaining why Phase 5's report can only be as good as Phases 1-4 that precede it.</p>
+  </div>
+
+  <div class="chapter-nav">
+    <a href="../quiz.html">&larr; Back to Quiz</a>
+    <a href="../practice/index.html">Practice Bank &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+  </div>
+</footer>
+
+<script src="../../../assets/progress.js"></script>
+<script src="../../../assets/chapters-data.js"></script>
+<script src="../../../assets/sidebar.js"></script>
+</body>
+</html>

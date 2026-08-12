@@ -117,7 +117,8 @@ window.AISFE_MODULES = [
         id: "chapter-11",
         num: 11,
         title: "Red-Teaming an LLM System: Methodology and Practice",
-        description: "A structured red-team exercise against a real target, with a findings report."
+        description: "A structured red-team exercise against a real target, with a findings report.",
+        path: "chapters/chapter-11-red-teaming-an-llm-system-methodology-and-practice/lesson.html"
       },
       {
         id: "chapter-12",
