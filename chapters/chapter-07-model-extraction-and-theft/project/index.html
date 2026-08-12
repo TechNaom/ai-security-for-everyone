@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project: A Query-Pattern Anomaly Scorer — AI Security for Everyone</title>
+<meta name="description" content="Build a real, self-contained model-extraction defense tool: a query-pattern anomaly scorer over a synthetic ClauseFinder API log, combining volume, category-coverage, and input-diversity signals -- with no live-model dependency, and an honest, directly observable false-positive limit.">
+<link rel="stylesheet" href="../../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-07">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../../index.html">All Chapters</a>
+      <a href="../../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="../interview-questions.html">&larr; Back to interview questions</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 7 Project</span>
+    <span class="reading-time">~75 min, hands-on</span>
+  </div>
+  <h1>Project: A Query-Pattern Anomaly Scorer</h1>
+  <p class="lede">
+    Build the real tool the lesson's lab section only showed the structure
+    of: a scorer that analyzes a synthetic 90-day log of API queries
+    against ClauseFinder (Defense 1, actually implemented) and combines
+    three independent signals — volume vs. an account's own baseline,
+    clause-category coverage breadth, and input diversity — into one
+    composite risk score, including the honest limit Defense 1's own
+    section names in prose: a patient, well-paced extraction campaign can
+    score uncomfortably close to your own busiest, most valuable
+    legitimate account.
+  </p>
+
+  <div class="hook">
+    <p>
+      The target is <strong>Halcyon Research's ClauseFinder</strong>,
+      continuing the lesson's own scenario. This project builds the piece
+      of Defense 1 the lesson's lab section only sketched: the actual
+      scoring logic Halcyon's security team would run over its own API
+      access logs to triage which accounts deserve a closer look. The
+      full synthetic five-account, 90-day query log is already written
+      for you in <code>starter.py</code> — your job is to build the
+      scoring logic around it.
+    </p>
+  </div>
+
+  <h2>Your task</h2>
+  <p>Download <code>starter.py</code> and fill in its four parts:</p>
+  <div class="task-card">
+    <h3><span class="task-num">1</span> <code>score_volume_vs_baseline()</code></h3>
+    <p>Score how far an account's query rate over the observed window sits above <em>its own</em> historical daily baseline — not a fleet-wide average.</p>
+  </div>
+  <div class="task-card">
+    <h3><span class="task-num">2</span> <code>score_category_coverage_breadth()</code></h3>
+    <p>Score how much of ClauseFinder's full clause-category space an account's queries touch — a real user working one matter touches a few categories; a distillation campaign needs to sweep all of them.</p>
+  </div>
+  <div class="task-card">
+    <h3><span class="task-num">3</span> <span class="badge-coming-soon">Production-gear</span> <code>score_input_diversity()</code></h3>
+    <p>Score how little an account repeats the same input clause — broad, non-repetitive sampling is a distillation signature; real usage repeats and revisits.</p>
+  </div>
+  <div class="task-card">
+    <h3><span class="task-num">4</span> <span class="badge-coming-soon">Production-gear</span> <code>combine_signals()</code> and <code>classify_risk()</code></h3>
+    <p>Combine the three signals into one composite score, and turn that score — plus a minimum-sample-size floor — into a risk band: <code>insufficient-data</code>, <code>normal</code>, <code>watch</code>, or <code>high</code>.</p>
+  </div>
+
+  <div class="what-is">
+    <span class="label">What the finished report shows</span>
+    Three report sections: <strong>Step A</strong> — the scorer's own
+    logic self-test against small, synthetic cases (9 checks, no
+    dependency on the full account log); <strong>Step B</strong> — all
+    five synthetic accounts scored and ranked by composite risk score,
+    from an obvious, unmissable extraction sweep down to two genuinely
+    normal accounts; <strong>Step C</strong> — a direct side-by-side of
+    the obvious campaign, the patient/paced campaign, and the legitimate
+    power user, showing exactly how close the last two land to each
+    other.
+  </div>
+
+  <div class="what-is">
+    <span class="label">No live model dependency at all</span>
+    Like Chapter 6's project, this one never imports <code>openai</code>,
+    never calls Ollama, and has no graceful-degradation branch to test,
+    because there's no live-model call anywhere in this file to degrade.
+    Every function is pure, deterministic Python operating on fabricated,
+    clearly-labeled synthetic account query logs. This matches this
+    chapter's own subject: query-pattern anomaly detection is an
+    API-log-analysis practice, not a runtime model interaction.
+  </div>
+
+  <div class="download-links">
+    <a href="starter.py">starter.py</a>
+    <a href="solution.py">solution.py (reference)</a>
+  </div>
+
+  <div class="points-to-remember">
+    <h2>What "done" looks like</h2>
+    <p>
+      <code>verify_logic()</code> reports 9/9 with all four parts filled
+      in correctly. Then run the full report and look closely at Step C:
+      confirm for yourself that <code>quicklex_bulk_account</code> (the
+      obvious sweep) is cleanly separated from everything else, while
+      <code>patient_broad_account</code> (the patient, well-paced
+      campaign) and <code>corp_legal_dept_alpha</code> (a genuinely
+      legitimate corporate legal department running one real 200-page
+      contract through the API in a short sprint) land within about ten
+      points of each other on the composite score — and can land in the
+      <em>same</em> risk band. That observation — not just reading about
+      it in the lesson — is the actual point of this project: a
+      query-pattern anomaly score is a real, useful triage signal, and it
+      genuinely cannot, by itself, tell a security team whether a
+      flagged account is a competitor's distillation campaign or its own
+      best customer having a busy month.
+    </p>
+  </div>
+
+  <div class="chapter-nav">
+    <a href="../interview-questions.html">&larr; Interview Questions</a>
+    <a href="../../../index.html">All Chapters &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+    <span><a href="https://github.com/TechNaom/ai-security-for-everyone">github.com/TechNaom/ai-security-for-everyone</a></span>
+  </div>
+</footer>
+
+<script src="../../../assets/progress.js"></script>
+<script src="../../../assets/chapters-data.js"></script>
+<script src="../../../assets/sidebar.js"></script>
+</body>
+</html>

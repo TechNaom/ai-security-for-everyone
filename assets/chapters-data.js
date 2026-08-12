@@ -75,7 +75,8 @@ window.AISFE_MODULES = [
         id: "chapter-07",
         num: 7,
         title: "Model Extraction and Theft",
-        description: "How a model's behavior or weights can be stolen through its API."
+        description: "How a model's behavior or weights can be stolen through its API.",
+        path: "chapters/chapter-07-model-extraction-and-theft/lesson.html"
       },
       {
         id: "chapter-08",

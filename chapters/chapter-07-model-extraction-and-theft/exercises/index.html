@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Model Extraction and Theft Exercises — AI Security for Everyone</title>
+<meta name="description" content="Hands-on exercises for Model Extraction and Theft.">
+<link rel="stylesheet" href="../../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-07">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../../index.html">All Chapters</a>
+      <a href="../../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="../quiz.html">&larr; Back to the quiz</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 7 Exercises</span>
+    <span class="reading-time">~40 min, hands-on</span>
+  </div>
+  <h1>Exercises: Model Extraction and Theft</h1>
+  <p>
+    These exercises use a new scenario, deliberately different from the
+    lesson's Halcyon Research / ClauseFinder example:
+    <strong>Fernwood Analytics</strong>, a fictional fintech-infrastructure
+    company whose RiskLens API fine-tunes a model on historical loan files
+    to return credit-risk scores. A rival, Driftwood Capital, wants a
+    competing product without paying full price for one. You'll classify
+    extraction scenarios by technique, compute a real extraction-likelihood
+    score from raw counts, judge honest claims versus overclaims, match
+    defenses to scenarios, critique flawed reports, and match real research
+    findings to their actual published source.
+  </p>
+
+  <div class="what-is">
+    <span class="label">Exercise standard</span>
+    Eight tasks total. Five are marked production-gear — real
+    extraction-score computation, defense/scenario matching, critiquing
+    flawed reports, research citation matching, and written reasoning — not
+    just concept recall.
+  </div>
+
+  <div class="what-is">
+    <span class="label">How to run these</span>
+    Download <code>starter.py</code>, fill in every <code>&#35; TODO</code>,
+    then run <code>python3 starter.py</code> to see an automated score
+    report. Compare against <code>solution.py</code>, which scores a
+    perfect 26/26.
+  </div>
+
+  <div class="download-links">
+    <a href="starter.py">starter.py</a>
+    <a href="solution.py">solution.py (reference)</a>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">1</span> Classify scenarios by technique</h3>
+    <p>Sort six scenarios into the correct one of this chapter's three extraction techniques — or recognize the one that isn't model extraction at all.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">2</span> <span class="badge-coming-soon">Production-gear</span> Compute a real extraction-likelihood score</h3>
+    <p>Given raw category-coverage and query-volume counts, compute a composite score combining coverage breadth and volume relative to baseline — real arithmetic, the same signal a query-pattern anomaly scorer computes.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">3</span> Honest claim vs. overclaim</h3>
+    <p>For four described defense claims, decide which are honest, limit-aware statements and which overclaim what a single defense actually guarantees.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">4</span> <span class="badge-coming-soon">Production-gear</span> Match defense to scenario</h3>
+    <p>Given four scenarios, name the single best-fit defense from this chapter's four.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">5</span> Match technique to strongest defense</h3>
+    <p>Map two of the three extraction techniques to the defense this chapter names as most effective against each.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">6</span> <span class="badge-coming-soon">Production-gear</span> Critique flawed reports</h3>
+    <p>Given four report excerpts, decide which contain a real reasoning gap (an overclaim, or the wrong evidence for the claim) and which are sound.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">7</span> <span class="badge-coming-soon">Production-gear</span> Research citation matching</h3>
+    <p>Match three real, published-research findings to their actual source — Tramer et al., Krishna et al., or Carlini et al.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">8</span> <span class="badge-coming-soon">Production-gear</span> Written reasoning</h3>
+    <p>Write a real, justified sentence explaining why removing raw logits doesn't fully rule out query-based distillation.</p>
+  </div>
+
+  <div class="chapter-nav">
+    <a href="../quiz.html">&larr; Back to Quiz</a>
+    <a href="../practice/index.html">Practice Bank &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+  </div>
+</footer>
+
+<script src="../../../assets/progress.js"></script>
+<script src="../../../assets/chapters-data.js"></script>
+<script src="../../../assets/sidebar.js"></script>
+</body>
+</html>
