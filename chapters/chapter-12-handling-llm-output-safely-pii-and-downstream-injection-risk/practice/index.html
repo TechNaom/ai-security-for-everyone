@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Handling LLM Output Safely Practice Bank — AI Security for Everyone</title>
+<meta name="description" content="Practice bank for Handling LLM Output Safely: PII and Downstream Injection Risk.">
+<link rel="stylesheet" href="../../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-12">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../../index.html">All Chapters</a>
+      <a href="../../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="../exercises/index.html">&larr; Back to exercises</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 12 Practice Bank</span>
+    <span class="reading-time">~30 min, hands-on</span>
+  </div>
+  <h1>Practice Bank: Handling LLM Output Safely: PII and Downstream Injection Risk</h1>
+  <p>
+    Eight short, independent scenarios, each with its own fictional
+    organization — none of them Fenwick Customer Experience (the lesson)
+    or Thornbury HR Cloud (the exercises). The first six drill fast,
+    accurate classification of which of this chapter's six failure
+    shapes a given event belongs to; the last two test real judgment
+    about what actually makes an output-handling defense sufficient.
+  </p>
+
+  <div class="what-is">
+    <span class="label">Why this bank leans on judgment, not recall</span>
+    Deciding whether an output-handling defense is actually sufficient
+    is a judgment skill, not a lookup — a system with some real controls
+    in place can still have one specific, actively exploitable gap.
+    Scenarios 7-8 have no single keyword to pattern-match against; you
+    have to reason about which control is missing and what its absence
+    actually costs.
+  </div>
+
+  <div class="what-is">
+    <span class="label">How to run these</span>
+    Download <code>starter.py</code>, fill in every <code>&#35; TODO</code>,
+    then run <code>python3 starter.py</code> to see an automated score
+    report. Compare against <code>solution.py</code>, which scores a
+    perfect 8/8.
+  </div>
+
+  <div class="download-links">
+    <a href="starter.py">starter.py</a>
+    <a href="solution.py">solution.py (reference)</a>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">1</span> Halvern Legal Services</h3>
+    <p>A confidential settlement figure reaching a wider-audience billing dashboard. Which failure shape?</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">2</span> Cressida Travel</h3>
+    <p>A different traveler's itinerary detail bleeding into an unrelated reply. Which failure shape?</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">3</span> Oakmere Insurance</h3>
+    <p>An unprompted bank routing number in a reply to a narrow question. Which failure shape?</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">4</span> Bramwell Logistics</h3>
+    <p>An unescaped, script-bearing shipment note rendered as raw HTML. Which failure shape?</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">5</span> Sable Ridge Media</h3>
+    <p>One model's generated output feeding unlabeled into a second model's instruction context. Which failure shape?</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">6</span> Pinehollow Retail</h3>
+    <p>An auto-fetched generated link pointing at an internal admin endpoint. Which failure shape?</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">7</span> Yarrow Health Clinics <span class="badge-coming-soon">Judgment</span></h3>
+    <p>Is a system-prompt instruction alone, with no output-side scanner or scoping, a sufficient PII defense?</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">8</span> Corrigan Analytics <span class="badge-coming-soon">Judgment, production-gear</span></h3>
+    <p>A PII scanner and HTML escaping are already in place, but no allow-list check exists, and an auto-fetch feature ships next week. Which single next step has the highest expected impact?</p>
+  </div>
+
+  <div class="chapter-nav">
+    <a href="../exercises/index.html">&larr; Back to Exercises</a>
+    <a href="../interview-questions.html">Interview Questions &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+  </div>
+</footer>
+
+<script src="../../../assets/progress.js"></script>
+<script src="../../../assets/chapters-data.js"></script>
+<script src="../../../assets/sidebar.js"></script>
+</body>
+</html>

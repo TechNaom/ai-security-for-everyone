@@ -124,7 +124,8 @@ window.AISFE_MODULES = [
         id: "chapter-12",
         num: 12,
         title: "Handling LLM Output Safely: PII and Downstream Injection Risk",
-        description: "What a model outputs can itself be an attack vector."
+        description: "What a model outputs can itself be an attack vector.",
+        path: "chapters/chapter-12-handling-llm-output-safely-pii-and-downstream-injection-risk/lesson.html"
       }
     ]
   },

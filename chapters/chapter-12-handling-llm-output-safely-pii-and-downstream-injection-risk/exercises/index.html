@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Handling LLM Output Safely Exercises — AI Security for Everyone</title>
+<meta name="description" content="Hands-on exercises for Handling LLM Output Safely: PII and Downstream Injection Risk.">
+<link rel="stylesheet" href="../../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-12">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../../index.html">All Chapters</a>
+      <a href="../../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="../quiz.html">&larr; Back to the quiz</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 12 Exercises</span>
+    <span class="reading-time">~40 min, hands-on</span>
+  </div>
+  <h1>Exercises: Handling LLM Output Safely: PII and Downstream Injection Risk</h1>
+  <p>
+    These exercises use a new scenario, deliberately different from the
+    lesson's Fenwick Customer Experience example: <strong>Thornbury HR
+    Cloud</strong>, a fictional HR-software vendor whose StaffAssist tool
+    drafts HR case summaries and dashboard replies. You'll classify
+    output-handling failures by shape, implement a real PII redactor,
+    judge honest claims versus overclaims, map observations to the OWASP
+    2026 categories, implement context-aware HTML output encoding,
+    implement an allow-list URL validator, critique flawed defense
+    descriptions, and write a real justification for why prompt-level
+    instructions aren't a sufficient output-side control.
+  </p>
+
+  <div class="what-is">
+    <span class="label">Exercise standard</span>
+    Eight tasks total. Five are marked production-gear — a real PII
+    redactor, real HTML output encoding, a real allow-list URL validator,
+    OWASP-category mapping, and defense critique — not just concept
+    recall.
+  </div>
+
+  <div class="what-is">
+    <span class="label">How to run these</span>
+    Download <code>starter.py</code>, fill in every <code>&#35; TODO</code>,
+    then run <code>python3 starter.py</code> to see an automated score
+    report. Compare against <code>solution.py</code>, which scores a
+    perfect 34/34.
+  </div>
+
+  <div class="download-links">
+    <a href="starter.py">starter.py</a>
+    <a href="solution.py">solution.py (reference)</a>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">1</span> Classify events by failure shape</h3>
+    <p>Sort six output-handling events into the three PII shapes and three injection shapes this chapter teaches.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">2</span> <span class="badge-coming-soon">Production-gear</span> Implement a real PII redactor</h3>
+    <p>Write <code>redact_pii()</code> using real regex patterns for emails, phone numbers, and SSN-shaped identifiers.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">3</span> Honest claim vs. overclaim/gap</h3>
+    <p>For four described statements, decide which reflect sound output-handling practice and which contain a real gap.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">4</span> <span class="badge-coming-soon">Production-gear</span> Map observation to OWASP 2026 category</h3>
+    <p>Given four StaffAssist observations, name the single best-fit OWASP 2026 category — LLM02 or LLM10.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">5</span> <span class="badge-coming-soon">Production-gear</span> Implement HTML output encoding</h3>
+    <p>Write <code>html_escape_output()</code> — real context-aware encoding, not a guess.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">6</span> <span class="badge-coming-soon">Production-gear</span> Implement an allow-list URL validator</h3>
+    <p>Write <code>is_allowed_case_link()</code>, resistant to look-alike-subdomain tricks.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">7</span> <span class="badge-coming-soon">Production-gear</span> Critique defense excerpts</h3>
+    <p>Given four defense descriptions, decide which contain a real flaw and which are sound.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">8</span> Written reasoning</h3>
+    <p>Write a real, justified sentence explaining why a system-prompt instruction alone is not a sufficient output-handling defense.</p>
+  </div>
+
+  <div class="chapter-nav">
+    <a href="../quiz.html">&larr; Back to Quiz</a>
+    <a href="../practice/index.html">Practice Bank &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+  </div>
+</footer>
+
+<script src="../../../assets/progress.js"></script>
+<script src="../../../assets/chapters-data.js"></script>
+<script src="../../../assets/sidebar.js"></script>
+</body>
+</html>

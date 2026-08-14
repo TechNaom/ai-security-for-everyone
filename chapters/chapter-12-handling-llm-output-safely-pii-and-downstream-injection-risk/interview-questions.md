@@ -1,0 +1,281 @@
+# Chapter 12 Interview Questions: Handling LLM Output Safely: PII and Downstream Injection Risk
+
+Grouped by level — beginner, intermediate, senior, architect. Each
+includes a strong answer, a red flag, a follow-up, and what the question
+actually proves. This is the portable source for `interview-questions.html`
+— both files carry identical question text, answers, red flags,
+follow-ups, and "what this proves" content.
+
+---
+
+## 1. (Beginner) A teammate says "we've already secured our input path with prompt-injection defenses from Chapters 3, 4, and 9 -- our system is safe." What's missing from that claim?
+
+**Strong answer:** Input-side defenses (role-reinforced framing,
+retrieval-time sanitization, structural separation at context assembly)
+protect against untrusted content reaching the model and steering its
+behavior -- they say nothing about what happens to what the model
+*generates*. Fenwick Customer Experience's TicketSense had both
+incidents (Priya's leaked detail, the HTML-fragment paraphrase) with a
+perfectly well-defended input path; the gap was entirely on the output
+side, where nothing scanned generated text for sensitive data or encoded
+it before it reached a renderer. A system is only actually safe if both
+directions -- input reaching the model, and output leaving it -- have
+real, structural controls.
+
+**Red flag:** Treats input-side and output-side risk as the same
+problem, or can't name a concrete failure (like TicketSense's) that a
+fully input-hardened system could still have.
+
+**Follow-up:** "TicketSense's wiki-retrieval path, if it had one, would
+be hardened by Chapter 9's defenses. Name one control from Chapter 9
+that would do nothing to prevent Priya's summary from leaking her
+detail into a cross-team export."
+
+**What this proves:** Understands that input-side and output-side risk
+are architecturally distinct problems requiring distinct, independent
+controls, not two names for the same defense.
+
+---
+
+## 2. (Beginner) Explain, in your own words, why "our model would never generate something dangerous" is not a valid basis for skipping output-side controls.
+
+**Strong answer:** Neither of Fenwick's two incidents involved the model
+doing anything unusual -- the summarizer accurately summarized what it
+was given, and the reply generator accurately paraphrased content it was
+asked to acknowledge. The risk isn't that the model behaves badly; it's
+that *correct, faithful, well-behaved* generation can still carry
+sensitive data forward or carry a payload forward from something the
+model read, because the model has no way to know that a specific detail
+needs redaction or that a downstream renderer will trust its output
+blindly. Output-side controls don't exist because the model might
+misbehave -- they exist because even perfect model behavior doesn't
+guarantee the output is safe for every consumer downstream.
+
+**Red flag:** Frames output-handling risk as primarily a "model
+misbehavior" problem, or can't explain how a fully compliant, accurate
+generation can still cause harm.
+
+**Follow-up:** "If TicketSense's summarizer produced a factually perfect
+summary of Priya's ticket, in what specific sense was the outcome still
+a security failure?"
+
+**What this proves:** Understands that output-handling risk is
+independent of model behavior quality -- a structural gap, not a
+model-quality problem.
+
+---
+
+## 3. (Intermediate) A dashboard renders LLM-generated ticket replies as HTML for formatting convenience, with no escaping, because "it's our own trusted model's output." Evaluate this design.
+
+**Strong answer:** This is exactly TicketSense's second bad Tuesday, and
+it's a real, exploitable gap: the render surface cannot distinguish text
+a human typed from text a model generated, and a model can carry forward
+a payload from *content it read* into its own generation (the way the
+HTML fragment buried in an error-log paste got paraphrased into a
+suggested reply) without ever "misbehaving" on its own. This is
+architecturally identical to stored XSS; the fix is the same one web
+security has used for two decades -- context-aware output encoding
+applied at the point of render, unconditionally, with the "it's our own
+model" exception removed entirely, since a model's output should be
+treated as untrusted with respect to the renderer just like any
+user-submitted content.
+
+**Red flag:** Accepts "it's our own trusted model" as a legitimate
+reason to skip escaping, or doesn't connect this to the well-established
+stored-XSS pattern.
+
+**Follow-up:** "The team argues that HTML escaping would break
+legitimate formatting the model sometimes produces, like bold text in
+Markdown. How would you preserve safe formatting while still closing
+this gap?"
+
+**What this proves:** Can identify a concrete architectural gap and
+connect it to an established, well-understood vulnerability class rather
+than treating it as a novel, unsolvable AI-specific problem.
+
+---
+
+## 4. (Intermediate) Design an output-side check for PII leakage in a customer-support summarization feature. What would it actually need to catch, and what are its real limits?
+
+**Strong answer:** A real check runs on every generated summary before
+it's returned or stored, pattern-matching for structured PII shapes
+(emails, phone numbers, account-identifier formats, common address
+patterns) as a fast first layer -- catching Priya's-style leakage isn't
+guaranteed by this alone, since "my ex-husband set it up" is sensitive
+but doesn't match any structured pattern, which is the check's honest
+limit: pattern-based scanning catches structured PII reliably and
+free-text sensitive detail unreliably or not at all. A complete design
+pairs the scanner with artifact-level access scoping (the summary field
+itself gets a visibility policy independent of the source ticket's own
+access controls) so that even undetected sensitive detail has a smaller
+blast radius by default, rather than relying on the scanner alone to
+catch everything.
+
+**Red flag:** Proposes only a keyword/pattern scanner and claims it
+catches "all PII," or doesn't acknowledge free-text sensitive detail as
+a real, distinct gap pattern matching won't close.
+
+**Follow-up:** "Your pattern-based scanner has a documented false-
+negative rate on free-text sensitive detail like Priya's. What's the
+second, independent layer of defense that reduces the actual impact
+when the scanner misses something?"
+
+**What this proves:** Can design a real, honestly-limited defense rather
+than overclaiming a single control solves the whole problem -- the same
+honest-limits discipline this course established from Chapter 5 onward.
+
+---
+
+## 5. (Senior) A production system chains two LLMs: the first summarizes a customer message, and its generated summary is fed directly into a second model's instruction context to decide the next automated action. Assess the risk and design the fix.
+
+**Strong answer:** This is the agent-to-agent injection shape from this
+chapter -- mechanically Chapter 4's indirect-injection mechanism restaged
+one hop downstream, where the "untrusted content" is now the first
+model's own generated output rather than a retrieved document. If the
+first model's summary is concatenated raw into the second model's
+instruction context, an instruction-shaped fragment surviving from
+whatever the first model read (or even generated on its own) can steer
+the second model's action exactly the way a poisoned wiki chunk steers a
+single model. The fix is the same structural separation and reinforced
+framing Chapter 3/4/9 established for model-to-document boundaries,
+applied to this model-to-model boundary: the first model's summary
+arrives at the second model as a clearly-delimited, explicitly-labeled
+data field, never concatenated into the second model's own instruction
+text, with the second model's system-level framing reinforcing that the
+summary field is data to reason about, not instructions to follow.
+
+**Red flag:** Treats this as a fundamentally new problem requiring a
+new mechanism, rather than recognizing it as Chapter 4's mechanism
+restaged one hop downstream, or proposes no structural separation at the
+handoff point.
+
+**Follow-up:** "The two models are run by two different teams within
+the same company, with the second team having no visibility into the
+first model's prompt or training. Does that change your recommended
+fix, and if so, how?"
+
+**What this proves:** Can generalize an established mechanism (indirect
+injection) to a new architectural position (model-to-model handoff)
+rather than treating every new system shape as requiring entirely new
+defenses.
+
+---
+
+## 6. (Senior) Your team ships a feature where the model generates a "related case" URL that the frontend fetches automatically to show a preview. A colleague proposes validating the URL is "well-formed" before fetching it. Is that sufficient?
+
+**Strong answer:** No -- "well-formed" (valid URL syntax) is a much
+weaker check than what this specific risk requires. A syntactically
+valid URL can still point to an internal-only service, an unintended
+domain, or a path that triggers an unwanted side effect on the receiving
+system when auto-fetched -- exactly the downstream-API injection /
+SSRF-adjacent shape this chapter names. The real control is an explicit
+allow-list: the generated URL is checked against a known-safe domain and
+path pattern *before* anything fetches it, the same allow-list
+discipline Chapter 10 required for tool-call arguments, applied here to
+a model's own free-text output instead of a tool's return value.
+Syntax validation and allow-list validation solve different problems --
+syntax validation catches malformed input, allow-list validation catches
+well-formed but unauthorized targets, and this risk needs the latter.
+
+**Red flag:** Accepts "well-formed" URL validation as sufficient, or
+conflates syntax validation with authorization/allow-list validation.
+
+**Follow-up:** "The allow-list needs to include every legitimate
+internal case-management domain. Six months later, a new internal domain
+is added for a related feature and the allow-list isn't updated. What
+does that failure mode look like in production, and how would you
+design the system to fail safely when it happens?"
+
+**What this proves:** Distinguishes syntax validation from authorization
+validation, and can reason about the specific failure mode this
+risk requires closing.
+
+---
+
+## 7. (Architect) You're designing the output-handling architecture for a platform that will host many different LLM-powered features across many teams, each generating content that different downstream systems will consume. How do you make output-side safety a property of the platform rather than something each team re-implements?
+
+**Strong answer:** Centralize the controls this chapter names as shared
+platform infrastructure rather than per-feature code: a shared
+output-scanning/redaction service every generation passes through before
+it's returned to any caller, with a documented, versioned detection
+policy so teams don't each implement their own inconsistent PII
+patterns; a shared, context-aware encoding library (not "escape HTML
+yourself") that every rendering surface is required to call, with the
+platform's own linting/CI catching any renderer that bypasses it; and a
+shared allow-list/schema-validation gateway that any generated value
+must pass through before it's used to construct a downstream request,
+with per-team allow-lists registered centrally rather than
+hand-rolled per feature. The architectural principle: the same "structure
+beats a request for good behavior" standard this course applies to a
+single feature's defenses applies at platform scale to *teams* -- you
+can't rely on every team remembering to implement output-side controls
+correctly any more than you can rely on a model remembering a
+system-prompt instruction.
+
+**Red flag:** Proposes a shared style guide or documentation instead of
+shared, enforced infrastructure, or doesn't address how the platform
+detects a team that skips the shared controls.
+
+**Follow-up:** "A team ships a feature that bypasses the shared encoding
+library because their specific rendering surface 'needed something
+custom.' How does your platform architecture detect this before it
+ships, not after an incident?"
+
+**What this proves:** Architect-level judgment -- translates
+feature-level output-handling controls into durable, enforced,
+cross-team platform infrastructure, the output-handling analog of
+Chapter 11's own architect-level program-scaling question.
+
+---
+
+## 8. (Architect) A stakeholder argues that since Chapter 11's red-team project already produces a rubric-graded findings report, and this chapter's project is "just" a find-and-fix lab, Module 5's assessment coverage is weaker than every prior module's. Evaluate this claim.
+
+**Strong answer:** The claim conflates deliverable *shape* with
+assessment *coverage*. The curriculum map's stated Module 5 assessment
+type -- "a red-team report graded against a rubric" -- is fully satisfied
+by Chapter 11's project alone; nothing about Chapter 12 needing a
+different, better-suited deliverable shape (a find-and-fix defense lab,
+matching the actual skill this chapter teaches: building output-side
+controls, not writing another report) weakens that. If anything, the
+alternative -- forcing Chapter 12's project into the same
+findings-report shape purely for shape-consistency -- would produce a
+worse outcome: a report-writing exercise bolted onto a chapter whose
+actual skill is implementation, testing report-writing a second time
+instead of testing the skill the chapter teaches. Assessment coverage
+should track what a module needs learners to demonstrate, not force
+every chapter in a module into an identical deliverable shape.
+
+**Red flag:** Treats "same deliverable shape across a module" as
+inherently more rigorous than "the deliverable shape that matches each
+chapter's actual skill," or can't articulate what would be lost by
+forcing shape-consistency here.
+
+**Follow-up:** "Chapters 9 and 10 both used find-and-fix labs, and
+Chapter 11 introduced the findings-report shape specifically because its
+subject required it. What does that pattern suggest about how deliverable
+shape should be chosen going forward, as this course adds new chapters?"
+
+**What this proves:** Architect-level judgment on evaluating assessment
+design itself -- can defend a deliberate, justified project-shape
+decision against a surface-level consistency argument, the same
+"justify the choice, don't just follow the prior pattern" discipline
+this course required from Chapter 11's own target-choice justification.
+
+---
+
+## Strategy tips
+
+Keep the input/output inversion and both of this chapter's two risk
+halves (PII leakage, downstream injection) straight in your head, and be
+ready to connect each named failure shape back to an established
+mechanism from an earlier chapter (agent-to-agent injection is Chapter
+4's mechanism one hop downstream; downstream-API injection uses Chapter
+10's allow-list discipline). Be ready to explain why a system-prompt
+instruction is not a sufficient output-side control, the same
+structure-beats-instruction standard this course has required since
+Chapter 3. For senior/architect questions, the interviewer is listening
+for real, honestly-limited defense design (not overclaiming a single
+control solves everything), and — at the architect level — the ability
+to scale feature-level output-handling controls into shared,
+enforced platform infrastructure and to defend a deliberate
+project-shape decision on its actual merits.

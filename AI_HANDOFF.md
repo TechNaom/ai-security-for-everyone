@@ -29,7 +29,7 @@ not offense-only. No content ships as a ready-to-use exploit against
 any named real-world product or service — demonstrate mechanism, not
 payloads.
 
-## Current state (as of 2026-08-12, Chapters 1-11 live, Module 5 started)
+## Current state (as of 2026-08-14, Chapters 1-12 live, Module 5 complete)
 
 **Read `PROJECT_STATE.md` for the authoritative, up-to-date status.**
 
@@ -96,97 +96,78 @@ payloads.
 
 ## Current task
 
-**Chapters 1-11 (Modules 1-5, partial) are done and live, plus the
-Module 2 written exam.** Modules 1, 3, and 4 confirmed not needing a
-separate written exam — satisfied by the chapters' own
-exercises/project. Chapter 10 ("Securing Agentic Systems Against
+**Chapters 1-12 (Modules 1-5, all complete) are done and live, plus the
+Module 2 written exam.** Modules 1, 3, 4, and now 5 confirmed not
+needing a separate written exam — satisfied by the chapters' own
+exercises/projects. Chapter 10 ("Securing Agentic Systems Against
 Adversarial Tool Output," Module 4, Advanced) completed Module 4,
-shipping the course's real, final L3 Independent project (extending
-Chapter 9's Vesper Cloud corpus with a combined RAG-plus-tool-output
-vector, genuinely no-scaffold). See `quality-audits/chapter-10-audit.md`
-for full detail.
+shipping the course's L3 Independent project. See
+`quality-audits/chapter-10-audit.md` for full detail.
 
 **Chapter 11 ("Red-Teaming an LLM System: Methodology and Practice,"
-Module 5, Advanced) is built and live, starting Module 5.** It's a
-process chapter, not a new-attack chapter — the third instance of the
-"process chapter building on established mechanism" pattern (Chapter 2
-on Chapter 1, Chapter 5 on Chapters 3-4) — teaching a five-phase
-red-teaming methodology (scoping/rules of engagement, threat-model-
-driven test-case design using Chapter 1's OWASP Top 10 as the
-structuring device, systematic execution/documentation, severity/impact
-classification, findings-report writing) that draws on Chapters 3-10's
-own attack taxonomy as its arsenal, mapped explicitly to all ten OWASP
-categories in the lesson's own table. Grounded in five real,
-independently-verified sources: OWASP GenAI Security Project's GenAI Red
-Teaming Guide (Jan 2025), NIST's Generative AI Profile (NIST-AI-600-1),
-Microsoft's "Lessons from Red Teaming 100 Generative AI Products"
-(arXiv:2501.07238), OpenAI's "Approach to External Red Teaming for AI
-Models and Systems" (arXiv:2503.16431), and Anthropic's published
-Frontier Red Team methodology. Hook is Alderglen Financial's Ledger
-Copilot; the project is Module 5's own new deliverable shape — a
-rubric-graded findings report (`project/RUBRIC.md`) against a fresh,
-self-contained target (Ledger Copilot again, three planted
-vulnerabilities mirroring Chapter 3/4/9/10's mechanisms), explicitly not
-a byte-identical reuse of Chapter 9/10's Vesper Cloud pipeline, choice
-justified in `project/README.md`. **Module 5 exam decision: explicitly
-deferred to after Chapter 12 ships** — unlike every prior module,
-Module 5's assessment type spans both chapters in the curriculum map's
-own framing, and Chapter 12 covers a risk direction Chapter 11's project
-doesn't exercise. Ollama checked fresh this session: `/api/tags` OK,
+Module 5, Advanced) is built and live, starting Module 5.** A process
+chapter teaching a five-phase red-teaming methodology, grounded in five
+real, independently-verified sources (OWASP's GenAI Red Teaming Guide,
+NIST's Generative AI Profile, Microsoft's and OpenAI's red-teaming
+papers, Anthropic's Frontier Red Team methodology). Hook is Alderglen
+Financial's Ledger Copilot; project ships a rubric-graded findings
+report. See `quality-audits/chapter-11-audit.md` for full detail.
+
+**Chapter 12 ("Handling LLM Output Safely: PII and Downstream Injection
+Risk," Module 5, Advanced) is built and live, closing Module 5.** Covers
+the *output* side of LLM risk (PII leakage in generated text,
+downstream injection risk carried FROM generated content) — the
+explicit inversion of Modules 2 and 4's input-side focus, named the way
+Chapter 7 named its own inversion relative to Chapters 3-6. Verified
+live this session: the **OWASP GenAI LLM Top 10 2026** shipped August 4,
+2026, confirming the edition Chapter 11's research had flagged but not
+confirmed — LLM02:2026 Sensitive Information Disclosure holds its #2
+rank; Improper Output Handling moved from LLM05:2025 to **LLM10:2026**
+(scope expanded). This chapter uses 2026 numbering going forward. A
+brief, technical-practitioner-scoped GDPR/CCPA mention is included, per
+the curriculum map's deferral of deep compliance framing to a future
+course. Hook is Fenwick Customer Experience's TicketSense; the project
+is a **find-and-fix defense lab** (not a second findings report),
+explicitly justified since this chapter's skill is building output-side
+controls and Chapter 11's project already satisfies Module 5's stated
+assessment type. Ollama checked fresh this session: `/api/tags` OK,
 `/api/chat` timed out after a 20-second timeout (exit code 28) — same
-persistent hang as Chapters 3, 4, 5, 9, 10. See
-`quality-audits/chapter-11-audit.md` for the full detail.
+persistent hang as Chapters 3, 4, 5, 9, 10, 11. **Module 5 exam decision:
+resolved, no separate written exam** — Chapter 11's project alone
+satisfies the curriculum map's stated Module 5 assessment type, the same
+judgment call as Modules 1, 3, and 4. See
+`quality-audits/chapter-12-audit.md` for the full detail.
 
 ## Next task after that
 
-**Build Chapter 12 next: "Handling LLM Output Safely: PII and
-Downstream Injection Risk," Module 5, Advanced — closes Module 5.** Full
-curriculum-map text and a detailed build brief now live in
+**Build Chapter 13 next: "Capstone: Security Architecture for a Real LLM
+System," Module 6, Architect — the final chapter, closing the course.**
+Full curriculum-map text and a detailed build brief now live in
 `PROJECT_STATE.md`'s "Next Recommended Task" section — read that section
 in full before starting. Key points not to lose:
 
-1. Chapter 12 covers the *output* side of LLM risk (what a model
-   generates becoming a downstream attack vector) — the mirror image of
-   everything Modules 2 and 4 covered (untrusted input reaching the
-   model). Chapter 1 already flagged Improper Output Handling (LLM05)
-   as "Chapter 12 builds a full chapter on exactly this," and Chapter
-   11's own arsenal table restates that exact deferral — read both
-   sections first, the same discipline Chapter 10 followed for Chapter 1
-   and Chapter 8's own deferred material.
-2. PII handling needs its own real, cited grounding — check current
-   OWASP guidance (LLM02:2025 is the input-side entry; verify
-   output-specific guidance), and check live whether OWASP has moved to
-   a 2026 Top 10 edition (Chapter 11's own research turned up a
-   reference to an "OWASP GenAI LLM Top 10 2026" resource — verify this
-   directly before citing, since it may supersede the 2025 numbering
-   Chapters 1-11 have used throughout). Keep any GDPR/CCPA regulatory
-   mention brief and technical-practitioner-focused — this course
-   defers deep compliance framing to a future `AI Governance for
-   Everyone` course.
-3. "Downstream injection risk in generated content" is the more novel
-   half — a model's own output carrying an injection payload FROM the
-   model's generation, not TO it, consumed by a downstream system
-   (rendered webpage, another agent, a downstream API). Architecturally
-   the mirror image of Modules 2 and 4's input-side risk — worth naming
-   that inversion explicitly, the way Chapter 7 named its own "attacker
-   touches neither the model nor its training data" inversion.
-4. This chapter closes Module 5. Chapter 11 already shipped a rubric-
-   graded findings-report project against Ledger Copilot; decide
-   explicitly whether Chapter 12 needs its own separate findings-report
-   deliverable (red-teaming the output side specifically) or a different
-   project shape (e.g., a find-and-fix lab on output-handling defenses),
-   and state the choice, the same way Chapter 11 justified its own
-   fresh-target choice.
-5. New fictional org, distinct from every org used across Chapters 1-11
-   — the full updated list (including Alderglen Financial, Corvette Bay
-   Utilities, and Chapter 11's eight practice-bank orgs) is in
-   `PROJECT_STATE.md`'s Chapter 12 build notes.
-6. Check Ollama status fresh at the start of that session — don't assume
-   Chapter 11's hang carries forward.
-
-Then Chapter 13 (capstone, Module 6). Continue module by module,
-validating each with a `quality-audits/chapter-0N-audit.md` before
-moving on. Don't mass-generate ahead of validation.
+1. This is a synthesis chapter drawing on all 12 prior chapters, not a
+   new-attack chapter — the L4 Architecture Challenge (per
+   `CURRICULUM_MAP.md`'s Projects section: "design a security
+   architecture for a realistic LLM system, with a red-team report and
+   full ADRs; business problem only"). It should require learners to
+   *use* Chapter 11's red-teaming methodology and Chapter 12's
+   output-handling checklist as inputs, not re-teach either.
+2. Use **OWASP 2026 numbering** throughout (LLM01:2026 through
+   LLM10:2026) — Chapter 12 confirmed and adopted this edition; Chapter
+   13 should follow suit, with a brief 2025-to-2026 mapping note if
+   referencing Chapters 1-11's own citations.
+3. Architect difficulty tier — the only chapter at that level. Should
+   read as a genuine step up from every prior chapter's Advanced tier.
+4. New fictional org, distinct from every org used across Chapters
+   1-12 — the full updated list is in `PROJECT_STATE.md`'s Chapter 13
+   build notes.
+5. Check Ollama status fresh at the start of that session — don't assume
+   Chapter 12's hang carries forward.
+6. This is the last chapter — after validating it with
+   `quality-audits/chapter-13-audit.md`, the remaining work is the
+   course-wide final polish pass (link-integrity sweep, CI/Pages
+   verification, a numbering-consistency check), not another chapter.
 
 ## Important architectural decisions (see PROJECT_STATE.md for full detail)
 
