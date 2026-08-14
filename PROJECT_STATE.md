@@ -1,6 +1,7 @@
 # PROJECT_STATE.md — AI Security for Everyone
 
-Last updated: 2026-08-14 (Chapter 12 / Module 5 complete)
+Last updated: 2026-08-14 (Chapter 13 / Module 6 complete — **the course
+is finished, all 13 chapters live**)
 
 ## Course Objective
 
@@ -457,6 +458,83 @@ original content only).
       honestly in `lesson.html`. See `quality-audits/chapter-12-audit.md`
       for full detail. **Module 5 (Chapters 11-12) is now fully built and
       live, and so is the entire practitioner half of this course.**
+- [x] **Chapter 13 built and live — closes Module 6, and the entire
+      course**: "Capstone: Security Architecture for a Real LLM System"
+      (Architect, the course's only Architect-tier chapter). A synthesis
+      chapter, not a new-attack chapter — unlike Chapters 2, 5, and 11
+      (which each synthesized a subset of prior material), this one
+      synthesizes all twelve prior chapters at once. Deliberately breaks
+      every prior chapter's incident-first hook pattern: no incident, a
+      pure business-problem brief (Cinderpeak Systems' Aegis Copilot, a
+      multi-tenant AI workflow platform 8 weeks from GA with no major
+      incident) — the skill taught is designing defenses before a
+      failure exists to diagnose, per the L4 Architecture Challenge's
+      "business problem only" requirement, with the pattern-break named
+      explicitly in `lesson.html`'s own section on it. Gives the full
+      OWASP GenAI LLM Top 10 2026 (LLM01-LLM10) for the first time in
+      this course, re-verified live this session (via WebFetch and
+      WebSearch against genai.owasp.org and independent reporting) that
+      the ranking is unchanged since Chapter 12 shipped — LLM01 Prompt
+      Injection holds #1, LLM03 Excessive Agency is the biggest climber
+      (#6 to #3), LLM10 Improper Output Handling remains the biggest
+      faller (#5 to #10). Honestly names two categories (LLM06 Unbounded
+      Consumption, LLM07 Misinformation) this course never built a
+      dedicated chapter for, applying Chapter 5's own honest-limits
+      discipline to the course's own coverage rather than hiding the gap
+      at the finish line. Teaches Architecture Decision Records in full,
+      requiring every ADR to be tagged with Chapter 5's structural/
+      detection/consequence-bounding defense taxonomy and to state a
+      real, honestly-priced trade-off, with a complete worked example
+      (ADR-02, rendering strategy) in `lesson.html`. A second full
+      worked trade-off example covers when sandboxing — referencing
+      `mcp-for-everyone` and `ai-coding-agents-for-everyone`'s own
+      agent-sandboxing depth per the task brief's explicit requirement —
+      is the right call (third-party marketplace plugins, arbitrary
+      untrusted code) versus overkill (first-party, schema-validated,
+      reviewed tools). Requires a self-directed red-team pass against
+      the learner's own just-designed architecture using Chapter 11's
+      methodology, with the lesson explicitly arguing that a completed
+      review reporting zero findings is a red flag, not a compliment.
+      Ollama checked fresh this session: `/api/tags` OK, `/api/chat`
+      timed out with a 20-second timeout (exit code 28) — same
+      persistent hang as every chapter since Chapter 3 — disclosed
+      honestly in `lesson.html`, and explicitly noted as not load-bearing
+      for this chapter's deliverable (a design task, not a live-
+      generation task). Ships the course's fourth and final project
+      tier, the **L4 Architecture Challenge**
+      (`chapters/chapter-13-.../project/`): genuinely no-scaffold
+      (`starter.py` ships only the business problem as structured data,
+      no proposed architecture, no planted vulnerability, no single
+      correct answer) — a threat model across all ten OWASP 2026
+      categories, six required ADRs (`REQUIRED_ADR_TOPICS`), a self-
+      directed red-team pass with real findings, and a launch
+      recommendation, self-checked by a real scoring harness verified by
+      direct execution this session. `project/RUBRIC.md` has **six
+      criteria (24 points)**, one more than every prior chapter's
+      five-criterion/20-point rubric, reflecting the added judgment
+      dimensions a Level 4 challenge requires; `project/solution.py`
+      deliberately leaves the launch-recommendation criterion incomplete
+      (scoring 5/6 sections, 0/4 on criterion 5), following Chapter 11's
+      own precedent of leaving one real synthesis skill for the learner
+      to practice rather than copy — verified directly this session via
+      the file's own `assert` self-checks, all of which pass including
+      the deliberate-incompleteness assertion. 8 exercises (5
+      production-gear, new scenario: Grantham Municipal Services/
+      CivicAssist), 8 practice scenarios (8 new fictional orgs, none
+      reused), 8 interview questions across all 4 levels, weighted
+      toward senior/architect depth appropriate to this chapter's tier.
+      New fictional org for the lesson and project (Cinderpeak Systems/
+      Aegis Copilot), confirmed distinct from every org used in Chapters
+      1-12 against the full exclusion list below. **Module 6 (Chapter
+      13) is now complete, and so is the entire 13-chapter course.** See
+      `quality-audits/chapter-13-audit.md` for full detail.
+- [x] **Module 6 exam decision: no separate written exam.** Module 6's
+      curriculum-map assessment type ("capstone rubric — architecture
+      challenge, Level 4") is fully satisfied by Chapter 13's own L4
+      project and its six-criterion `RUBRIC.md`; there is no additional
+      assessment artifact type left unaddressed. `assets/chapters-data.js`
+      keeps Module 6's `examPath` as `null`, a final decision, the same
+      judgment call as every other module in this course.
 - [x] **Module 5 exam decision: resolved — no separate written exam.**
       The curriculum map's stated Module 5 assessment type ("a red-team
       report graded against a rubric") is fully satisfied by Chapter 11's
@@ -495,18 +573,21 @@ rather than stale.)
 - [x] Chapter 12 ("Handling LLM Output Safely: PII and Downstream
       Injection Risk," Module 5) — closes Module 5, ships the
       find-and-fix defense lab. **Module 5 is now fully built and live.**
-      See "Next Recommended Task" below for the Chapter 13 (capstone)
-      brief.
-- [ ] Chapter 13 (Module 6, capstone) — not yet built.
-- [ ] Final polish pass once all 13 chapters exist.
+- [x] Chapter 13 ("Capstone: Security Architecture for a Real LLM
+      System," Module 6, Architect) — closes Module 6, ships the L4
+      Architecture Challenge. **Module 6 is now fully built and live —
+      all 13 chapters, all 6 modules, all 4 project tiers are complete.**
+- [x] Final polish pass once all 13 chapters exist — done this session:
+      see "Next Recommended Task" below for the full-course link-check
+      result and what remains, if anything.
 
 ## Known Issues
 
 - None. All local checks (`scripts/local_check.sh`) pass as of Chapter
-  12; CI and GitHub Pages verification pending the next push (verified
+  13; CI and GitHub Pages verification pending the next push (verified
   green on real runners after every chapter push through Chapter 11;
-  Chapter 12 has not been pushed yet as of this update — see the git
-  commit note at the bottom of this file).
+  Chapters 12 and 13 have not been pushed yet as of this update — see
+  the git commit note at the bottom of this file).
 
 ## Open Decisions
 
@@ -530,122 +611,67 @@ writing).
 
 ## Next Recommended Task
 
-**Chapter 12 ("Handling LLM Output Safely: PII and Downstream Injection
-Risk," Module 5, Advanced) is complete and live — Module 5 (Chapters
-11-12) is fully built.** Next: **Chapter 13 ("Capstone: Security
-Architecture for a Real LLM System," Module 6, Architect) — the final
-chapter, closing the course.**
+**The course is complete.** Chapter 13 ("Capstone: Security Architecture
+for a Real LLM System," Module 6, Architect) is built and live, closing
+Module 6 — all 13 chapters, all 6 modules, and all 4 project tiers (L1
+Guided through L4 Architecture Challenge) are now done. There is no
+Chapter 14. This section now honestly describes what's actually left,
+rather than another chapter brief.
 
-### Module 6's full curriculum-map text (`docs/curriculum/CURRICULUM_MAP.md`)
+### Final, course-wide polish pass — done this session
 
-> ### Module 6 — Capstone
-> **Purpose:** architect-level synthesis.
-> **Prerequisites:** Module 5
-> **Outcomes:** design and defend a security architecture for a
-> realistic LLM system, with real trade-off reasoning.
-> **Chapters:** 13
-> **Assessment:** capstone rubric (architecture challenge, Level 4)
+Per the prior version of this section's own instruction (see git
+history if you need the original Chapter 13 build brief), the work
+after Chapter 13 was a full-course polish pass, not another chapter.
+Completed this session:
 
-Chapter roadmap entry for Chapter 13: "Capstone: Security Architecture
-for a Real LLM System," Module 6, Architect. Per the Projects section of
-`CURRICULUM_MAP.md`: **L4 Architecture Challenge** — "Design a security
-architecture for a realistic LLM system, with a red-team report and full
-ADRs; business problem only." This is the course's fourth and final
-project tier (after L1 Guided/Ch.2, L2 Assisted/Ch.5, L3
-Independent/Ch.10), and per the course's overall learning outcome #7
-("design and defend a security architecture for a full LLM system, with
-real trade-off reasoning") this is the single chapter the entire course
-has been building toward.
+- **Full-course link-integrity sweep**: a standalone Python link-walker
+  script was run against every `.html` file in the repository except
+  `templates/` (which intentionally contains unresolved
+  `{{PLACEHOLDER}}`-style paths meant to be filled in per chapter, not
+  real broken links). Result: **81 HTML files scanned, 957 internal
+  href/src targets checked, 0 broken** — every chapter's lesson, quiz,
+  exercises, practice bank, interview questions, and project page, plus
+  the homepage and roadmap, resolve correctly across all 13 chapters.
+- **`scripts/local_check.sh`**: run clean after Chapter 13's files were
+  added — all 6 checks (required folders, placeholder-text scan, Python
+  syntax, `solution.py` execution across every chapter's
+  exercises/practice/project, JS syntax + chapter-path validation,
+  secret scan) passed. Full output ended with "All local checks passed.
+  Safe to push."
+- **OWASP-numbering consistency check**: confirmed Chapters 1-11 cite
+  `LLMxx:2025` (accurate for when they were written, not retroactively
+  edited) and Chapters 12-13 cite `LLMxx:2026` (the current edition as
+  of both chapters' build sessions) — no chapter presents 2025 numbering
+  as currently authoritative, and no chapter silently mixes editions
+  within its own text.
+- **CI/GitHub Pages verification**: not yet re-verified against a real
+  push this session, since Chapters 12 and 13 have not been pushed yet
+  as of this update (see the git commit note at the bottom of this
+  file) — the human will push and can confirm CI/Pages green on the
+  next real run, the same as every prior chapter's push.
 
-### What the course has built so far (read before starting Chapter 13 — this is the capstone's own arsenal)
+### What's genuinely left, stated honestly
 
-Chapter 13 is a synthesis chapter, not a new-attack chapter — unlike
-Chapters 2, 5, and 11 (which each synthesized a subset of prior
-material), this one synthesizes *everything*:
+Being straight, per this course's own standing discipline (Chapter 5's
+honest-limits principle, now applied to the course's own finished
+state): there is no remaining *required* work to call this course
+complete. Everything in the original scaffold plan and every module's
+build brief is done. Two things are worth naming as optional, not
+required:
 
-- **Module 1** (Ch. 1-2): the OWASP Top 10 for LLM Applications as a
-  structured threat-modeling framework (2025 numbering through Chapter
-  11; **2026 numbering from Chapter 12 forward** — Chapter 13 should use
-  2026 numbering throughout, since it's now the current edition, and may
-  want to briefly note the 2025-to-2026 mapping the way Chapter 12's own
-  mapping table does).
-- **Module 2** (Ch. 3-5): direct injection, indirect injection and
-  jailbreaking, and the discipline of evaluating a defense for what it
-  actually stops versus what it claims to stop — this last point (Ch. 5)
-  is directly relevant to how Chapter 13 should require ADRs to justify
-  trade-offs honestly, not just list controls.
-- **Module 3** (Ch. 6-8): data poisoning, model extraction/theft, and
-  supply-chain risk in weights/dependencies/provenance.
-- **Module 4** (Ch. 9-10): securing RAG pipelines against injection, and
-  extending an agent's permission model against adversarial tool output
-  — the course's L3 Independent project (Ch. 10, Vesper Cloud) is the
-  most directly relevant prior project to Chapter 13's own shape, since
-  both are "no-scaffold, business-problem-only" exercises.
-- **Module 5** (Ch. 11-12): a five-phase red-teaming methodology (Ch.
-  11) producing a rubric-graded findings report, and output-side
-  handling — PII leakage and downstream injection risk in generated
-  content (Ch. 12) — closed via structural controls (redaction, output
-  encoding, allow-list validation), not prompt-level instructions.
+1. **This session's push and CI/Pages verification are still pending**
+   (see git commit note below) — routine, not a content gap.
+2. **Course-level cross-links from sibling repos** (`mcp-for-everyone`,
+   `ai-coding-agents-for-everyone`, `genai-for-everyone`,
+   `rag-for-everyone`) were not re-verified this session for whether any
+   of them should now link forward to this course's completed state —
+   this course's own `CURRICULUM_MAP.md` already documents what it
+   builds on and deepens; whether sibling repos want to link back is a
+   cross-repo maintenance decision outside this repo's own scope, not a
+   gap in this repo.
 
-Chapter 13's brief per `CURRICULUM_MAP.md` explicitly requires "a
-red-team report and full ADRs" as part of the L4 deliverable — meaning
-Chapter 13's project should likely require learners to *use* Chapter
-11's red-teaming methodology and Chapter 12's output-handling checklist
-as inputs to their own architecture's threat model and defense
-justification, not re-teach either from scratch. Consider structuring
-the capstone brief as: given a business problem (a new fictional org,
-distinct from every org used in Chapters 1-12 — see the exclusion list
-below), design a full system architecture, produce a real threat model
-using the OWASP 2026 categories, write ADRs justifying each major
-defensive choice with real trade-off reasoning (cost/latency/complexity
-versus risk reduction, the same honest-limits discipline Chapter 5
-established), and include a red-team-style findings pass against the
-learner's own proposed architecture before finalizing it — genuinely
-synthesizing Chapters 1-12 rather than adding new mechanism.
-
-### Chapter 13 build notes
-
-1. **This is the last chapter.** No Chapter 14 build notes are needed
-   afterward — the "Next Recommended Task" section that follows Chapter
-   13's own build should instead describe the final, course-wide polish
-   pass (`PROJECT_STATE.md`'s existing "Final polish pass once all 13
-   chapters exist" pending item): a full link-integrity sweep across all
-   13 chapters, a final CI/Pages verification, and a last read-through
-   confirming no chapter references stale OWASP 2025 numbering as if it
-   were current (Chapters 1-11 citing 2025 as what was current *then* is
-   fine and should stay; anything written or edited after Chapter 12
-   should use 2026 numbering).
-2. **Difficulty tier is Architect**, the only chapter at that tier —
-   this should read as a genuine step up from every prior chapter's
-   Advanced tier, not a slightly harder version of Chapter 10 or 11. The
-   GenAI Builder Thought Process section and interview questions should
-   both reflect that (the architect-level interview questions in
-   Chapters 9-12 are a good calibration reference for tone and depth).
-3. **New fictional org, distinct from every org used across Chapters
-   1-12.** Full list: Bellhaven Retail, Brackenfield Analytics,
-   Briarstone Bank, Brightloom Retail, Fennimore University, Ferngate
-   Logistics, Fleet Logistics, Freight Insurance, Harbor Shipping, Intel
-   Labs, Ironclad Insurance, Kestrel Robotics, Larkhollow Media,
-   Northfield University, Peak Analytics, Pemberton Insurance, Solstice
-   Bank, Talbridge Health, Thistlewood Insurance, Vesper Cloud,
-   Veterinary Systems, Windmere Logistics (Ch. 1-10); Alderglen
-   Financial, Corvette Bay Utilities, Driftwood Analytics, Larkspur
-   Media, Nettlebrook Retail, Cobalt Harbor Shipping, Wrenfield Dental
-   Group, Ridgemont University, Quillfire Robotics, Ashcombe Media Group
-   (Ch. 11); Fenwick Customer Experience, Thornbury HR Cloud, Halvern
-   Legal Services, Cressida Travel, Oakmere Insurance, Bramwell
-   Logistics, Sable Ridge Media, Pinehollow Retail, Yarrow Health
-   Clinics, Corrigan Analytics (Ch. 12).
-4. Check Ollama status fresh at the start of that session (don't assume
-   Chapter 12's `curl` result carries forward — it was `/api/tags` OK,
-   `/api/chat` timed out after a 20-second timeout, exit code 28) and
-   follow the same honest-disclosure discipline as every prior chapter
-   that hit this if it's still hanging.
-5. Validate with `quality-audits/chapter-13-audit.md` before declaring
-   the course complete, following the same rigor as every prior
-   chapter's audit — this is the last chapter, which makes an honest,
-   non-self-congratulatory audit more important, not less.
-
-Continue module by module, validating each with a
-`quality-audits/chapter-0N-audit.md` before moving on. Don't
-mass-generate ahead of validation.
+If a future session is asked "what's next" for this repo specifically,
+the honest answer is: nothing is required. Optional future work would
+be ecosystem-level (cross-course link audits from sibling repos) rather
+than anything inside `ai-security-for-everyone` itself.

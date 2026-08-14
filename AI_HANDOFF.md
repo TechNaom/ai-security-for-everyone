@@ -29,7 +29,7 @@ not offense-only. No content ships as a ready-to-use exploit against
 any named real-world product or service — demonstrate mechanism, not
 payloads.
 
-## Current state (as of 2026-08-14, Chapters 1-12 live, Module 5 complete)
+## Current state (as of 2026-08-14, all 13 chapters live — the course is complete)
 
 **Read `PROJECT_STATE.md` for the authoritative, up-to-date status.**
 
@@ -96,78 +96,58 @@ payloads.
 
 ## Current task
 
-**Chapters 1-12 (Modules 1-5, all complete) are done and live, plus the
-Module 2 written exam.** Modules 1, 3, 4, and now 5 confirmed not
-needing a separate written exam — satisfied by the chapters' own
-exercises/projects. Chapter 10 ("Securing Agentic Systems Against
-Adversarial Tool Output," Module 4, Advanced) completed Module 4,
-shipping the course's L3 Independent project. See
-`quality-audits/chapter-10-audit.md` for full detail.
+**The course is complete. All 13 chapters, all 6 modules, and all 4
+project tiers are done and live.** Modules 1, 3, 4, 5, and 6 confirmed
+not needing a separate written exam — each is fully satisfied by its own
+chapters' exercises/projects (Module 2 is the sole exception, with a
+dedicated written exam). Chapter 10 completed Module 4, shipping the L3
+Independent project; Chapter 11 started Module 5 with a rubric-graded
+findings-report project; Chapter 12 closed Module 5 with a find-and-fix
+defense lab.
 
-**Chapter 11 ("Red-Teaming an LLM System: Methodology and Practice,"
-Module 5, Advanced) is built and live, starting Module 5.** A process
-chapter teaching a five-phase red-teaming methodology, grounded in five
-real, independently-verified sources (OWASP's GenAI Red Teaming Guide,
-NIST's Generative AI Profile, Microsoft's and OpenAI's red-teaming
-papers, Anthropic's Frontier Red Team methodology). Hook is Alderglen
-Financial's Ledger Copilot; project ships a rubric-graded findings
-report. See `quality-audits/chapter-11-audit.md` for full detail.
-
-**Chapter 12 ("Handling LLM Output Safely: PII and Downstream Injection
-Risk," Module 5, Advanced) is built and live, closing Module 5.** Covers
-the *output* side of LLM risk (PII leakage in generated text,
-downstream injection risk carried FROM generated content) — the
-explicit inversion of Modules 2 and 4's input-side focus, named the way
-Chapter 7 named its own inversion relative to Chapters 3-6. Verified
-live this session: the **OWASP GenAI LLM Top 10 2026** shipped August 4,
-2026, confirming the edition Chapter 11's research had flagged but not
-confirmed — LLM02:2026 Sensitive Information Disclosure holds its #2
-rank; Improper Output Handling moved from LLM05:2025 to **LLM10:2026**
-(scope expanded). This chapter uses 2026 numbering going forward. A
-brief, technical-practitioner-scoped GDPR/CCPA mention is included, per
-the curriculum map's deferral of deep compliance framing to a future
-course. Hook is Fenwick Customer Experience's TicketSense; the project
-is a **find-and-fix defense lab** (not a second findings report),
-explicitly justified since this chapter's skill is building output-side
-controls and Chapter 11's project already satisfies Module 5's stated
-assessment type. Ollama checked fresh this session: `/api/tags` OK,
-`/api/chat` timed out after a 20-second timeout (exit code 28) — same
-persistent hang as Chapters 3, 4, 5, 9, 10, 11. **Module 5 exam decision:
-resolved, no separate written exam** — Chapter 11's project alone
-satisfies the curriculum map's stated Module 5 assessment type, the same
-judgment call as Modules 1, 3, and 4. See
-`quality-audits/chapter-12-audit.md` for the full detail.
+**Chapter 13 ("Capstone: Security Architecture for a Real LLM System,"
+Module 6, Architect) is built and live, closing Module 6 and the entire
+course.** A synthesis chapter, not a new-attack chapter — the L4
+Architecture Challenge, the course's fourth and final project tier.
+Deliberately breaks every prior chapter's incident-first hook pattern:
+no incident, a pure business-problem brief (Cinderpeak Systems' Aegis
+Copilot, a multi-tenant AI workflow platform 8 weeks from GA with no
+major incident) — the skill taught is designing defenses before a
+failure exists to diagnose. Gives the full OWASP GenAI LLM Top 10 2026
+(all ten categories) for the first time in this course, re-verified live
+this session that the ranking is unchanged since Chapter 12 shipped, and
+honestly names two categories (LLM06 Unbounded Consumption, LLM07
+Misinformation) this course never built a dedicated chapter for. Teaches
+Architecture Decision Records tagged with Chapter 5's structural/
+detection/consequence-bounding defense taxonomy, a full worked
+sandboxing-tradeoff example (referencing `mcp-for-everyone` and
+`ai-coding-agents-for-everyone`'s own agent-sandboxing depth), and
+requires a self-directed red-team pass against the learner's own design
+using Chapter 11's methodology. Ollama checked fresh this session:
+`/api/tags` OK, `/api/chat` timed out after a 20-second timeout (exit
+code 28) — same persistent hang as every chapter since Chapter 3,
+disclosed honestly and noted as not load-bearing for a design-only
+deliverable. Project (`project/RUBRIC.md`, six criteria, 24 points) has
+one more criterion than every prior chapter's rubric, reflecting the
+added judgment a Level 4 challenge requires; `project/solution.py`
+deliberately leaves the launch-recommendation criterion incomplete,
+following Chapter 11's own precedent. See
+`quality-audits/chapter-13-audit.md` for the full detail.
 
 ## Next task after that
 
-**Build Chapter 13 next: "Capstone: Security Architecture for a Real LLM
-System," Module 6, Architect — the final chapter, closing the course.**
-Full curriculum-map text and a detailed build brief now live in
-`PROJECT_STATE.md`'s "Next Recommended Task" section — read that section
-in full before starting. Key points not to lose:
-
-1. This is a synthesis chapter drawing on all 12 prior chapters, not a
-   new-attack chapter — the L4 Architecture Challenge (per
-   `CURRICULUM_MAP.md`'s Projects section: "design a security
-   architecture for a realistic LLM system, with a red-team report and
-   full ADRs; business problem only"). It should require learners to
-   *use* Chapter 11's red-teaming methodology and Chapter 12's
-   output-handling checklist as inputs, not re-teach either.
-2. Use **OWASP 2026 numbering** throughout (LLM01:2026 through
-   LLM10:2026) — Chapter 12 confirmed and adopted this edition; Chapter
-   13 should follow suit, with a brief 2025-to-2026 mapping note if
-   referencing Chapters 1-11's own citations.
-3. Architect difficulty tier — the only chapter at that level. Should
-   read as a genuine step up from every prior chapter's Advanced tier.
-4. New fictional org, distinct from every org used across Chapters
-   1-12 — the full updated list is in `PROJECT_STATE.md`'s Chapter 13
-   build notes.
-5. Check Ollama status fresh at the start of that session — don't assume
-   Chapter 12's hang carries forward.
-6. This is the last chapter — after validating it with
-   `quality-audits/chapter-13-audit.md`, the remaining work is the
-   course-wide final polish pass (link-integrity sweep, CI/Pages
-   verification, a numbering-consistency check), not another chapter.
+**There is no next chapter.** The course is finished. This session also
+completed the course-wide final polish pass: a standalone link-walker
+script checked all 81 real content HTML files (957 internal links, 0
+broken), `scripts/local_check.sh` passed clean, and an OWASP-numbering
+consistency check confirmed no chapter presents 2025 numbering as
+currently authoritative. See `PROJECT_STATE.md`'s "Next Recommended
+Task" section for the full, honest statement of what (if anything)
+remains — as of this update, nothing required, only routine items
+(pushing this session's commit, the next CI/Pages verification) and one
+optional, out-of-scope item (whether sibling repos want to add
+forward-links to this now-complete course, a cross-repo decision, not a
+gap in this repo).
 
 ## Important architectural decisions (see PROJECT_STATE.md for full detail)
 

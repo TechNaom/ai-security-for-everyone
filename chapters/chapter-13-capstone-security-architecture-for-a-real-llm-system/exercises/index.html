@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capstone: Security Architecture Exercises — AI Security for Everyone</title>
+<meta name="description" content="Hands-on exercises for Chapter 13, Capstone: Security Architecture for a Real LLM System.">
+<link rel="stylesheet" href="../../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-13">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../../index.html">All Chapters</a>
+      <a href="../../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="../quiz.html">&larr; Back to the quiz</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 13 Exercises — Capstone</span>
+    <span class="reading-time">~45 min, hands-on</span>
+  </div>
+  <h1>Exercises: Capstone: Security Architecture for a Real LLM System</h1>
+  <p>
+    These exercises use a new scenario, deliberately different from the
+    lesson's Cinderpeak Systems example: <strong>Grantham Municipal
+    Services</strong>, a fictional city government's internal AI
+    assistant, <strong>CivicAssist</strong>, used across multiple
+    departments. You'll map observations to the full ten-category OWASP
+    2026 Top 10, implement a real ADR-validity checker, judge honest
+    claims versus overclaims, implement the sandboxing judgment rule as
+    real code, implement a threat-model completeness scorer, critique
+    flawed ADR excerpts, and write a real justification for why a
+    zero-finding red-team pass is a red flag.
+  </p>
+
+  <div class="what-is">
+    <span class="label">Exercise standard</span>
+    Eight tasks total. Five are marked production-gear — a real
+    ADR-validity checker, a real sandboxing-judgment function, a real
+    OWASP-category mapper across all ten categories, a real threat-model
+    completeness scorer, and ADR critique — not just concept recall.
+  </div>
+
+  <div class="what-is">
+    <span class="label">How to run these</span>
+    Download <code>starter.py</code>, fill in every <code>&#35; TODO</code>,
+    then run <code>python3 starter.py</code> to see an automated score
+    report. Compare against <code>solution.py</code>, which scores a
+    perfect 38/38.
+  </div>
+
+  <div class="download-links">
+    <a href="starter.py">starter.py</a>
+    <a href="solution.py">solution.py (reference)</a>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">1</span> Map events to the full OWASP 2026 category</h3>
+    <p>Sort six CivicAssist events into the ten OWASP GenAI LLM Top 10 2026 categories.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">2</span> <span class="badge-coming-soon">Production-gear</span> Implement an ADR-validity checker</h3>
+    <p>Write <code>is_valid_adr()</code> — a real structural check that an ADR has every required field, a valid defense category, and a non-trivial trade-off statement.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">3</span> Honest claim vs. overclaim/gap</h3>
+    <p>For four described architecture-review statements, decide which reflect sound practice and which contain a real gap.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">4</span> <span class="badge-coming-soon">Production-gear</span> Implement the sandboxing-judgment rule</h3>
+    <p>Write <code>is_sandboxing_warranted()</code> — apply this chapter's real rule to a tool's risk profile.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">5</span> <span class="badge-coming-soon">Production-gear</span> Map observation to OWASP 2026 category</h3>
+    <p>Given four CivicAssist observations, name the single best-fit OWASP 2026 category.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">6</span> <span class="badge-coming-soon">Production-gear</span> Implement a threat-model completeness scorer</h3>
+    <p>Write <code>score_threat_model_completeness()</code> — verify all ten categories are present with a real rationale, not a placeholder.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">7</span> <span class="badge-coming-soon">Production-gear</span> Critique ADR excerpts</h3>
+    <p>Given four ADR excerpts, decide which contain a real flaw and which are sound.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">8</span> Written reasoning</h3>
+    <p>Write a real, justified sentence explaining why a self-directed red-team pass reporting zero findings is a red flag, not a compliment.</p>
+  </div>
+
+  <div class="chapter-nav">
+    <a href="../quiz.html">&larr; Back to Quiz</a>
+    <a href="../practice/index.html">Practice Bank &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+  </div>
+</footer>
+
+<script src="../../../assets/progress.js"></script>
+<script src="../../../assets/chapters-data.js"></script>
+<script src="../../../assets/sidebar.js"></script>
+</body>
+</html>

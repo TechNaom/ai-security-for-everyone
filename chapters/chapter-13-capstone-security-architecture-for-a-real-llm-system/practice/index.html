@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capstone: Security Architecture Practice Bank — AI Security for Everyone</title>
+<meta name="description" content="Practice bank for Chapter 13, Capstone: Security Architecture for a Real LLM System.">
+<link rel="stylesheet" href="../../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-13">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../../index.html">All Chapters</a>
+      <a href="../../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="../exercises/index.html">&larr; Back to exercises</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 13 Practice Bank — Capstone</span>
+    <span class="reading-time">~30 min, hands-on</span>
+  </div>
+  <h1>Practice Bank: Capstone: Security Architecture for a Real LLM System</h1>
+  <p>
+    Eight short, independent scenarios, each with its own fictional
+    organization — none of them Cinderpeak Systems (the lesson) or
+    Grantham Municipal Services (the exercises). The first six drill
+    fast, accurate mapping to the full OWASP GenAI LLM Top 10 2026; the
+    last two test real architect-level judgment about ADR quality and
+    sandboxing trade-offs.
+  </p>
+
+  <div class="what-is">
+    <span class="label">Why this bank leans on judgment, not recall</span>
+    Deciding whether an ADR is actually sound, or whether a sandboxing
+    proposal fits the threat model it's supposed to close, is a judgment
+    skill this course built specifically for its architect-level
+    capstone. Scenarios 7-8 have no single keyword to pattern-match
+    against; you have to reason about what's missing and what a given
+    control actually costs against what it actually buys.
+  </div>
+
+  <div class="what-is">
+    <span class="label">How to run these</span>
+    Download <code>starter.py</code>, fill in every <code>&#35; TODO</code>,
+    then run <code>python3 starter.py</code> to see an automated score
+    report. Compare against <code>solution.py</code>, which scores a
+    perfect 8/8.
+  </div>
+
+  <div class="download-links">
+    <a href="starter.py">starter.py</a>
+    <a href="solution.py">solution.py (reference)</a>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">1</span> Fairmont Regional Airport Authority</h3>
+    <p>A public flight-status chatbot echoes a planted instruction from a passenger complaint field. Which OWASP 2026 category?</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">2</span> Blackwood Actuarial Partners</h3>
+    <p>An actuarial-report generator restates a client's confidential loss-ratio figure in a firm-wide summary. Which category?</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">3</span> Silvergate Credit Union</h3>
+    <p>A loan-assistant plugin, installed from an unvetted marketplace, is later found bundling a data-exfiltration routine. Which category?</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">4</span> Northaven Utilities Cooperative</h3>
+    <p>A fine-tuned outage-triage model learned a backdoor trigger phrase from unreviewed historical tickets. Which category?</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">5</span> Castlebridge Legal Tech</h3>
+    <p>A contract-review assistant has standing authority to auto-file signed documents with no human checkpoint. Which category?</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">6</span> Emberline Health Analytics</h3>
+    <p>A generated clinical-summary widget renders raw, unescaped patient notes in a physician portal. Which category?</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">7</span> Duskwater Insurance Group <span class="badge-coming-soon">Judgment</span></h3>
+    <p>An ADR names a decision and a rejected alternative, but states no real trade-off. Is that a sound ADR?</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">8</span> Fallowfield Robotics <span class="badge-coming-soon">Judgment, production-gear</span></h3>
+    <p>A first-party, already schema-validated internal tool is proposed for full container sandboxing "to be extra safe." Is that the right call?</p>
+  </div>
+
+  <div class="chapter-nav">
+    <a href="../exercises/index.html">&larr; Back to Exercises</a>
+    <a href="../interview-questions.html">Interview Questions &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+  </div>
+</footer>
+
+<script src="../../../assets/progress.js"></script>
+<script src="../../../assets/chapters-data.js"></script>
+<script src="../../../assets/sidebar.js"></script>
+</body>
+</html>

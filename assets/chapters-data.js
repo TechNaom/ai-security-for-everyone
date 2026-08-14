@@ -6,7 +6,8 @@
   not set a placeholder path, or sidebar/home will link to a 404. The
   same rule applies to a module's `examPath`: set it to null until that
   module's written exam actually exists in assessments/written-exams/.
-  No chapters have content yet -- see PROJECT_STATE.md.
+  All 13 chapters are live -- the course is complete. See
+  PROJECT_STATE.md for build history and status.
 */
 
 window.AISFE_MODULES = [
@@ -138,7 +139,8 @@ window.AISFE_MODULES = [
         id: "chapter-13",
         num: 13,
         title: "Capstone: Security Architecture for a Real LLM System",
-        description: "A Level 4 architecture challenge closing the course."
+        description: "A Level 4 architecture challenge closing the course.",
+        path: "chapters/chapter-13-capstone-security-architecture-for-a-real-llm-system/lesson.html"
       }
     ]
   }

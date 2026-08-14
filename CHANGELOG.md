@@ -2,6 +2,57 @@
 
 All notable changes to this course are logged here, newest first.
 
+## 2026-08-14 — Chapter 13 built, Module 6 complete: the course is finished
+
+- Chapter 13 ("Capstone: Security Architecture for a Real LLM System,"
+  Module 6, Architect) built and live — the final chapter, closing the
+  course. All 13 chapters across all 6 modules are now live.
+- Deliberately breaks every prior chapter's incident-first hook pattern:
+  no incident, a pure business-problem brief (Cinderpeak Systems' Aegis
+  Copilot, a multi-tenant AI workflow platform, 8 weeks from GA with no
+  major incident) — the skill taught is designing defenses before a
+  failure exists to diagnose, per the L4 Architecture Challenge's
+  "business problem only" requirement.
+- Full OWASP GenAI LLM Top 10 2026 (all ten categories, LLM01-LLM10)
+  mapped to this course's arsenal for the first time — re-verified live
+  this session that the ranking is unchanged since Chapter 12 shipped.
+  Honestly names two categories (LLM06 Unbounded Consumption, LLM07
+  Misinformation) this course never built a dedicated chapter for,
+  applying Chapter 5's honest-limits discipline to the course's own
+  coverage.
+- Teaches Architecture Decision Records, requiring every ADR to be
+  tagged with Chapter 5's structural/detection/consequence-bounding
+  defense taxonomy and to state a real, honestly-priced trade-off — with
+  a full worked example in `lesson.html`.
+- Full worked trade-off example on when sandboxing (referencing
+  `mcp-for-everyone` and `ai-coding-agents-for-everyone`'s own
+  agent-sandboxing depth) is the right call versus overkill, comparing
+  Aegis Copilot's first-party tools against its third-party plugin
+  marketplace.
+- Project is the course's fourth and final project tier, the **L4
+  Architecture Challenge** (`project/RUBRIC.md`, six criteria, 24
+  points): a threat model across all ten OWASP 2026 categories, six
+  required ADRs, a self-directed red-team pass against the learner's own
+  design (using Chapter 11's methodology), and a prioritized launch
+  recommendation. `project/solution.py` deliberately leaves the launch-
+  recommendation criterion incomplete, following Chapter 11's own
+  precedent.
+- 8 exercises (5 production-gear, new scenario: Grantham Municipal
+  Services/CivicAssist), 8 practice scenarios (8 new fictional orgs), 8
+  interview questions across all 4 levels, weighted toward
+  senior/architect depth appropriate to the course's only Architect-tier
+  chapter.
+- Ollama checked fresh this session: `/api/tags` OK, `/api/chat` timed
+  out after a 20-second timeout (exit code 28) — same persistent hang as
+  every prior chapter since Chapter 3; disclosed honestly, and noted as
+  not load-bearing for this chapter's deliverable (a design task, not a
+  live-generation task).
+- `index.html` and `docs/curriculum/index.html` updated to reflect the
+  finished course (13/13 chapters live, 6/6 modules complete),
+  matching the completion pattern used by `mcp-for-everyone` and
+  `ai-coding-agents-for-everyone`.
+- See `quality-audits/chapter-13-audit.md` for full detail.
+
 ## 2026-08-14 — Chapter 12 built, Module 5 complete
 
 - Chapter 12 ("Handling LLM Output Safely: PII and Downstream Injection

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L4 Architecture Challenge: Aegis Copilot Pre-GA Review — AI Security for Everyone</title>
+<meta name="description" content="Chapter 13 capstone project: the course's L4 Architecture Challenge. Design a full security architecture for Cinderpeak Systems' Aegis Copilot -- a threat model across all ten OWASP GenAI LLM Top 10 2026 categories, six Architecture Decision Records with real trade-off reasoning, and a self-directed red-team pass with a prioritized launch recommendation. Business problem only.">
+<link rel="stylesheet" href="../../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-13">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../../index.html">All Chapters</a>
+      <a href="../../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="../interview-questions.html">&larr; Back to interview questions</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 13 Project — L4 Architecture Challenge</span>
+    <span class="reading-time">~120 min, capstone</span>
+  </div>
+  <h1>Project: Aegis Copilot Pre-GA Security Architecture Review</h1>
+  <p>
+    The course's fourth and final project tier — no vulnerable pipeline
+    to fix, just a business problem. See <a href="README.md">README.md</a>
+    for the full brief.
+  </p>
+
+  <div class="what-is">
+    <span class="label">The business problem</span>
+    Cinderpeak Systems' Aegis Copilot — a multi-tenant AI workflow
+    platform — has run a nine-tenant beta for four months with no major
+    incident. General availability is eight weeks out. Design the
+    security architecture it should have had from day one.
+  </div>
+
+  <div class="what-is">
+    <span class="label">What you produce</span>
+    A threat model across all ten OWASP GenAI LLM Top 10 2026
+    categories (honestly rating your own confidence per category), six
+    required Architecture Decision Records with real trade-off
+    reasoning tagged by Chapter 5's structural/detection/consequence-
+    bounding taxonomy, a self-directed red-team pass against your own
+    finished design with real findings, and a launch recommendation
+    that separates must-fix, accepted-and-monitored, and
+    needs-follow-up items. Grade your finished submission against
+    <code>RUBRIC.md</code>'s six criteria.
+  </div>
+
+  <div class="download-links">
+    <a href="starter.py">starter.py</a>
+    <a href="solution.py">solution.py (reference)</a>
+    <a href="RUBRIC.md">RUBRIC.md</a>
+    <a href="README.md">README.md (full brief)</a>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">1</span> Run the scaffold</h3>
+    <p><code>python3 starter.py</code> prints the business problem, the full system description, and an empty score report showing exactly what's missing.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">2</span> Build the threat model</h3>
+    <p>Fill in <code>THREAT_MODEL</code> for all ten OWASP 2026 categories, honestly flagging any category you can't confidently rate.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">3</span> Write the six required ADRs</h3>
+    <p>Fill in <code>ADRS</code> for every topic in <code>REQUIRED_ADR_TOPICS</code>, each with a real alternative, a real trade-off, and the correct defense-category tag.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">4</span> Red-team your own design</h3>
+    <p>Fill in <code>RED_TEAM_FINDINGS</code> — at least one real, specific residual gap your own ADRs leave open.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">5</span> Write the launch recommendation</h3>
+    <p>Fill in <code>LAUNCH_RECOMMENDATION</code>, synthesizing your findings into a prioritized, honest recommendation.</p>
+  </div>
+
+  <div class="task-card">
+    <h3><span class="task-num">6</span> Self-grade</h3>
+    <p>Re-run <code>starter.py</code> to confirm the score report reflects a complete submission, then grade against <code>RUBRIC.md</code> (target: 19-24/24).</p>
+  </div>
+
+  <p>See <a href="README.md">README.md</a> for the full brief and <a href="RUBRIC.md">RUBRIC.md</a> for the complete grading rubric.</p>
+
+  <div class="chapter-nav">
+    <a href="../interview-questions.html">&larr; Back to Interview Questions</a>
+    <a href="../../../index.html">All Chapters &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+    <span><a href="https://github.com/TechNaom/ai-security-for-everyone">github.com/TechNaom/ai-security-for-everyone</a></span>
+  </div>
+</footer>
+
+<script src="../../../assets/progress.js"></script>
+<script src="../../../assets/chapters-data.js"></script>
+<script src="../../../assets/sidebar.js"></script>
+</body>
+</html>

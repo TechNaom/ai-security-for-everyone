@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capstone: Security Architecture Quiz — AI Security for Everyone</title>
+<meta name="description" content="Interactive quiz for Chapter 13, Capstone: Security Architecture for a Real LLM System.">
+<link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-13" data-chapter-id="chapter-13">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../index.html">All Chapters</a>
+      <a href="../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="lesson.html">&larr; Back to the lesson</a></p>
+
+  <span class="chapter-badge">Chapter 13 Quiz — Capstone</span>
+  <h1>Capstone: Security Architecture for a Real LLM System</h1>
+  <p>Fill in each blank, then check your answers. A perfect score marks this chapter — and the course — complete.</p>
+
+  <div class="quiz-progress-wrap" aria-hidden="true">
+    <div class="quiz-progress-fill" id="quiz-progress-fill"></div>
+  </div>
+
+  <form onsubmit="return false;">
+
+    <div class="quiz-question">
+      <label for="q1"><span class="q-num">1</span> Unlike every prior chapter, this chapter's hook has no ______ -- the skill it teaches is designing defenses before a failure exists to diagnose.</label>
+      <div class="fib-row">
+        <input type="text" id="q1" class="fib-blank" data-answers="incident" aria-label="Answer for question 1">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q2"><span class="q-num">2</span> This chapter's fictional org is Cinderpeak Systems, whose product is called Aegis ______.</label>
+      <div class="fib-row">
+        <input type="text" id="q2" class="fib-blank" data-answers="Copilot,copilot" aria-label="Answer for question 2">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q3"><span class="q-num">3</span> This chapter's project is the course's fourth and final project tier: the L______ Architecture Challenge.</label>
+      <div class="fib-row">
+        <input type="text" id="q3" class="fib-blank" data-answers="4,L4,four" aria-label="Answer for question 3">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q4"><span class="q-num">4</span> Every required ADR must state which of Chapter 5's three defense categories it belongs to: structural, detection, or consequence-______.</label>
+      <div class="fib-row">
+        <input type="text" id="q4" class="fib-blank" data-answers="bounding" aria-label="Answer for question 4">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q5"><span class="q-num">5</span> In the OWASP GenAI LLM Top 10 2026, Excessive Agency is now LLM______:2026, the biggest climb on the list, up from #6.</label>
+      <div class="fib-row">
+        <input type="text" id="q5" class="fib-blank" data-answers="03,3" aria-label="Answer for question 5">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q6"><span class="q-num">6</span> This chapter honestly names two OWASP 2026 categories with no dedicated course chapter: Unbounded Consumption and ______.</label>
+      <div class="fib-row">
+        <input type="text" id="q6" class="fib-blank" data-answers="Misinformation,misinformation" aria-label="Answer for question 6">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q7"><span class="q-num">7</span> Sandboxing is the right call for third-party marketplace plugins because the risk is arbitrary untrusted ______, not just a malformed tool-call argument.</label>
+      <div class="fib-row">
+        <input type="text" id="q7" class="fib-blank" data-answers="code" aria-label="Answer for question 7">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <label for="q8"><span class="q-num">8</span> This chapter's project requires the learner to red-team their ______ own just-designed architecture using Chapter 11's methodology, before finalizing it.</label>
+      <div class="fib-row">
+        <input type="text" id="q8" class="fib-blank" data-answers="own" aria-label="Answer for question 8">
+        <button type="button" class="check-btn">Check</button>
+        <span class="fib-feedback" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div id="check-all-wrap">
+      <button type="button" id="check-all-btn" class="check-btn">Check All Answers</button>
+      <span id="quiz-score"></span>
+    </div>
+
+    <div class="quiz-celebration" id="quiz-celebration" aria-live="polite">
+      Perfect score. Module 6 complete -- and so is the entire course. Congratulations.
+    </div>
+  </form>
+
+  <div class="chapter-nav">
+    <a href="lesson.html">&larr; Back to Lesson</a>
+    <a href="exercises/index.html">Exercises &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+  </div>
+</footer>
+
+<script src="../../assets/quiz-engine.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/chapters-data.js"></script>
+<script src="../../assets/sidebar.js"></script>
+</body>
+</html>

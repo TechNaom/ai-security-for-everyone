@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capstone: Security Architecture for a Real LLM System — AI Security for Everyone</title>
+<meta name="description" content="The final chapter, closing the course. Architect-level synthesis: design and defend a full security architecture for Cinderpeak Systems' Aegis Copilot, a multi-tenant enterprise LLM platform, using every chapter's arsenal -- the OWASP GenAI LLM Top 10 2026 as the threat-modeling framework, Chapter 5's structural/detection/consequence-bounding defense taxonomy to justify Architecture Decision Records, Chapter 11's red-teaming methodology applied to your own proposed design, and Chapter 12's output-handling discipline. No incident hook -- this chapter breaks that pattern on purpose, because the skill it teaches is designing before the incident, not diagnosing after one.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body data-active-chapter="chapter-13">
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle chapter list" aria-expanded="false">Chapters</button>
+<aside id="chapter-sidebar" class="sidebar" data-root="../../" aria-label="Chapter navigation"></aside>
+<div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+<header class="top-bar">
+  <div class="page">
+    <a href="../../index.html" class="brand">AI Security for Everyone</a>
+    <nav>
+      <a href="../../index.html">All Chapters</a>
+      <a href="../../docs/curriculum/index.html">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <p><a href="../../index.html">&larr; Back to all chapters</a></p>
+
+  <div class="page-meta">
+    <span class="chapter-badge">Chapter 13 — Capstone</span>
+    <span class="badge-difficulty">Architect</span>
+    <span class="reading-time">~65 min</span>
+  </div>
+
+  <h1>Capstone: Security Architecture for a Real LLM System</h1>
+  <p class="lede">
+    Twelve chapters built an arsenal: a structured threat-modeling
+    framework, real attack mechanisms with real defenses across input
+    and output, a way to evaluate whether a defense actually works, and
+    a methodology for finding what's still wrong. This chapter asks you
+    to use all of it at once, the way an architect actually would —
+    before a system ships, not after it breaks. This is Module 6, the
+    course's final chapter.
+  </p>
+
+  <nav class="page-toc" aria-label="On this page">
+    <span class="toc-label">On this page</span>
+    <a href="#hook">1. Cinderpeak Systems and the Aegis Copilot pre-GA review</a>
+    <a href="#pattern-break">2. Why this chapter has no incident</a>
+    <a href="#system">3. The system: Aegis Copilot, in enough detail to threat-model</a>
+    <a href="#arsenal">4. This course's arsenal, mapped to the OWASP 2026 Top 10</a>
+    <a href="#adrs">5. Architecture Decision Records: format, and a worked example</a>
+    <a href="#sandbox-tradeoff">6. A full trade-off worked example: when sandboxing is the right call</a>
+    <a href="#self-redteam">7. Red-teaming your own architecture before you ship it</a>
+    <a href="#capstone">8. The capstone project: the L4 Architecture Challenge</a>
+    <a href="#thought-process">9. GenAI Builder Thought Process</a>
+    <a href="#recap-points">10. Points to remember — and where the course goes from here</a>
+  </nav>
+
+  <div class="hook" id="hook">
+    <p>
+      <strong>Cinderpeak Systems</strong> is a fictional enterprise
+      software vendor. Its product, <strong>Aegis Copilot</strong>, is a
+      multi-tenant AI workflow assistant: each client company (a
+      "tenant") gets its own workspace where Aegis Copilot answers
+      questions against that tenant's own documents, drafts replies,
+      creates tickets, sends emails, and can install third-party plugins
+      from a public marketplace to extend what it can do. Aegis Copilot
+      has been in a limited beta with nine tenants for four months. No
+      major incident has happened. General availability — opening
+      signups to any company, at scale — is eight weeks out.
+    </p>
+    <p>
+      Cinderpeak's VP of Engineering has one request for you, and it
+      isn't "find out what's broken." It's: <strong>"Before we open this
+      up to the world, design the security architecture we should have
+      had from day one — and show your work."</strong> No specific
+      vulnerability has been reported. No customer has complained. The
+      brief is the business problem, full stop: a multi-tenant system
+      that reads private documents, takes real actions, renders
+      generated content to real users, and lets third parties extend it —
+      and a launch date. Everything else is yours to design, justify, and
+      defend.
+    </p>
+  </div>
+
+  <section id="pattern-break" class="subtopic">
+    <h2>Why This Chapter Has No Incident</h2>
+    <p>
+      Every one of Chapters 1 through 12 opened with something that had
+      already gone wrong — GreenCart's fraudulent refund, Northline
+      Digest's planted wiki edit, TicketSense's two bad Tuesdays. That
+      pattern was deliberate and it was correct for what those chapters
+      taught: mechanism is easiest to learn by watching it fail first.
+      This chapter breaks that pattern on purpose, and the reason is the
+      whole point of Module 6.
+    </p>
+    <div class="what-is">
+      <span class="label">The skill this chapter teaches is not diagnosis</span>
+      Chapters 1-12 taught you to recognize a failure, explain why it
+      happened, and close it. Chapter 11 taught you to go looking for
+      failures systematically, on purpose, against a system that already
+      exists. This chapter teaches something upstream of both: designing
+      a system's defenses <em>before</em> a version of it exists to fail.
+      An incident hook would undercut that lesson — it would let you
+      pattern-match "this looks like Chapter 6's problem" instead of
+      building a threat model from a blank system description the way a
+      real architecture review actually starts. Cinderpeak's beta having
+      no major incident yet isn't a plot convenience; it's the premise.
+      The Level 4 Architecture Challenge, per <code>CURRICULUM_MAP.md</code>'s
+      own Projects section, is explicitly "business problem only" — no
+      planted vulnerability, no starter code with a bug already in it.
+      That's not a lighter version of Chapter 10 or 11's projects; it's a
+      harder one, because nothing points at the gap for you.
+    </div>
+    <p>
+      That doesn't mean this chapter invents new mechanism. It means the
+      opposite: every failure shape you'll threat-model against Aegis
+      Copilot is one this course already taught in depth somewhere in
+      Chapters 1-12. What's new is the order of operations — designing
+      the defenses first, with real trade-off reasoning, instead of
+      finding what's missing after the fact.
+    </p>
+  </section>
+
+  <section id="system" class="subtopic">
+    <h2>The System: Aegis Copilot, in Enough Detail to Threat-Model</h2>
+    <p>
+      A real architecture review starts from a system description, not a
+      vague product name. Here is Aegis Copilot's, at the level of
+      detail this chapter's project also ships as structured data in
+      <code>project/starter.py</code>'s <code>SYSTEM_DESCRIPTION</code>.
+    </p>
+    <div class="code-window">
+      <div class="code-window-bar">
+        <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+        <span class="filename">aegis_copilot_architecture.md (the business problem, as given)</span>
+      </div>
+      <pre><code>Tenants
+  Each client company gets an isolated workspace: its own document
+  index, its own tool configuration, its own generated-content history.
+  ~9 tenants in beta; GA is expected to bring hundreds within a year.
+
+Retrieval (RAG)
+  Each tenant's internal wikis, contracts, support tickets, and
+  uploaded files are ingested into a per-tenant vector index. Aegis
+  Copilot retrieves from that index to answer questions and draft
+  content for that tenant only -- in principle.
+
+Tools (agentic actions)
+  First-party tools: create_ticket(), send_email(), query_billing_api(),
+  fetch_related_document_link() (auto-fetched by the frontend for link
+  previews). Third-party tools: a public plugin marketplace where any
+  developer can publish additional tools (a Slack notifier, a CRM sync,
+  a calendar-booking plugin); any tenant admin can install any listed
+  plugin for their own workspace with one click.
+
+Fine-tuning
+  Each tenant can opt into a per-tenant fine-tune of the base model on
+  that tenant's own historical support transcripts, to match tone and
+  house style. Fine-tuning jobs run centrally, triggered by a tenant
+  admin, with no human review of the training transcripts before the
+  job runs.
+
+Output surfaces
+  1. An internal agent dashboard (Cinderpeak's own support staff use
+     this across all tenants) -- renders generated summaries and
+     replies as HTML for formatting.
+  2. A customer-facing chat widget, embedded on each tenant's own
+     public website -- renders generated replies as Markdown.
+  3. An automated weekly digest email, built by concatenating short
+     generated summaries from every tenant's activity that week, sent
+     to Cinderpeak's internal product-analytics team for engagement
+     reporting.
+
+Base model
+  Swappable via Cinderpeak's own inference gateway; local dev defaults
+  to an Ollama-compatible open-weight model per this course's
+  documented model policy, with a hosted-provider option for
+  production traffic.</code></pre>
+    </div>
+    <p>
+      Read that twice. It is deliberately dense with surface area — nine
+      distinct places where a decision has to be made, and every one of
+      them maps to something Chapters 1-12 already taught you to
+      recognize. That mapping is the next section.
+    </p>
+  </section>
+
+  <section id="arsenal" class="subtopic">
+    <h2>This Course's Arsenal, Mapped to the OWASP 2026 Top 10</h2>
+    <p>
+      Chapter 12 confirmed live that the <strong>OWASP GenAI LLM Top 10
+      2026</strong> (published August 4, 2026) is the current edition and
+      adopted its numbering from that chapter forward. This chapter
+      re-confirmed the full ranking is unchanged since Chapter 12 shipped
+      (checked live again this session, not assumed) and gives the
+      complete category list for the first time in this course — Chapter
+      1 through 12 each used a subset; the capstone needs all ten at
+      once, since a real architecture review doesn't get to skip a
+      category because no chapter went deep on it yet.
+    </p>
+    <div class="code-window">
+      <div class="code-window-bar">
+        <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+        <span class="filename">the full OWASP GenAI LLM Top 10 2026, mapped to this course and to Aegis Copilot</span>
+      </div>
+      <pre><code>LLM01:2026 Prompt Injection (2025 rank: #1, unchanged)
+  Course depth: Chapters 3, 4 (direct/indirect injection, jailbreaking)
+  Aegis Copilot surface: tenant-uploaded documents entering RAG;
+  customer-facing chat widget is a direct-injection surface too.
+
+LLM02:2026 Sensitive Information Disclosure (2025 rank: #2, unchanged)
+  Course depth: Chapter 12 (PII leakage, three failure shapes)
+  Aegis Copilot surface: per-tenant isolation must hold; the weekly
+  cross-tenant analytics digest is the sharpest risk (see below).
+
+LLM03:2026 Excessive Agency (2025 rank: #6 -> biggest climb on the list)
+  Course depth: Chapter 1 introduced it, Chapter 10 built full defenses
+  Aegis Copilot surface: send_email, query_billing_api, and every
+  marketplace plugin's tool-call authority.
+
+LLM04:2026 Supply Chain (2025 rank: #3 -> down)
+  Course depth: Chapter 8
+  Aegis Copilot surface: the third-party plugin marketplace itself is a
+  standing trust decision, re-made every time a tenant installs one.
+
+LLM05:2026 Data and Model Poisoning (2025 rank: #4 -> down)
+  Course depth: Chapter 6
+  Aegis Copilot surface: per-tenant fine-tuning ingests a tenant's own
+  historical transcripts with no review before the job runs.
+
+LLM06:2026 Unbounded Consumption (2025 rank: #10 -> up)
+  Course depth: touched only at threat-model-checklist level in
+  Chapters 1-2 -- this course has NO dedicated deep-dive chapter on
+  cost/resource-exhaustion attacks. Named honestly below.
+
+LLM07:2026 Misinformation (2025 rank: #9 -> up)
+  Course depth: touched only at threat-model-checklist level in
+  Chapter 1 -- also no dedicated chapter. Named honestly below.
+
+LLM08:2026 Hidden Context Exposure (renamed/expanded from LLM07:2025
+                                     System Prompt Leakage)
+  Course depth: Chapter 7's system-prompt-extraction technique, Chapter
+  3's framing defenses
+  Aegis Copilot surface: one tenant's customized system-prompt
+  instructions leaking to a different tenant is a real product failure
+  unique to a multi-tenant system.
+
+LLM09:2026 Vector and Embedding Weaknesses (2025 rank: #8, ~unchanged)
+  Course depth: Chapter 9
+  Aegis Copilot surface: per-tenant vector-store isolation, embedding-
+  space poisoning within one tenant's own index.
+
+LLM10:2026 Improper Output Handling (2025 rank: #5 -> #10, biggest fall,
+                                      scope expanded)
+  Course depth: Chapter 12
+  Aegis Copilot surface: HTML dashboard rendering, Markdown chat-widget
+  rendering, the auto-fetched related-document link -- now customer-
+  facing, which raises the severity of every one of Chapter 12's three
+  injection shapes.</code></pre>
+    </div>
+    <div class="what-is">
+      <span class="label">The honest gap this chapter names on purpose</span>
+      Two categories — LLM06:2026 Unbounded Consumption and LLM07:2026
+      Misinformation — never got a dedicated chapter in this course.
+      That's not an oversight being hidden at the finish line; it's the
+      kind of thing a real architect has to handle constantly: your own
+      team's depth is never uniform across a full framework, and the
+      honest move is to say so in the threat model itself, not silently
+      thin out the analysis for the categories you know less well. This
+      chapter's project requires you to name this gap explicitly in your
+      own threat model, the same "don't overclaim" discipline Chapter 5
+      established for defense evaluation, now applied to your own team's
+      coverage rather than a vendor's defense claims. A threat model that
+      confidently rates all ten categories with equal authority, when
+      two of them were reasoned about for the first time during the
+      review itself, is a worse and less trustworthy artifact than one
+      that flags "this needs a specialist review we haven't done yet" —
+      exactly the judgment this chapter's rubric grades for.
+    </div>
+    <p>
+      One category deserves a second look because of what changed
+      between tenants and departments. Chapter 12's Priya incident was a
+      sensitive detail crossing from one internal audience (a specific
+      support agent) to a wider internal one (any agent, a cross-team
+      export). Aegis Copilot's weekly digest email crosses a sharper
+      line: content generated for one <em>paying customer's</em> tenant
+      workspace, concatenated into a digest read by Cinderpeak's own
+      staff. The mechanism is identical — no artifact-level scoping
+      independent of the source data's own access controls — but the
+      blast radius is now a contractual, not just organizational,
+      boundary. Same failure shape, higher stakes. That's exactly the
+      kind of escalation an architecture review has to catch before
+      launch, not after a tenant's contract lawyer catches it instead.
+    </p>
+  </section>
+
+  <section id="adrs" class="subtopic">
+    <h2>Architecture Decision Records: Format, and a Worked Example</h2>
+    <p>
+      An <strong>Architecture Decision Record (ADR)</strong> is a short,
+      durable document that captures one specific design decision: the
+      context that forced the decision, the option chosen, the
+      alternatives that were seriously considered and rejected, and the
+      trade-offs accepted by choosing this option over those
+      alternatives. The discipline that makes an ADR worth writing is the
+      same one Chapter 5 built for evaluating a defense: state what a
+      choice actually costs and actually buys, not just that it was
+      made.
+    </p>
+    <div class="what-is">
+      <span class="label">Why this chapter requires Chapter 5's three-category taxonomy inside every ADR</span>
+      Chapter 5 taught that a prompt-injection defense falls into one of
+      three categories by what it actually measures: <strong>structural</strong>
+      (does the tell still fire at all — an architectural fact,
+      independent of any measurement), <strong>detection</strong> (a real
+      false-positive/false-negative trade-off that has to be measured),
+      and <strong>consequence-bounding</strong> (does blast radius stay
+      contained regardless of whether the attack succeeded). That
+      taxonomy generalizes past prompt injection specifically to every
+      defensive choice this capstone requires — output encoding is
+      structural, a PII scanner is detection, tool sandboxing is
+      consequence-bounding — and naming which category a given ADR's
+      decision falls into forces the same honesty Chapter 5 required:
+      you cannot defend a detection-based choice by citing a structural
+      guarantee it doesn't have, and you cannot justify skipping
+      consequence-bounding controls by pointing at a structural or
+      detection control that operates on a completely different failure
+      mode. Every required ADR in this chapter's project must state its
+      defense category explicitly and reason about trade-offs using the
+      standard that category actually earns.
+    </div>
+    <p>
+      Here is a complete worked example, at the depth this chapter's
+      project requires for all six of its own required ADRs.
+    </p>
+    <div class="code-window">
+      <div class="code-window-bar">
+        <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+        <span class="filename">ADR-02: Rendering strategy for customer-facing and internal output surfaces</span>
+      </div>
+      <pre><code>Status: Accepted
+Defense category: Structural
+Maps to: LLM10:2026 Improper Output Handling
+
+Context
+  Aegis Copilot has two rendering surfaces that display generated text
+  as formatted content, not plain text: the internal dashboard (HTML)
+  and the customer-facing chat widget (Markdown, which itself renders
+  to HTML in the browser). Chapter 12's own TicketSense incident is the
+  exact failure shape available here -- generated text carrying a
+  paraphrased payload from something the model read, rendered
+  unescaped, executing in a viewer's browser. On Aegis Copilot this is
+  worse than TicketSense: the chat widget is customer-facing, so the
+  "viewer" can be an end user outside Cinderpeak entirely, and the
+  payload's origin can be another tenant's document indirectly
+  influencing a shared base model's stylistic patterns -- still a
+  single-tenant technical boundary, but a much larger blast radius than
+  an internal dashboard.
+
+Decision
+  Apply context-aware output encoding unconditionally at both render
+  surfaces, with no exception for text that originated from the model's
+  own generation -- Chapter 12's central principle, applied here at
+  platform scale per the interview-level answer to "how do you make
+  output-side safety a property of the platform." A single shared
+  encoding library is called by both surfaces; there is no code path
+  that renders generated text without passing through it first.
+
+Alternatives considered
+  1. Detection-based: scan generated text for script-like patterns
+     before rendering, block or strip matches. Rejected as the PRIMARY
+     control -- this is the same category-mismatch error Chapter 5
+     named: a pattern scanner has a real, non-zero false-negative rate
+     on payloads it wasn't written to catch, and "we scan for it" is a
+     detection claim being used to justify skipping a structural
+     control that would close the whole class of failure regardless of
+     payload shape.
+  2. Trust the model's system-prompt instruction not to generate
+     unsafe markup. Rejected outright -- this is exactly the brittle,
+     non-enforced control this course has flagged since Chapter 3; it
+     depends on the model choosing to comply, and Chapter 12's own
+     Priya-style incidents happen with zero adversarial intent at all.
+
+Trade-offs accepted
+  Unconditional escaping strips the model's ability to generate
+  legitimate rich formatting (bold text, bullet lists) that some
+  tenants' style guides want in generated replies. This is a real,
+  named cost, not an ignored one -- addressed by allowing a
+  pre-approved, narrow Markdown subset to render (bold, italics,
+  bullet lists only) via a safe-subset renderer that never interprets
+  raw HTML, rather than disabling escaping. This costs additional
+  implementation and review effort up front; it does not reopen the
+  vulnerability, because the safe-subset renderer's allowed syntax has
+  no code-execution path by construction, unlike raw HTML rendering.
+
+Consequences
+  Every new rendering surface added after this ADR must call the shared
+  encoding library or safe-subset renderer -- enforced via a CI lint
+  rule that flags any direct string interpolation into an HTML or
+  Markdown-to-HTML sink, not just documented as a convention.</code></pre>
+    </div>
+    <p>
+      Notice what this ADR does <em>not</em> do: it doesn't just list
+      "we escape output" as a mitigation and move on. It states the
+      specific alternative that was rejected and why, names the real
+      cost of the chosen option (broken rich formatting) and the real
+      fix for that cost (a safe subset, not disabled escaping), and
+      commits to an enforcement mechanism so the decision survives the
+      next engineer who didn't read this document. That's the bar this
+      chapter's project grades every required ADR against.
+    </p>
+  </section>
+
+  <section id="sandbox-tradeoff" class="subtopic">
+    <h2>A Full Trade-Off Worked Example: When Sandboxing Is the Right Call</h2>
+    <p>
+      The task brief for this capstone specifically calls out one
+      recurring architect-level judgment call: when a sandboxing
+      approach — the kind of process- or container-level execution
+      isolation covered in depth in <code>mcp-for-everyone</code> and
+      <code>ai-coding-agents-for-everyone</code>'s own agent-sandboxing
+      chapters — is the right call versus overkill. Aegis Copilot's
+      plugin marketplace is exactly the decision point that forces this
+      judgment, because it has two tool populations with genuinely
+      different risk profiles sitting inside the same system.
+    </p>
+    <div class="lesson-card">
+      <h3>First-party tools (create_ticket, send_email, query_billing_api)</h3>
+      <p>
+        <strong>Risk profile:</strong> a small, fixed set of tools,
+        written and reviewed by Cinderpeak's own engineers, with a
+        narrow, already-known argument schema. The main risk is
+        adversarial <em>arguments</em> reaching a legitimate tool
+        (Chapter 10's mechanism), not adversarial <em>code</em> running
+        inside the tool itself.
+      </p>
+      <p>
+        <strong>Right-sized control:</strong> Chapter 10's schema/type
+        validation and allow-list checks at the point of tool
+        invocation, plus a human-in-the-loop approval threshold for
+        high-consequence calls (Chapter 10's own capability-scoping
+        pattern). Full container-level sandboxing here would add real
+        latency and operational complexity for a risk this set of
+        controls already closes — consequence-bounding machinery bought
+        for a threat model that doesn't need it is not free, and
+        spending it here is the overkill half of this judgment call.
+      </p>
+    </div>
+    <div class="lesson-card">
+      <h3>Third-party marketplace plugins</h3>
+      <p>
+        <strong>Risk profile:</strong> an open, growing set of tools
+        written by developers Cinderpeak has never met, each one
+        capable of running arbitrary logic when invoked, installable by
+        any tenant admin with one click. The risk here genuinely
+        includes adversarial <em>code</em>, not just adversarial
+        arguments — a malicious or compromised plugin could attempt
+        far more than a crafted tool-call argument ever could, closer
+        to Chapter 8's supply-chain trust problem than Chapter 10's
+        tool-output problem.
+      </p>
+      <p>
+        <strong>Right-sized control:</strong> genuine execution
+        isolation — running each plugin invocation in its own sandboxed
+        process or container with an explicitly scoped, minimal
+        capability grant (no network access beyond what the plugin's
+        declared purpose requires, no filesystem access, a hard
+        resource/time limit per invocation) — the same category of
+        control <code>ai-coding-agents-for-everyone</code>'s
+        agent-sandboxing chapter builds for exactly this reason: when
+        the thing you're bounding is arbitrary untrusted code, not just
+        an untrusted argument, only genuine execution isolation actually
+        bounds the consequence. Schema validation alone does nothing
+        here, because the risk isn't a malformed argument — it's what
+        the plugin's own code does once invoked.
+      </p>
+    </div>
+    <div class="what-is">
+      <span class="label">The judgment, stated as a rule</span>
+      Sandboxing is a consequence-bounding control, and consequence-
+      bounding controls exist specifically for the case where structural
+      and detection controls can't reliably close the gap on their own —
+      the same logic Chapter 5 established for when consequence-bounding
+      defenses earn their keep. First-party tools have a threat model
+      structural controls (schema validation) already closes; paying the
+      cost of full sandboxing there is overkill. Third-party plugins have
+      a threat model no amount of schema validation touches, because the
+      risk is arbitrary code, not a malformed field; skipping sandboxing
+      there isn't cost-saving, it's leaving the one control that actually
+      matches the threat unimplemented. The rule isn't "sandbox
+      everything" or "sandbox nothing" — it's "sandbox exactly where the
+      threat model says schema and allow-list controls structurally
+      cannot reach," and saying so explicitly, with the reasoning shown,
+      is what separates an ADR from a preference.
+    </div>
+  </section>
+
+  <section id="self-redteam" class="subtopic">
+    <h2>Red-Teaming Your Own Architecture Before You Ship It</h2>
+    <p>
+      The curriculum map's own L4 brief requires "a red-team report and
+      full ADRs" — not ADRs alone. Chapter 11's five-phase methodology
+      (scoping, threat-model-driven test-case design, systematic
+      execution, severity classification, findings report) doesn't stop
+      being useful just because the target is your own just-designed
+      architecture instead of someone else's already-shipped system.
+      Applying it to your own design before finalizing it is the single
+      most direct way this chapter synthesizes Module 5 into Module 6's
+      outcome, and it catches a category of gap that writing ADRs alone
+      never will: <strong>an ADR can be internally well-reasoned and
+      still leave a residual gap the ADR itself doesn't surface</strong>,
+      because you're grading your own homework. A self-directed red-team
+      pass is the check on that.
+    </p>
+    <div class="what-is">
+      <span class="label">A completed architecture with zero findings is a red flag, not a compliment</span>
+      This mirrors Chapter 6's own honest disclosure (a real backdoor
+      and pure noise became statistically indistinguishable at low
+      support) and Chapter 7's (a legitimate power user scored only ~10
+      points below a real extraction campaign): every defense this
+      course taught has a stated, honest limit. A self-red-team pass
+      against six freshly written ADRs that reports zero residual risk
+      is far more likely to mean the pass wasn't rigorous than that the
+      architecture is actually flawless. This chapter's project requires
+      real findings — at least one genuine, specific gap your own ADRs
+      leave open — precisely so the exercise can't be gamed by writing
+      ADRs and then simply asserting they worked.
+    </div>
+    <p>
+      One concrete example, continuing the ADR-02 and ADR-06 pattern
+      from this lesson: ADR-02 closes rendered-output injection with
+      unconditional encoding. ADR-06 (tool permissioning, covered in
+      full in this chapter's project) adds a human-approval threshold
+      before <code>send_email</code> can send to an external address.
+      A rigorous self-red-team pass has to ask the next question anyway:
+      does that human-approval step check <em>who the email goes to</em>,
+      or does it also check <em>what the email says</em>? If it only
+      gates the recipient, an agent steered by a chained agent-to-agent
+      injection (Chapter 12's mechanism) could still get a human to
+      approve sending an attacker-influenced message body to an
+      already-approved recipient — a real gap ADR-06 didn't close on its
+      own, only findable by testing the design's actual boundary rather
+      than trusting the ADR's stated intent. That's exactly the kind of
+      finding this chapter's project expects you to surface yourself.
+    </p>
+  </section>
+
+  <section id="capstone" class="subtopic">
+    <h2>The Capstone Project: the L4 Architecture Challenge</h2>
+    <p>
+      This chapter's <a href="project/index.html">project</a> is the
+      course's fourth and final project tier — the <strong>L4
+      Architecture Challenge</strong>, per <code>CURRICULUM_MAP.md</code>'s
+      Projects section: "design a security architecture for a realistic
+      LLM system, with a red-team report and full ADRs; business problem
+      only." Unlike Chapters 9-12's find-and-fix labs or Chapter 11's
+      findings report against a provided vulnerable target, there is no
+      code to fix here — <code>project/starter.py</code> ships the
+      business problem (Aegis Copilot's system description, as
+      structured data) and a scaffold for the deliverable itself: a
+      threat model covering all ten OWASP 2026 categories, six required
+      Architecture Decision Records, and a self-directed red-team pass
+      with real findings and a launch recommendation.
+    </p>
+    <div class="what-is">
+      <span class="label">What makes this genuinely no-scaffold, the way L4 requires</span>
+      Chapter 10's L3 project had zero <code>TODO</code> markers in its
+      vulnerable starter pipeline, but the pipeline itself — the code
+      structure, the specific vulnerability — was fully given; the task
+      was finding and fixing it. This project gives you the system
+      description and nothing else: no proposed architecture, no
+      planted vulnerability to locate, no single correct answer key. The
+      six ADR topics <code>REQUIRED_ADR_TOPICS</code> names are the
+      decision points a real review would surface, but the decision
+      itself, its alternatives, and its trade-offs are yours to reason
+      through and defend — exactly what "business problem only" means in
+      practice.
+    </div>
+    <p>
+      Full brief, required deliverables, and the complete grading rubric
+      live in <a href="project/README.md">project/README.md</a> and
+      <a href="project/RUBRIC.md">project/RUBRIC.md</a>.
+    </p>
+    <p>
+      <strong>Honest disclosure on Ollama, checked fresh this session:</strong>
+      re-checked from scratch, not assumed to carry forward from Chapter
+      12. <code>curl -s -m 15 http://localhost:11434/api/tags</code>
+      responded normally, confirming <code>llama3.2:latest</code> (3.2B
+      parameters) is pulled and the server is reachable. A direct
+      generation request against <code>/api/chat</code>, tested
+      independently via raw <code>curl</code> with a 20-second timeout,
+      returned no response and timed out (<code>curl</code> exit code
+      28) — the same persistent, previously-disclosed, sandbox-wide
+      generation hang Chapters 3, 4, 5, 9, 10, 11, and 12 all
+      independently documented, re-confirmed directly this session with
+      no change in outcome. This isn't a live-model-dependent chapter in
+      the first place — an architecture review reasons about a system's
+      design, not about a specific model's live output — so this gap has
+      no bearing on the project's core deliverable; every function in
+      <code>project/starter.py</code> and <code>project/solution.py</code>
+      is real, deterministic Python whose behavior (which threat-model
+      entries validate, which ADR fields are checked, how the scoring
+      harness grades completeness) was actually run and verified this
+      session.
+    </p>
+  </section>
+
+  <section id="thought-process" class="subtopic">
+    <h2>GenAI Builder Thought Process</h2>
+    <div class="thinking-box">
+      <p><strong>Problem:</strong> Cinderpeak's VP of Engineering, after
+      seeing the threat model's honest gap-naming on Unbounded Consumption
+      and Misinformation, asks: "If we're not confident in two of the ten
+      categories, doesn't that mean we're not ready to launch?"</p>
+      <p><strong>Assumption being made:</strong> that "not deeply
+      specialized in a category yet" and "not ready to launch" are the
+      same statement. They aren't, and confusing them produces exactly
+      the wrong instinct — either false confidence (rate every category
+      as if the team's depth were uniform, to look launch-ready) or
+      false paralysis (block launch on categories where the honest
+      answer is "needs a follow-up review," not "known to be broken").
+      Chapter 5's whole discipline was refusing to overclaim what a
+      defense does; the parallel move here is refusing to overclaim what
+      a threat model covers.</p>
+      <p><strong>What actually resolves it:</strong> the launch
+      recommendation this chapter's project requires isn't a single
+      GO/NO-GO bit — it's a prioritized statement that distinguishes
+      "blocking, must-fix before GA" findings (like the ADR-06 email-body
+      gap this lesson found) from "accepted residual risk, monitored"
+      findings (like the digest re-identification risk), from "needs a
+      dedicated follow-up review before we can rate it with confidence"
+      categories (Unbounded Consumption, Misinformation). Those are three
+      different statements requiring three different actions, and
+      collapsing them into one launch/no-launch decision throws away the
+      information the whole review was built to produce.</p>
+      <p><strong>Why this matters as the course closes:</strong> every
+      module before this one taught a piece of the discipline this
+      answer depends on — Module 2's honest defense evaluation, Module 3
+      and 4's specific mechanism depth, Module 5's methodology for
+      finding what's wrong and handling what comes out. An architect's
+      actual job, most days, isn't inventing new attacks or new
+      defenses; it's making exactly this kind of prioritized,
+      honestly-limited judgment call under a real deadline, using an
+      arsenal that's necessarily uneven in depth — and being straight
+      about which parts of the judgment are solid and which parts
+      aren't, rather than presenting all of it with the same confidence.</p>
+      <p><strong>Working definition to carry forward, closing the
+      course:</strong> designing and defending a security architecture
+      means producing a threat model honest about its own coverage,
+      Architecture Decision Records that state real trade-offs using the
+      right evaluative standard for each defense's category, and a
+      self-directed adversarial check on your own design before anyone
+      else has to find its gaps for you — with a launch recommendation
+      that separates what must be fixed, what's an accepted and
+      monitored risk, and what still needs more expertise than the room
+      currently has. That is the single chapter this entire course has
+      been building toward.</p>
+    </div>
+  </section>
+
+  <section id="recap-points" class="subtopic">
+    <div class="points-to-remember">
+      <h2>Points To Remember — and Where the Course Goes From Here</h2>
+      <ul>
+        <li>This chapter deliberately breaks the incident-first pattern
+        every prior chapter used — the skill it teaches is designing a
+        system's defenses before an incident exists to diagnose, the
+        premise behind the L4 Architecture Challenge's "business problem
+        only" requirement.</li>
+        <li>The full OWASP GenAI LLM Top 10 2026 (LLM01 through LLM10)
+        maps onto Aegis Copilot's architecture with real, traceable
+        course depth behind eight of the ten categories — and this
+        chapter names, rather than hides, the two (Unbounded Consumption,
+        Misinformation) this course never built a dedicated chapter for,
+        the same honest-limits discipline Chapter 5 established applied
+        to the team's own coverage, not just a vendor's defense claims.</li>
+        <li>An Architecture Decision Record states context, the decision
+        made, the alternatives seriously considered and rejected, and
+        the real trade-offs accepted — every ADR in this chapter's
+        project must also state which of Chapter 5's three defense
+        categories (structural, detection, consequence-bounding) its
+        decision belongs to, and reason about trade-offs using the
+        standard that category actually earns.</li>
+        <li>Sandboxing is a consequence-bounding control that earns its
+        real cost specifically where structural and detection controls
+        structurally cannot reach — arbitrary untrusted code (third-party
+        plugins), not a malformed argument to an already-scoped
+        first-party tool. Applying it everywhere is overkill; skipping it
+        where it's the only control that matches the threat is a real
+        gap, not a savings.</li>
+        <li>A red-team pass against your own just-designed architecture,
+        using Chapter 11's methodology, is required — not optional —
+        because an ADR can be internally well-reasoned and still leave a
+        residual gap it doesn't surface on its own. A completed
+        architecture reporting zero findings is a signal the pass wasn't
+        rigorous, not a compliment.</li>
+        <li>This closes the course. Thirteen chapters, six modules, four
+        project tiers (L1 Guided through L4 Architecture Challenge) — the
+        full arc runs from "here is a checklist for thinking about LLM
+        attack surface at all" (Chapter 1) to "design and defend a full
+        security architecture, with real trade-off reasoning, for a
+        system nobody has attacked yet" (this chapter). There is no
+        Chapter 14. If you're reading this having finished the project,
+        you've done the thing this course was built to teach.</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="what-is">
+    <span class="label">Interview questions (4 levels)</span>
+    Practice explaining an ADR's trade-off reasoning and the
+    sandboxing judgment call out loud — see
+    <a href="interview-questions.html">Chapter 13 interview questions</a>,
+    covering beginner through architect level.
+  </div>
+
+  <div class="chapter-nav">
+    <a href="../../index.html">&larr; All Chapters</a>
+    <a href="quiz.html">Take the Quiz &rarr;</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="page">
+    <span>AI Security for Everyone — free, visual, engineering-first GenAI learning.</span>
+    <span><a href="https://github.com/TechNaom/ai-security-for-everyone">github.com/TechNaom/ai-security-for-everyone</a></span>
+  </div>
+</footer>
+
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/chapters-data.js"></script>
+<script src="../../assets/sidebar.js"></script>
+</body>
+</html>
